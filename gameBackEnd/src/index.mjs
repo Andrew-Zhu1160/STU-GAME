@@ -72,7 +72,7 @@ app.use(helmet());
 app.use(express.json({ limit: '10kb' }));
 app.use(cors({
     
-    origin: process.env.REACT_URL, 
+    origin:['https://stu-game-v100.vercel.app', process.env.REACT_URL],
     
     //very important to allow cookies from react front end
     credentials: true,               
