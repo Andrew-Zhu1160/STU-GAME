@@ -1,0 +1,622 @@
+@font-face {
+    font-family:honk ;
+    src: url(../fonts/Honk-Regular-VariableFont_MORF\,SHLN.ttf);
+}
+
+
+
+
+
+.background{
+    background-image: url(../images/mainPageBackground.png);
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+    background-repeat: no-repeat;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+    overflow-y: auto;
+    opacity: 1;
+
+    
+
+
+    position: relative;
+
+}
+
+.welcomeTag{
+    font-size:1.5em;
+    background-color: hsla(102, 100%, 50%, 0.699);
+    color:white;
+    padding:10px;
+    border-radius: 10px;
+    animation: tagDisplay 5s ease-in-out;
+    animation-fill-mode: forwards;
+    width:60%;
+    text-align: center;
+    position:absolute;
+    top:0%;}
+@keyframes tagDisplay {
+    0%{
+        transform:translateY(-80%);
+        opacity: 0;
+    }
+    10%{
+        opacity: 1;
+        transform:none;
+    }
+    90%{
+        opacity: 1;
+        transform:none;
+    }
+    100%{
+        opacity: 0;
+        transform:translateY(-80%);
+    }
+    
+}
+
+
+
+
+
+
+
+
+
+.shop{
+    position: absolute;
+    top: 10px;
+    right: 50px;
+    width: 120px;
+    height: 170px;
+    z-index:3;
+    cursor: pointer;
+
+}
+.shop:hover{
+    transform: scale(1.3);
+}
+.shop:active{
+    transform: scale(1);
+}
+
+.gameCard{
+    display:flex;
+    flex-direction: column;
+    align-items: center;
+    width:40%;
+    height: auto;
+    padding: 10px;
+    margin: 20px;
+    margin-top: 100px;
+    border-radius: 30px;
+    animation: gameCardLight 1s infinite;
+
+}
+@keyframes gameCardLight {
+    0%{
+        box-shadow: 10px 10px 15px rgba(255, 196, 0, 0.366);
+    }
+    50%{
+        box-shadow: 20px 20px 25px rgba(255, 255, 0, 1);
+    }
+    100%{
+        box-shadow: 10px 10px 15px rgba(255, 196, 0, 0.366);
+    }
+    
+}
+.gameCard:hover{
+    transform: scale(1.3);
+}
+.gameCard:active{
+    transform: scale(1);
+}
+.gameCardIcon{
+    width: 200px;
+    height: 200px;
+    margin: 10px; 
+}
+.gameCardTitle{
+    font-size: 3em;
+    color: white;
+    font-family: honk;
+    text-align: center;
+}
+
+
+
+.enterGameConfirmPanel{
+    position:absolute;
+    background-color: hsla(0, 1%, 38%, 0.793);
+    width:100vw;
+    height:100vh;
+
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    font-family: honk,Aerial;
+    text-align: center;
+    font-size: 3em;
+    z-index: 4;
+    
+
+}
+.enterGameButton{
+    width:50vw;
+    height:7%;
+    margin-bottom:3%;
+    border:none;
+    background-color: rgba(9, 255, 0, 0.741);
+    
+    border-radius: 20px;
+    font-family: Aerial;
+    font-weight: bold;
+    font-size: 0.7em;
+    color:white;
+    border-bottom: 1px solid rgb(1, 67, 1);
+    transform:none;
+
+}
+.enterGameButton:hover{
+    transform:translateX(-10px);
+    border-bottom: 10px solid rgb(1, 67, 1);
+}
+.enterGameButton:active{
+    
+    border-bottom: 1px solid rgb(1, 67, 1);
+    transform:none;
+}
+.enterConfirm{
+    animation: enterAnimation;
+    animation-duration: 1s;
+
+}
+.notEnterGameButton{
+    width:50vw;
+    height:7%;
+    margin-bottom:3%;
+    border:none;
+    background-color: rgba(255, 0, 0, 0.741);
+    font-weight: bold;
+    font-size: 0.7em;
+    color:white;
+    border-radius: 20px;
+    font-family: Aerial;
+    border-bottom: 1px solid rgb(67, 1, 1);
+    transform:none;
+
+}
+.notEnterGameButton:hover{
+    transform:translateX(-10px);
+    border-bottom: 10px solid rgb(67, 1, 1);
+
+}
+.notEnterGameButton:active{
+    
+    border-bottom: 1px solid rgb(67, 1, 1);
+    transform:none;
+}
+
+
+
+
+
+
+@keyframes enterAnimation {
+    0%{
+        transform:translateY(-50%);
+        opacity: 0.5;
+    }
+    100%{
+        transform:none;
+        opacity: 1;
+    }
+    
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/*for shops*/
+
+.shopMainPage{
+    width:100vw;
+    height:100vh;
+    position:absolute;
+  
+    z-index: 4;
+    background-color: hsla(210, 7%, 11%, 0.867);
+}
+.existShopButton{
+    width:40vw;
+    height:7%;
+    margin-bottom:3%;
+    border:none;
+    background-color: rgba(174, 3, 3, 0.708);
+    font-weight: bold;
+    font-size: 2em;
+    font-family: honk;
+    border-radius: 20px;
+ 
+    border-bottom: 1px solid rgb(67, 1, 1);
+    transform:none;
+    position: absolute;
+    right:1%;
+    top:1%;
+}
+.existShopButton:hover{
+     transform:translateX(-10px);
+    border-bottom: 10px solid rgb(39, 1, 1);
+}
+.existShopButton:active{
+    border-bottom: 1px solid rgb(39, 1, 1);
+    transform:none;
+}
+
+.sideNavBar{
+    display:flex;
+    flex-direction: column;
+    flex-wrap: wrap;
+    align-items: center;
+    width:20vw;
+    border-right: 15px solid rgba(128, 128, 128, 0.574);
+    background-color: rgba(0, 0, 0, 0.655);
+}
+.sideNavBar >img{
+    margin-top: 5vh;
+    margin-bottom: 2vh;
+}
+.sideNavBar >img:hover{
+    transform:scale(1.2);
+}
+.sideNavBar >img:active{
+    transform:scale(1);
+}
+
+
+.coinDisplay{
+    display:flex;
+    column-gap: 10px;
+}
+
+
+
+/*for tower defence game*/
+.imageSliderUp{
+    position:absolute;
+    width:90px;
+    height:70px;
+    background-color: hsla(0, 0%, 19%, 0.774);
+    font-family: honk,Aerial;
+    transform:translateX(-50%) translateY(-50%);
+    font-size: 3em;
+    left:50vw;
+    top:15vh;
+    border-radius: 75px;
+    border:5px solid rgba(255, 255, 255, 0.427);
+
+
+}
+.imageSliderDown{
+    position:absolute;
+    width:90px;
+    height:70px;
+    background-color: hsla(0, 0%, 19%, 0.774);
+    font-family: honk,Aerial;
+    font-size: 3em;
+    transform:translateX(-50%) translateY(-50%) rotateX(180deg);
+    left:50vw;
+    bottom:3vh;
+    border-radius: 75px;
+    border:5px solid rgba(255, 255, 255, 0.427);
+
+}
+.imageSliderUp:hover{
+   transform: scale(1.2) translateX(-50%) translateY(-50%)
+   
+}
+.imageSliderUp:active{
+   transform: scale(1) translateX(-50%) translateY(-50%)
+   
+}
+.imageSliderDown:hover{
+   transform:  scale(1.2)  translateX(-50%) translateY(-50%) rotateX(180deg)
+}
+.imageSliderDown:active{
+   transform: scale(1) translateX(-50%) translateY(-50%) rotateX(180deg)
+}
+
+
+
+
+.towerDisplayPanel{
+    display:flex;
+    flex-direction: column;
+    font-family: BGS,Aerial;
+    font-size: 1.2em;
+    align-items: center;
+    width:40vw;
+    height:40vh;
+    position:absolute;
+    transform: translateX(-50%) translateY(-50%);
+    top:40%;
+    left: 50%;
+
+}
+
+.towerShowCase{
+
+    
+    width:160px;
+    height:160px;
+    animation: towerEnter 1s ease-in-out ,
+    towerSpin 2s linear 1s infinite;
+    
+}
+@keyframes towerEnter {
+    0%{
+        transform:translateX(-60%);
+    }
+    100%{
+        transform: none;
+    }
+    
+}
+@keyframes towerSpin {
+    0%{
+        transform: rotateZ(0deg);
+    }
+    100%{
+        transform: rotateZ(360deg);
+    }
+    
+}
+
+.buyButton{
+    
+    width:25vw;
+    height:15vh;
+    background-color: hsla(46, 100%, 50%, 0.816);
+    border:none;
+    border-bottom: 1px solid rgba(64, 46, 1, 0.893);
+    border-radius: 30px ;
+    font-family: honk;
+    font-size: 2em;
+    top:40%;
+    right:5%;
+}
+.buyButton:hover{
+    border-bottom: 12px solid rgba(64, 46, 1, 0.893);
+    transform: translateX(-5%);
+}
+.buyButton:active{
+    border-bottom: 1px solid rgba(64, 46, 1, 0.893);
+    transform:none;
+}
+
+
+.confirmPurchasePanel{
+ 
+    position:absolute;
+    z-index: 5;
+    width:100vw;
+    height:100vh;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    font-size: 2em;
+    background-color: rgba(65, 64, 64, 0.641);
+    font-family: honk;
+}
+
+.towerDeployPanel{
+    border:none;
+    border-bottom: 3px solid hsl(248, 100%, 16%);
+   
+    position:absolute;
+    right:5vw;
+    bottom:5vh;
+    padding:5px;
+    min-width:10vw;max-width:20vw;
+    min-height:30vh;
+    border-radius: 25px;
+    display:flex;
+    flex-wrap: wrap;
+    flex-direction: row;
+    justify-content: center;
+    column-gap: 5px;
+    row-gap: 5px;
+    background-color: rgba(0, 98, 255, 0.597);
+    font-family: honk;
+    align-items: center;
+    font-size: 3em;
+}
+.towerDeployPanel:hover{
+    border-bottom: 17px solid hsl(248, 100%, 16%);
+    transform: translateX(-5%);
+
+}
+.towerDeployPanel:active{
+    border-bottom: 3px solid hsl(248, 100%, 16%);
+    transform: none;
+
+}
+
+.towerDeploySelection{
+    flex-direction: column;
+    position:absolute;
+    align-items: center;
+    
+    width:100vw;
+    height:100vh;
+    background: linear-gradient(60deg,hsla(0, 2%, 24%, 0.633),hsla(0, 0%, 50%, 0.622));
+
+
+}
+.towerDeploySelection>h1{
+    font-family: honk;
+    font-size: 3em;
+    text-align: center;
+    margin-bottom: 5vh;
+    margin-top: 15vh;
+    max-width: 70vw;
+}
+.towerDeploySelection>div{
+    display: flex;
+    width:70vw;
+    height:40vh;
+    background-color: hsla(231, 14%, 27%, 0.775);
+    border:15px solid rgba(163, 163, 163, 0.812);
+    border-radius: 20px;
+    padding:10px;
+    flex-wrap: wrap;
+    
+    overflow-y: auto;
+    
+    gap:10px;
+
+}
+.towerDeploySelection >button{
+    position:absolute;
+    bottom:5vh;
+    width:40vw;
+    height:10vh;
+    background-color: hsla(29, 100%, 58%, 0.775);
+    border:none;
+    border-bottom: 3px solid rgba(164, 107, 1, 1);
+    border-radius: 20px;
+    font-family: honk;
+    font-size: 3em;
+}
+.towerDeploySelection >button:hover{
+    border-bottom: 13px solid rgba(164, 107, 1, 1);
+    transform:translateX(-5%);
+}
+.towerDeploySelection >button:active{
+    border-bottom: 3px solid rgba(164, 107, 1, 1);
+    transform:none;
+}
+
+.towerDeploySelection>div>div{
+    display:flex;
+    height:15vh;
+   
+    
+
+}
+.towerDeploySelection>div>div>input{
+    width:30%;
+    border-radius: 20px;
+    border:5px solid gray;
+    font-family: honk,aerial;
+    font-size: 4em;
+}
+
+
+
+
+/*the logout buttons and screens*/
+
+.logoutScreen{
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    position: fixed;
+    width:100vw;
+    height:100vh;
+    background-color: rgba(244, 87, 87, 0.595);
+    font-family: honk,Aerial;
+    font-size: 2em;
+    z-index: 15;
+}
+.logoutScreen>h1{
+    text-align: center;
+}
+.logoutButton{
+    position: fixed;
+    display: flex;
+    align-items: center;
+    justify-content:center ;
+    width:120px;
+    height:120px;
+    bottom:0px;
+    right:0px;
+    background-color: rgba(227, 29, 29, 0.778);
+    border-radius: 60px;
+    border: 15px solid rgba(255, 111, 0, 0.74);
+    font-family: honk,Aerial;
+    font-size: 6em;
+
+
+}
+.logoutButton:hover{
+    transform: scaleX(1.5) scaleY(1.5);
+}
+.logoutButton:active{
+    transform: none;
+}
+
+
+.cancelLogout{
+    
+    width:25vw;
+    height:auto;
+    background-color: hsla(26, 100%, 50%, 0.816);
+    border:none;
+    border-bottom: 1px solid rgba(64, 23, 1, 0.893);
+    border-radius: 30px ;
+    font-family: honk;
+    font-size: 2em;
+    top:40%;
+    right:5%;
+    margin-bottom: 5vh;
+}
+.cancelLogout:hover{
+    border-bottom: 12px solid rgba(64, 23, 1, 0.893);
+    transform: translateX(-5%);
+}
+.cancelLogout:active{
+    border-bottom: 1px solid rgba(64, 23, 1, 0.893);
+    transform:none;
+}
+
+
+.confirmLogout{
+    
+    width:25vw;
+    height:auto;
+    background-color: hsla(91, 100%, 50%, 0.816);
+    border:none;
+    border-bottom: 1px solid rgba(14, 64, 1, 0.893);
+    border-radius: 30px ;
+    font-family: honk;
+    font-size: 2em;
+    top:40%;
+    right:5%;
+}
+.confirmLogout:hover{
+    border-bottom: 12px solid rgba(14, 64, 1, 0.893);
+    transform: translateX(-5%);
+}
+.confirmLogout:active{
+    border-bottom: 1px solid rgba(14, 64, 1, 0.893);
+    transform:none;
+}

@@ -1,0 +1,211 @@
+@font-face {
+    font-family: "SFC";
+    src: url(../fonts/SixtyfourConvergence-Regular-VariableFont_BLED\,SCAN\,XELA\,YELA.ttf);
+}
+@font-face {
+    font-family: "BGS";
+    src: url(../fonts/BitcountGridSingleInk-VariableFont_CRSV\,ELSH\,ELXP\,SZP1\,SZP2\,XPN1\,XPN2\,YPN1\,YPN2\,slnt\,wght.ttf);
+}
+
+.gameTitle{
+    font-family: SFC;
+    font-size: 3em;
+    color: hsl(204, 72%, 64%);
+    text-align: center;
+    position:absolute;
+    top:7%;
+    animation: fontAnimation 3s ease-in-out infinite;
+    
+}
+
+
+
+.inputButton{
+    margin-top:20px;
+    margin-bottom: 20px;
+    font-family: BGS;
+    font-size: 2em;
+    text-shadow: 2px 2px 5px rgb(247, 0, 0);
+    border-radius: 20px;
+    background:linear-gradient( 40deg,rgba(0, 0, 255, 0.218),rgba(255, 0, 0, 0.525));
+    border-bottom:7px solid rgb(139, 0, 0);
+    border-left:none;
+    border-right:none;
+    border-top:none;
+    box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.5);
+    max-width: 100%;
+}
+.inputButton:active{
+    transform: translateY(4px);
+    transform: translateX(4px);
+    border-bottom:1px solid rgb(139, 0, 0);
+}
+.instructionText{
+    text-align: center;
+    font-size: 2em;
+    margin-bottom: 20px;
+    font-family: BGS;
+    text-shadow: 5px 5px 5px rgb(247, 0, 0);
+    max-width: 100%;
+}
+.inputText{
+    font-size: 1.5em;
+    text-align: center;
+    font-family: SFC;
+    max-width: 97%;
+    margin-bottom: 10px;
+    text-shadow: 2px 2px 5px rgb(61, 21, 0);
+    border-radius: 15px;
+    box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.5);
+    background-color: hsla(15, 63%, 63%, 0.984);
+    border: rgb(154, 5, 5) 5px solid;
+    
+}
+
+
+
+
+.warning{
+    position:absolute;
+    top:0%;
+    width:60%;
+    text-align: center;
+    background-color: hsla(0, 100%, 50%, 0.721);
+    color:white;
+    font-size: 1.5em;
+    font-weight: bold;
+    border-radius: 15px;
+    padding:15px;
+    animation: warning 5s ease-in-out;
+    animation-fill-mode: forwards;
+    
+}
+@keyframes warning {
+    0%{
+        transform:translateY(-50%);
+        opacity: 0;
+    }
+    10%{
+        opacity: 1;
+        transform:none;
+    }
+    90%{
+        opacity: 1;
+        transform:none;
+    }
+    100%{
+        opacity: 0;
+        transform:translateY(-50%);
+    }
+    
+}
+
+
+
+
+
+
+
+
+
+
+
+.ring{
+    position: absolute;
+    z-index: 0;
+    border-radius:50%;
+    
+    /*transform: translateX(-50%) translateY(-50%);
+    top:50%;
+    left:50%;*/
+    background: transparent;
+    animation:ringAnimation 6s ease-in-out infinite;
+    animation-fill-mode: forwards;
+    
+    
+}
+
+@keyframes ringAnimation {
+    0%{
+        transform: rotateZ(0deg);
+        opacity: 0.5;
+    }
+    50%{
+        transform: rotateZ(360deg);
+        opacity: 0.2;
+    }
+    100%{
+        transform: rotateZ(720deg);
+        opacity: 0.5;
+    }
+    
+}
+
+@keyframes fortAnimation {
+    0%{
+        opacity: 0.7;
+    }
+    50%{
+        opacity: 0.4;
+    }
+    100%{
+        opacity: 0.7;
+    }
+    
+}
+@keyframes fontAnimation {
+    0%{
+        opacity: 1.1;
+    }
+    50%{
+        opacity: 0.2;
+    }
+    100%{
+        opacity: 1.1;
+    }
+    
+}
+
+.fortR{
+    position:absolute;
+    top:-5%;
+    right:-3%;
+    width:300px;
+    height:300px;
+    transform: scaleX(1);
+    animation: fortAnimation 6s ease-in-out infinite;
+    
+}
+.fortL{
+    position:absolute;
+    top:-5%;
+    left:-3%;
+    width:300px;
+    height:300px;
+    transform: scaleX(-1);
+    animation: fortAnimation 6s ease-in-out infinite;
+    
+}
+.fortBR{
+    position:absolute;
+    bottom:-5%;
+    right:-3%;
+    width:300px;
+    height:300px;
+    transform: scaleX(1);
+    animation: fortAnimation 6s ease-in-out infinite;
+    
+}
+.fortBL{
+    position:absolute;
+    bottom:-5%;
+    left:-3%;
+    width:300px;
+    height:300px;
+    transform: scaleX(-1);
+    animation: fortAnimation 6s ease-in-out infinite;
+    
+}
+
+
+
