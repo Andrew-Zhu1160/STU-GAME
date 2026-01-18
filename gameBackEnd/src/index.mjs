@@ -22,41 +22,6 @@ import { rateLimit } from 'express-rate-limit';
 
 
 
-try{
-    await mongoose.connect(process.env.MONGODB_URL,{
-        //for production
-        maxPoolSize:20,
-        serverSelectionTimeoutMS: 5000
-        //production block end
-    });
-    console.log('connected');
-}catch(error){
-    console.log(error);
-}
-
-
-//get the towerGameStats from DB
-
-let towerGameSetting = await TowerGameConfig.findOne({Name:"towerGameSettingSheet"});
-if(!towerGameSetting){
-    towerGameSetting = new TowerGameConfig({Name:"towerGameSettingSheet"});
-}
-//any changes to the setting before save goes here?
-
-await towerGameSetting.save();
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 const app = express();
@@ -118,6 +83,45 @@ app.use(session({
 
 
 }));
+
+
+//moved order
+try{
+    await mongoose.connect(process.env.MONGODB_URL,{
+        //for production
+        maxPoolSize:20,
+        serverSelectionTimeoutMS: 5000
+        //production block end
+    });
+    console.log('connected');
+}catch(error){
+    console.log(error);
+}
+
+
+//get the towerGameStats from DB
+
+let towerGameSetting = await TowerGameConfig.findOne({Name:"towerGameSettingSheet"});
+if(!towerGameSetting){
+    towerGameSetting = new TowerGameConfig({Name:"towerGameSettingSheet"});
+}
+//any changes to the setting before save goes here?
+
+await towerGameSetting.save();
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
