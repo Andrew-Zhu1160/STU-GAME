@@ -17,6 +17,9 @@ import lv9Tower from '../images/towerGameImg/towerLv9.png';
 import lv10Tower from '../images/towerGameImg/towerLv10.png';
 
 
+//----------------------------
+//edit here to add more tower
+//----------------------------
 
 
 
@@ -47,6 +50,12 @@ function MainPage({switchPage,styleDisplay}) {
                                 <img src={lv10Tower} className={styles.towerShowCase}/>,
     
     ]);
+    //................
+    //edit here to add more tower
+    //.......................
+
+
+
     const towerDmgArr = useRef([]);
     const towerCostArr = useRef([]);
     const [toweOwnedArr,setTowerOwnedArr]=useState([]);
@@ -56,7 +65,10 @@ function MainPage({switchPage,styleDisplay}) {
         lv5Tower,lv6Tower,lv7Tower,lv8Tower,
         lv9Tower,lv10Tower
     ]);
-    
+
+    //..........................
+    //edit here to add more tower
+    //..........................
     
     
     
@@ -107,6 +119,9 @@ function MainPage({switchPage,styleDisplay}) {
                                         data.tower10.damage
                                             
                     ];
+                    //....................
+                    //edit here to add more tower
+                    //......................
                     towerCostArr.current=[
                                         data.tower1.cost,
                                         data.tower2.cost,
@@ -119,6 +134,9 @@ function MainPage({switchPage,styleDisplay}) {
                                         data.tower9.cost,
                                         data.tower10.cost
                     ];
+                    //....................
+                    //edit here to add more tower
+                    //......................
                     setTowerOwnedArr(t=>[data.tower1.owned,
                                         data.tower2.owned,
                                         data.tower3.owned,
@@ -131,7 +149,9 @@ function MainPage({switchPage,styleDisplay}) {
                                         data.tower10.owned,
 
                     ]);
-                    
+                    //....................
+                    //edit here to add more tower
+                    //......................
 
                     }else{
                         console.log('fail to fetch');
@@ -181,7 +201,9 @@ function MainPage({switchPage,styleDisplay}) {
     }
     
     
-    
+    //...................
+    //edit here to add more game
+    //....................
     const towerGameCard = createGameCard(towerIcon,"Tower Defense","hsla(240, 94%, 55%, 0.68)",openEnterPanel);
     
 
@@ -257,6 +279,9 @@ function MainPage({switchPage,styleDisplay}) {
     const[val8,setVal8]=useState(0);
     const[val9,setVal9]=useState(0);
     const[val10,setVal10]=useState(0);
+    //....................
+    //edit here to add more tower
+    //.......................
 
     const[showTooMuchDeploy,setShowTooMuchDeploy]
     =useState(false);
@@ -333,7 +358,9 @@ function MainPage({switchPage,styleDisplay}) {
 
 
 
-                {/*towerDefence shop */}
+                {/*towerDefence shop 
+                .........................
+                .........................*/}
                 <div style={{
                     display:openSpecificGameShop[0]?'block':'none'
                 }}>
@@ -388,6 +415,9 @@ function MainPage({switchPage,styleDisplay}) {
                         setDisplayTowerSelection(t=>true);
                         
                             try{
+                                //...................
+                                //edit here to add more tower
+                                //.................
                                 const response = await fetch(`${import.meta.env.VITE_API_URL}/getUserTowerCollection`,{credentials: 'include'});
                                 if(response.ok){
                                     const {towerCollection,towerLayout} = await response.json();
@@ -585,6 +615,9 @@ function MainPage({switchPage,styleDisplay}) {
                                 
                             </div>
                             <button onClick={async ()=>{
+                                //.....................
+                                //edit here to add more tower
+                                //.....................
                                 setShowTooMuchDeploy(false);
                                 if((val1+val2+val3+val4+val5+val6+val7+val8+val9+val10)>userTowerDeploy.current.length){
                                     console.log((val1+val2+val3+val4+val5+val6+val7+val8+val9+val10));
@@ -657,6 +690,9 @@ function MainPage({switchPage,styleDisplay}) {
                                 setNotEnoughMoneyWarning(true);}, 10);
                             }else{
                                 try{
+                                    //....................
+                                    //edit here to add more tower
+                                    //.....................
                                     const response = await fetch(`${import.meta.env.VITE_API_URL}/addTower`,{
                                         method:'POST',
                                         credentials: 'include',

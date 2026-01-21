@@ -103,6 +103,8 @@ const towerGameSchema= new mongoose.Schema({
 
         hp:{type:Number,default:150000}
     },
+    //edit here to add more tower
+    //.........................
     enemyLv1:{
         hp:{type:Number,default:100},
         appearance:{type:String,default:'enemyLv1.png'},

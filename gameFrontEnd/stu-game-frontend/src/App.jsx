@@ -15,6 +15,7 @@ const[displayPage,setDisplayPage] = useState([
   true,false,false
 ]);
 
+
 //test code,delete this later, test cokkie handling
 /*
 useEffect(() => {

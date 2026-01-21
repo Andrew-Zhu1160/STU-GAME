@@ -364,7 +364,9 @@ app.get('/api/towerShop', async(req,res)=>{
             };
             return res.status(201).json(responseObj);
             
-
+            //.....................
+            //edit here to add more towers
+            //.........................
 
 
             }else{
@@ -415,7 +417,9 @@ app.post('/api/addTower',[
             return res.sendStatus(400);
 
         }
-
+        //....................
+        //edit here to add more towers
+        //...................
 
 
         switch(purchasedTowerLevel){
@@ -500,6 +504,9 @@ app.get('/api/getUserTowerCollection',async (req,res)=>{
             ],
             towerLayout:thePlayer.towerGameAssets.towerDeployLayout
         })
+        //.......................
+        //edit here to add more tower
+        //.....................
 
     }catch(error){
         return res.sendStatus(500);
@@ -512,6 +519,9 @@ app.post('/api/editTowerDeploy',[
     body('updatedDeploy.*').isInt({ min: 0, max: 10 }),
     validate
 ],async (req,res)=>{
+    //...................
+    //edit here to add more tower
+    //.................
     if(!req.session.playerName){
         return res.sendStatus(404);
     }
@@ -556,6 +566,9 @@ app.get('/api/towerGame/getTowerDeploy',async (req,res)=>{
                                 {...towerGameSetting.towerLv9},
                                 {...towerGameSetting.towerLv10}
         ];
+        //..........................
+        //edit here to add more tower
+        //..........................
         let towerInitArr=[];
         for(let i=0;i<userTowerArr.length;++i){
             if(userTowerArr[i]===0){
@@ -649,6 +662,7 @@ app.get('/api/towerGame/getCoinsAndScores',async (req,res)=>{
 
 
 
+
 app.post('/api/towerGame/addCoins',[
     body('coinAddAmount').isInt({ min: 1, max: 20000 })
         .withMessage('Invalid coin amount'),
@@ -670,6 +684,9 @@ app.post('/api/towerGame/addCoins',[
         return res.sendStatus(500);
     }
 });
+
+
+
 
 
 app.post('/api/towerGame/updateScoreRecord',[

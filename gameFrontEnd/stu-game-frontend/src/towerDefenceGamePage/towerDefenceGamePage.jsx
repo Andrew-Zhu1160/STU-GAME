@@ -21,6 +21,8 @@ import lv7Tower from '../images/towerGameImg/towerLv7.png';
 import lv8Tower from '../images/towerGameImg/towerLv8.png';
 import lv9Tower from '../images/towerGameImg/towerLv9.png';
 import lv10Tower from '../images/towerGameImg/towerLv10.png';
+//edit here to add more tower
+//...........................
 
 
 //bullets:
@@ -59,12 +61,16 @@ function TowerDefenceGamePage({switchPage,styleDisplay}){
     const[lv8TowerImg] = useImage(lv8Tower);
     const[lv9TowerImg] = useImage(lv9Tower);
     const[lv10TowerImg] = useImage(lv10Tower);
+    //....................
+    //edit here to add more tower
+    //....................
     //bullets
     const[lv1BulletImg] = useImage(lv1Bullet);
     const[lv4BulletImg] = useImage(lv4Bullet);
     const[lv6BulletImg] = useImage(lv6Bullet);
     const[lv9BulletImg] = useImage(lv9Bullet);
     const[lv10BulletImg] = useImage(lv10Bullet);
+
     //enemies
     const[lv1EnemyNormalImg] = useImage(lv1EnemyNormal);
     const[lv1EnemyTakeDmgImg]=useImage(lv1EnemyTakeDmg);
@@ -77,14 +83,7 @@ function TowerDefenceGamePage({switchPage,styleDisplay}){
     const[lv4EnemyDeathImg]=useImage(lv4EnemyDeath);
     const[enemySpawningHoleImg] = useImage(enemySpawningHole);
 
-    //test
-    /*console.log('Bullet images loading status:', {
-    lv1: lv1BulletImg,
-    lv4: lv4BulletImg,
-    lv6: lv6BulletImg,
-    lv9: lv9BulletImg,
-    lv10: lv10BulletImg
-});*/
+   
     
 
 
@@ -99,7 +98,7 @@ function TowerDefenceGamePage({switchPage,styleDisplay}){
     const enemyImgArr=[[lv1EnemyNormalImg,lv1EnemyTakeDmgImg,null],
                         [lv2EnemyNormalImg,lv2EnemyTakeDmgImg,null],
                         [lv3EnemyNormalImg,lv3EnemyTakeDmgImg,null],
-                        [lv4EnemyNormalImg,lv4EnemyTakeDmgImg,lv4EnemyDeathImg]];
+                        [lv4EnemyNormalImg,lv4EnemyTakeDmgImg,null]];
 
     
     
@@ -117,23 +116,18 @@ function TowerDefenceGamePage({switchPage,styleDisplay}){
 
     const [showDifficuly,setShowDifficulty]=useState(false);
     //enemy buff
-    const[enemyData, setEnemyData]=useState([]);
-    const enemyDataRef = useRef([]);
-    useEffect(()=>{
-        enemyDataRef.current = [...enemyData];
-
-    },[enemyData]);
+    
     //waiting for fetch to fill in
     const enemyAttributeArr=useRef(null);
     
    
 
+    //enemy and bullet
+    const bulletData=useRef(null);
+    const enemyHealthData = useRef(null);
+    const enemyBodyData=useRef(null);
     
-    const[bulletData,setBulletData] = useState([]);
-    const bulletDataRef = useRef([]);
-    useEffect(()=>{
-        bulletDataRef.current = [...bulletData];
-    },[bulletData]);
+    
 
     const[tower1,setTower1]=useState(null);
     const[tower2,setTower2]=useState(null);
@@ -234,7 +228,8 @@ function TowerDefenceGamePage({switchPage,styleDisplay}){
 //timelimit for fetching scores;
 const lastimeScoreFetched= useRef(0);
 
-
+//only first load
+const isFirstLoad=useRef(true);
 
 
    
@@ -281,7 +276,7 @@ const lastimeScoreFetched= useRef(0);
 
                 }
             }
-            getUserTower();
+            
 
 
             //fetching enemy setting
@@ -299,7 +294,7 @@ const lastimeScoreFetched= useRef(0);
                 }
 
             }
-            getEnemy();
+            
 
             //render tower
             //get user coins and highest scores
@@ -317,9 +312,16 @@ const lastimeScoreFetched= useRef(0);
                 }
 
             }
+            
+            
+        if(isFirstLoad.current){
+            isFirstLoad.current=false;
+
+            getUserTower();
+            getEnemy();
             getUserCoinsAndScores();
-            
-            
+
+        }  
 
         
             
@@ -333,31 +335,26 @@ const lastimeScoreFetched= useRef(0);
             let Tower3Ref=tower3Ref.current;
             
 
-            let BulletDataRef = bulletDataRef.current;
+            const BulletDataRef = bulletData.current;
             
 
             //enemy
             const EnemyAttributeArr = enemyAttributeArr.current;
-            const EnemySpawnRate = Math.max(3000-gameDifficultyRef.current*100,1500);
+            const EnemySpawnRate = Math.max(3000-gameDifficultyRef.current*100,2000);
 
             const EnemySpawnAmount = gameDifficultyRef.current>4?4:gameDifficultyRef.current;
             
             
-            let EnemyDataRef = enemyDataRef.current;
+            const EnemyHealthRef = enemyHealthData.current;
+            const EnemyBodyRef = enemyBodyData.current;
 
             const EnemyLevelRange= Math.min(gameDifficultyRef.current,4);
 
-            //rerender cycle limit
-            let RefreshFrequency = 16.67;
-            const rawDt = frame.timeDiff;
-            const dt = rawDt/16.67
-            const fps=1000/rawDt;
-            //RefreshFrequency=Math.min(2**(1.3*dt),100);
-            if(fps<50){RefreshFrequency=16.67*2}
-            if(fps<40){RefreshFrequency=16.67*3}
-            if(fps<30){RefreshFrequency=16.67*4}
-            if(fps<20){RefreshFrequency=16.67*5}
-            if(fps<10){RefreshFrequency=16.67*51/fps}
+            
+           
+            if (!BulletDataRef || !EnemyHealthRef || !EnemyBodyRef) {
+                return; 
+            }
 
 
             //test
@@ -365,11 +362,10 @@ const lastimeScoreFetched= useRef(0);
              
             //frame calculation
             const lastFrame = frame.time-frame.timeDiff;
-            const isReRender = Math.floor(frame.time/RefreshFrequency)>Math.floor(lastFrame/RefreshFrequency);
-            //const isReRender2 = Math.floor(frame.time*48/RefreshFrequency)>Math.floor(lastFrame*48/RefreshFrequency);
+            
 
-            //new bullets
-            let newBulletsArr=[];
+           
+            
 
 
             //increase difficulty
@@ -385,7 +381,7 @@ const lastimeScoreFetched= useRef(0);
 
             }
             const enemyHealthBuffer = Math.min(gameDifficultyRef.current*8,12000);
-            const enemyDamageBuffer = Math.min(gameDifficultyRef.current*2,1000);
+            const enemyDamageBuffer = Math.min(gameDifficultyRef.current*4,1000);
 
             
 
@@ -420,7 +416,204 @@ const lastimeScoreFetched= useRef(0);
 
 
                 }
-            //about Tower1Ref
+
+
+
+
+
+
+
+                //bullet,enemy movement, collision detection
+                if(Tower1Ref||Tower2Ref||Tower3Ref){
+                    
+                    let BulletList = BulletDataRef.getChildren();
+                    
+                    const bulletSpeed = 20, enemySpeed = 2; 
+                    for (let i =BulletList.length-1;i>=0;--i){
+                        BulletList[i].x(BulletList[i].x()+bulletSpeed*Math.cos(BulletList[i].getAttr('bulletAngle')*Math.PI/180));
+                        BulletList[i].y(BulletList[i].y()+bulletSpeed*Math.sin(BulletList[i].getAttr('bulletAngle')*Math.PI/180));
+                        BulletList[i].setAttr('distance',BulletList[i].getAttr('distance')+bulletSpeed);
+                        if(BulletList[i].getAttr('distance')>1600){
+                            BulletList[i].destroy();
+                        }
+
+                    }
+                    let EnemyHealthList = EnemyHealthRef.getChildren();
+                    for(let i = EnemyHealthList.length-1;i>=0;--i){
+                        if(frame.time-EnemyHealthList[i].getAttr('enemySpawnedTime')>2000){
+                        EnemyHealthList[i].x(EnemyHealthList[i].x()+enemySpeed*Math.cos(EnemyHealthList[i].getAttr('enemyAngle')*Math.PI/180));
+                        EnemyHealthList[i].y(EnemyHealthList[i].y()+enemySpeed*Math.sin(EnemyHealthList[i].getAttr('enemyAngle')*Math.PI/180));
+                        EnemyHealthList[i].setAttr('distance',EnemyHealthList[i].getAttr('distance')+enemySpeed);
+                        if(EnemyHealthList[i].getAttr('distance')>1600){
+                            EnemyHealthList[i].destroy();
+                        }
+                        }
+                        
+                    }
+                    let EnemyBodyList = EnemyBodyRef.getChildren();
+                    for(let i = EnemyBodyList.length-1;i>=0;--i){
+                        if(frame.time-EnemyBodyList[i].getAttr('enemySpawnedTime')>2000){
+                            if(frame.time-EnemyBodyList[i].getAttr('enemyLastHitTime')>200){
+                                EnemyBodyList[i].setAttr('enemyState',0);
+                            }
+                            EnemyBodyList[i].image(enemyImgArr[EnemyBodyList[i].getAttr('enemyLevel')-1][EnemyBodyList[i].getAttr('enemyState')]);
+                            
+                            EnemyBodyList[i].x(EnemyBodyList[i].x()+enemySpeed*Math.cos(EnemyBodyList[i].getAttr('enemyAngle')*Math.PI/180));
+                            EnemyBodyList[i].y(EnemyBodyList[i].y()+enemySpeed*Math.sin(EnemyBodyList[i].getAttr('enemyAngle')*Math.PI/180));
+                            EnemyBodyList[i].setAttr('distance',EnemyBodyList[i].getAttr('distance')+enemySpeed);
+                            if(EnemyBodyList[i].getAttr('distance')>1600){
+                                EnemyBodyList[i].destroy();
+                            }
+                        }
+
+
+                        
+                    }
+
+                    
+
+
+                }
+
+                //enemy hitting tower logic
+                if(Tower1Ref||Tower2Ref||Tower3Ref){
+                    let EnemyHealthList = EnemyHealthRef.getChildren();
+                    let EnemyBodyList = EnemyBodyRef.getChildren();
+                    for (let i= EnemyBodyList.length-1;i>=0;--i){
+                        const distanceTo1 = Tower1Ref?Math.sqrt((EnemyBodyList[i].x()-tower1X)**2+(EnemyBodyList[i].y()-tower1Y)**2):100000;
+                        const distanceTo2 = Tower2Ref?Math.sqrt((EnemyBodyList[i].x()-tower2X)**2+(EnemyBodyList[i].y()-tower2Y)**2):100000;
+                        const distanceTo3 = Tower3Ref?Math.sqrt((EnemyBodyList[i].x()-tower3X)**2+(EnemyBodyList[i].y()-tower3Y)**2):100000;
+                        if(distanceTo1<100){
+                            Tower1Ref.towerCurrentHp-=EnemyBodyList[i].getAttr('enemyDamage');
+                            if(Tower1Ref.towerCurrentHp<=0){
+                                Tower1Ref=null;
+                                
+                            }
+                            rerenderTower=true;
+                            EnemyBodyList[i].destroy();
+                            EnemyHealthList[i].destroy();
+                            continue;
+                        }else if(distanceTo2<100){
+                            Tower2Ref.towerCurrentHp-=EnemyBodyList[i].getAttr('enemyDamage');
+                            if(Tower2Ref.towerCurrentHp<=0){
+                                Tower2Ref=null;
+                                
+                            }
+                            rerenderTower=true;
+                            EnemyBodyList[i].destroy();
+                            EnemyHealthList[i].destroy();
+                            continue;
+                        }else if(distanceTo3<100){
+                            Tower3Ref.towerCurrentHp-=EnemyBodyList[i].getAttr('enemyDamage');
+                            if(Tower3Ref.towerCurrentHp<=0){
+                                Tower3Ref=null;
+                                
+                            }
+                            rerenderTower=true;
+                            EnemyBodyList[i].destroy();
+                            EnemyHealthList[i].destroy();
+                            continue;
+                        }
+
+                    }
+
+
+
+                }
+
+
+                //bullet collision logic
+                if(Tower1Ref||Tower2Ref||Tower3Ref){
+                    let EnemyHealthList = EnemyHealthRef.getChildren();
+                    let EnemyBodyList = EnemyBodyRef.getChildren();
+                    let BulletList = BulletDataRef.getChildren();
+
+                    const Grid_Size = 120;
+                    const enemyGrid = {};
+
+                    for(let i = EnemyBodyList.length-1;i>=0;--i){
+                        const gridX = Math.floor(EnemyBodyList[i].x()/Grid_Size);
+                        const gridY = Math.floor(EnemyBodyList[i].y()/Grid_Size);
+                        const gridKey = `${gridX},${gridY}`;
+                        if(!enemyGrid[gridKey]){
+                            enemyGrid[gridKey]=[];
+                        }
+                        enemyGrid[gridKey].push({bodyData:EnemyBodyList[i],healthData:EnemyHealthList[i],xPos:EnemyBodyList[i].x(),yPos:EnemyBodyList[i].y(),
+                            isKilled:false
+                        });
+
+                    }
+                    for (let i = BulletList.length-1;i>=0;--i){
+                        const gridX = Math.floor(BulletList[i].x()/Grid_Size);
+                        const gridY = Math.floor(BulletList[i].y()/Grid_Size);
+                        let bulletHit=false;
+                       
+                        for(let xOff=-1;xOff<=1&& !bulletHit;xOff++){
+                            for(let yOff=-1;yOff<=1&& !bulletHit;yOff++){
+                                 const gridKey = `${gridX+xOff},${gridY+yOff}`;
+                                 if(enemyGrid[gridKey]&&enemyGrid[gridKey].length>=0){
+                                    for(let j=enemyGrid[gridKey].length-1;j>=0;--j){
+                                        const currentEnemy = enemyGrid[gridKey][j];
+                                        
+                                        if(currentEnemy.isKilled){continue;}
+
+
+
+                                        const distance = Math.sqrt((currentEnemy.xPos-BulletList[i].x())**2+
+                                                                    (currentEnemy.yPos-BulletList[i].y())**2);
+                                        if(frame.time-currentEnemy.bodyData.getAttr('enemySpawnedTime')>2000){
+                                        if(distance<=100){
+                                            
+                                            
+                                            const newHp = currentEnemy.healthData.getAttr('enemyCurrentHp')-
+                                            BulletList[i].getAttr('bulletDmg');
+
+                                            BulletList[i].destroy();
+                                            bulletHit=true;
+
+                                            if(newHp<=0){
+                                                //enemy is dead
+                                                //add coins:
+                                                coinAdd.current+=currentEnemy.bodyData.getAttr('enemyCoinDrop');
+                                                scoreAdd.current += Math.min(gameDifficultyRef.current*10,500);
+                                                setScoreDisplay(s=>s+Math.min(gameDifficultyRef.current*10,500));
+                                                setCoinDisplay(c=>c+currentEnemy.bodyData.getAttr('enemyCoinDrop'));
+                                                currentEnemy.healthData.destroy();
+                                                currentEnemy.bodyData.destroy();
+                                                currentEnemy.isKilled=true;
+                                                break;
+                                                
+                                            }
+                                            currentEnemy.bodyData.setAttr('enemyState',1);
+                                            currentEnemy.bodyData.setAttr('enemyLastHitTime',frame.time);
+
+
+                                            currentEnemy.healthData.setAttr('enemyCurrentHp',newHp);
+                                            currentEnemy.healthData.width(150*newHp/currentEnemy.healthData.getAttr('enemyHp'));
+
+                                            
+
+
+                                            break;
+                                        }
+                                        }
+
+                                    }
+                                    
+                                 }
+                            }
+                            
+                        }
+                    }
+
+
+                }
+
+
+               
+
+
+                 //about Tower1Ref
                 
             
                 if(Tower1Ref!==null){
@@ -431,19 +624,25 @@ const lastimeScoreFetched= useRef(0);
                         if(isFireTime){
                             
                         for(let i=0;i<Tower1Ref.towerBulletPerRound;++i){
-                            newBulletsArr.push({
-                                id: `tower1-bullet-${Date.now()}-${i}`,
-                                bulletDmg:Tower1Ref.towerDamage,
-                                bulletAngle:Tower1Ref.towerAngle+i*360/Tower1Ref.towerBulletPerRound,
-                                distance:0,
-                                bulletLevel:Tower1Ref.towerLevel,
-                                bulletImg:Tower1Ref.towerLevel-1,
-                                startingX:tower1X,
-                                startingY:tower1Y,
-                                isHit:false
-                                
+                            
+                            if(BulletDataRef){
+                                const newBullet = new Konva.Image({
+                                    width:80,
+                                    height:80,
+                                    offsetX:40,
+                                    offsetY:40,
+                                    bulletDmg:Tower1Ref.towerDamage,
+                                    bulletAngle:Tower1Ref.towerAngle+i*360/Tower1Ref.towerBulletPerRound,
+                                    distance:0,
+                                    image: bulletImgArr[Tower1Ref.towerLevel-1],
+                                    x: tower1X,
+                                    y:tower1Y
 
-                            });
+
+                                });
+                                BulletDataRef.add(newBullet);
+
+                            }
                             
 
                         
@@ -463,19 +662,22 @@ const lastimeScoreFetched= useRef(0);
                            
                         for(let i=0;i<Tower2Ref.towerBulletPerRound;++i){
                             
-                            newBulletsArr.push({
-                                id: `tower2-bullet-${Date.now()}-${i}`,
-                                bulletDmg:Tower2Ref.towerDamage,
-                                bulletAngle:Tower2Ref.towerAngle+i*360/Tower2Ref.towerBulletPerRound,
-                                distance:0,
-                                bulletLevel:Tower2Ref.towerLevel,
-                                bulletImg:Tower2Ref.towerLevel-1,
-                                startingX:tower2X,
-                                startingY:tower2Y,
-                                isHit:false
-                                
+                             if(BulletDataRef){
+                                const newBullet = new Konva.Image({
+                                    width:80,
+                                    height:80,
+                                    offsetX:40,
+                                    offsetY:40,
+                                    bulletDmg:Tower2Ref.towerDamage,
+                                    bulletAngle:Tower2Ref.towerAngle+i*360/Tower2Ref.towerBulletPerRound,
+                                    distance:0,
+                                    image: bulletImgArr[Tower2Ref.towerLevel-1],
+                                    x: tower2X,
+                                    y:tower2Y
 
-                            });
+
+                                });
+                                BulletDataRef.add(newBullet);
                             
 
                         
@@ -483,6 +685,7 @@ const lastimeScoreFetched= useRef(0);
                         
                     }
 
+                }
                 }
                 //for tower 3
                 if(Tower3Ref!==null){
@@ -493,19 +696,22 @@ const lastimeScoreFetched= useRef(0);
                            
                         for(let i=0;i<Tower3Ref.towerBulletPerRound;++i){
                             
-                            newBulletsArr.push({
-                                id: `tower3-bullet-${Date.now()}-${i}`,
-                                bulletDmg:Tower3Ref.towerDamage,
-                                bulletAngle:Tower3Ref.towerAngle+i*360/Tower3Ref.towerBulletPerRound,
-                                distance:0,
-                                bulletLevel:Tower3Ref.towerLevel,
-                                bulletImg:Tower3Ref.towerLevel-1,
-                                startingX:tower3X,
-                                startingY:tower3Y,
-                                isHit:false
-                                
+                             if(BulletDataRef){
+                                const newBullet = new Konva.Image({
+                                    width:80,
+                                    height:80,
+                                    offsetX:40,
+                                    offsetY:40,
+                                    bulletDmg:Tower3Ref.towerDamage,
+                                    bulletAngle:Tower3Ref.towerAngle+i*360/Tower3Ref.towerBulletPerRound,
+                                    distance:0,
+                                    image: bulletImgArr[Tower3Ref.towerLevel-1],
+                                    x: tower3X,
+                                    y:tower3Y
 
-                            });
+
+                                });
+                                BulletDataRef.add(newBullet);
                             
 
                         
@@ -514,109 +720,15 @@ const lastimeScoreFetched= useRef(0);
                     }
 
                 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-                if(Tower1Ref!==null||Tower2Ref!==null||Tower3Ref!==null){
-                    //hitting enemy logic
-
-
-                    
-                    BulletDataRef=BulletDataRef.map(bullet=>{
-                        return ({...bullet,distance:bullet.distance+20*dt})
-                    });
-                    BulletDataRef=BulletDataRef.filter(bullet=>bullet.distance<1600);
-                    BulletDataRef = [...BulletDataRef,...newBulletsArr];
-
-
-                    bulletDataRef.current=BulletDataRef;
-                    
-                    
-
                 }
 
-                
-                //spawn/delete/move enemy
-                if(EnemyAttributeArr!==null&&(Tower1Ref||Tower2Ref||Tower3Ref)){
-                    const currentFrame = frame.time;
-                    
-                    for(let i=0;i<EnemyDataRef.length;++i){
-                        if(!EnemyDataRef[i].isDead){
-                        if(frame.time-EnemyDataRef[i].enemyLastHitTime>200){
-                            if(EnemyDataRef[i].enemyState!==-1){
-                            EnemyDataRef[i].enemyState=0;
-                            }
-                        }
-                        const currentXPosition=(EnemyDataRef[i].startingX+EnemyDataRef[i].distance*Math.cos(EnemyDataRef[i].enemyAngle*2*Math.PI/360));
-                        const currentYPosition=(EnemyDataRef[i].startingY+EnemyDataRef[i].distance*Math.sin(EnemyDataRef[i].enemyAngle*2*Math.PI/360));
-                        const distanceTo1 = Tower1Ref?Math.sqrt((currentXPosition-tower1X)**2+(currentYPosition-tower1Y)**2):100000;
-                        const distanceTo2 = Tower2Ref?Math.sqrt((currentXPosition-tower2X)**2+(currentYPosition-tower2Y)**2):100000;
-                        const distanceTo3 = Tower3Ref?Math.sqrt((currentXPosition-tower3X)**2+(currentYPosition-tower3Y)**2):100000;
-                        if(distanceTo1<100){
-                            EnemyDataRef[i]={...EnemyDataRef[i],isDead:true};
-                            Tower1Ref.towerCurrentHp-=EnemyDataRef[i].enemyDamage;
-                            if(Tower1Ref.towerCurrentHp<=0){
-                                Tower1Ref = null;
-                            }
-                            tower1Ref.current=Tower1Ref;
-                            rerenderTower=true;
-                            continue;
-                            
-                            
-                           
-                            
-                        }else if(distanceTo2<100){
-                            EnemyDataRef[i]={...EnemyDataRef[i],isDead:true};
-                            Tower2Ref.towerCurrentHp-=EnemyDataRef[i].enemyDamage;
-                            if(Tower2Ref.towerCurrentHp<=0){
-                                Tower2Ref = null;
-                            }
-                            tower2Ref.current=Tower2Ref;
-                            rerenderTower=true;
-                            continue;
-                            
-
-                        }else if(distanceTo3<100){
-                            EnemyDataRef[i]={...EnemyDataRef[i],isDead:true};
-                            Tower3Ref.towerCurrentHp-=EnemyDataRef[i].enemyDamage;
-                            if(Tower3Ref.towerCurrentHp<=0){
-                                Tower3Ref = null;
-                            }
-                            tower3Ref.current=Tower3Ref;
-                            rerenderTower=true;
-                            continue;
-                        }
-                        
-                        if(currentFrame-EnemyDataRef[i].enemySpawnedTime>2000){
-                            const temp = EnemyDataRef[i].distance;
-                            EnemyDataRef[i]={...EnemyDataRef[i],enemyState:0,distance:temp+3*dt};
+                //new spawn enemy logic
 
 
 
-
-
-                            
-                        }
-                        }
-                    }
-
-                    //adding logic
+                if(EnemyBodyRef&&EnemyHealthRef&&EnemyAttributeArr!==null){
                     const isSpawningTime = Math.floor(frame.time/EnemySpawnRate)>Math.floor(lastFrame/EnemySpawnRate);
                     if(isSpawningTime){
-                        let newEnemyArr=[];
                         for(let i=0;i<EnemySpawnAmount;++i){
                             const enemyLevelRandom = Math.floor(Math.random()*EnemyLevelRange)+1;
                             const randomAngle=Math.random()*360;
@@ -647,130 +759,65 @@ const lastimeScoreFetched= useRef(0);
 
                                 }
                             }
-                            
-                            newEnemyArr.push({
-                                enemyId:`enemy-${Date.now()}-${i}`,
-                                enemyHpId:`enemyHp-${Date.now()}-${i}`,
+                            const newEnemy = new Konva.Image({
                                 enemyLevel:enemyLevelRandom,
+                                x:initialX,
+                                y:initialY,
+                                width:150,
+                                height:150,
+                                offsetX:75,
+                                offsetY:75,
+                                distance:0,
+                                image:enemySpawningHoleImg,
+                                enemyAngle:Angle,
+                                enemySpawnedTime: frame.time,
+
                                 enemyHp:EnemyAttributeArr[enemyLevelRandom-1].enemyHp + enemyHealthBuffer,
                                 enemyCurrentHp:EnemyAttributeArr[enemyLevelRandom-1].enemyHp + enemyHealthBuffer,
                                 enemyDamage:EnemyAttributeArr[enemyLevelRandom-1].enemyDmg + enemyDamageBuffer,
                                 enemyCoinDrop:EnemyAttributeArr[enemyLevelRandom-1].enemyCoinDrop,
-                                startingX:initialX ,
-                                startingY:initialY,
+
+                                enemyState:0,
+
+                                enemyLastHitTime:0,
+                                isDead:false,
+
+                                scaleX:initialX>980?-1:1
+
+
+                            });
+                            const newEnemyHp = new Konva.Rect({
+                                x:initialX,
+                                y:initialY,
+                                width:150,
+                                height:30,
+                                offsetX:75,
+                                offsetY:145,
                                 distance:0,
+                                fill:'red',
+                                enemyHp:EnemyAttributeArr[enemyLevelRandom-1].enemyHp + enemyHealthBuffer,
+                                enemyCurrentHp:EnemyAttributeArr[enemyLevelRandom-1].enemyHp + enemyHealthBuffer,
                                 enemyAngle:Angle,
-                                //enemyState -1 means still in hole
-                                //0 means normal
-                                //1 means being hitted
-                                //2 means dead
-                                enemyState:-1,
-                                enemySpawnedTime:frame.time,
-                                enemyLastHitTime:frame.time,
-                                isDead:false
+                                enemySpawnedTime:frame.time
 
 
+                            });
+                            EnemyBodyRef.add(newEnemy);
+                            EnemyHealthRef.add(newEnemyHp);
 
 
-
-
-
-
-
-                            })
                         }
-                        EnemyDataRef = [...EnemyDataRef,...newEnemyArr];
-
-                    }
-                    //check for collisions
-                    const Grid_Size = 120;
-                    const enemyGrid = {};
-                    for(let i=0;i<EnemyDataRef.length;++i){
-                        if(!EnemyDataRef[i].isDead&&EnemyDataRef[i].enemyState!==-1){
-                            const ex = EnemyDataRef[i].startingX + EnemyDataRef[i].distance * Math.cos(EnemyDataRef[i].enemyAngle * 2 * Math.PI / 360);
-                            const ey = EnemyDataRef[i].startingY + EnemyDataRef[i].distance * Math.sin(EnemyDataRef[i].enemyAngle * 2 * Math.PI / 360);
-                            const gridKey = `${Math.floor(ex / Grid_Size)}-${Math.floor(ey / Grid_Size)}`;
-                            if (!enemyGrid[gridKey]) {
-                                enemyGrid[gridKey] = []; 
-                            }
-                            enemyGrid[gridKey].push({ data: EnemyDataRef[i], x: ex, y: ey });
-                        }
-
-                    }
-                    for(let i=0;i<BulletDataRef.length;++i){
-                        const bullet = BulletDataRef[i];
-                        if (bullet.isHit) continue; 
-
-                        const bx = bullet.startingX + bullet.distance * Math.cos(bullet.bulletAngle * 2 * Math.PI / 360);
-                        const by = bullet.startingY + bullet.distance * Math.sin(bullet.bulletAngle * 2 * Math.PI / 360);
-
-                        const bGridX = Math.floor(bx / Grid_Size);
-                        const bGridY = Math.floor(by / Grid_Size);
-
-                        
-                        let collisionFound = false;
-                        for (let xOff = -1; xOff <= 1; xOff++) {
-                            for (let yOff = -1; yOff <= 1; yOff++) {
-                                if (collisionFound) break;
-
-                                const bGridKey = `${bGridX + xOff}-${bGridY + yOff}`;
-                                const nearbyEnemies = enemyGrid[bGridKey];
-
-                                if (nearbyEnemies) {
-                                    for (let j = 0; j < nearbyEnemies.length; j++) { 
-                                        const enemyObj = nearbyEnemies[j];
-                                        const enemyData = enemyObj.data;
-
-                                        const dx = bx - enemyObj.x;
-                                        const dy = by - enemyObj.y;
-                                        const distSq = dx * dx + dy * dy;
-
-                                        if (distSq < 8100) { 
-                                            bullet.isHit = true; 
-                                            if(enemyData.enemyState!==-1){
-                                            enemyData.enemyCurrentHp -= bullet.bulletDmg;
-                                            enemyData.enemyState = 1; 
-                                            enemyData.enemyLastHitTime = frame.time;
-
-                                            if (enemyData.enemyCurrentHp <= 0) {
-                                                enemyData.isDead = true;
-                                                //add the coins and scores
-                                                coinAdd.current+=enemyData.enemyCoinDrop;
-                                                scoreAdd.current += Math.min(gameDifficultyRef.current*10,500);
-                                                setScoreDisplay(s=>s+Math.min(gameDifficultyRef.current*10,500));
-                                                setCoinDisplay(c=>c+enemyData.enemyCoinDrop);
-                                                
-                                            }
-                                            collisionFound = true;
-                                            break; 
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-
                     }
 
 
-
-
-
-
-
-                    //finally update
-                    EnemyDataRef=EnemyDataRef.filter((enemy)=>enemy.distance<1600&&!enemy.isDead);
-                    enemyDataRef.current = EnemyDataRef;
-                    BulletDataRef=BulletDataRef.filter((bullet)=>!bullet.isHit);
-                    bulletDataRef.current = BulletDataRef;
                 }
 
+                //new update method:
+                BulletDataRef.batchDraw();
+                EnemyHealthRef.batchDraw();
+                EnemyBodyRef.batchDraw();
 
-                if(isReRender){
-                setBulletData(b=>[...BulletDataRef]);
-                setEnemyData(e=>[...EnemyDataRef]);
-                }
-                
+
 
                 
                 if(rerenderTower){
@@ -781,22 +828,9 @@ const lastimeScoreFetched= useRef(0);
             
                 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
             
         });
+    
 
         anim.start();
 
@@ -808,7 +842,14 @@ const lastimeScoreFetched= useRef(0);
 
 
 
-    },[styleDisplay]);
+    },[styleDisplay, 
+        lv1BulletImg,lv4BulletImg,lv6BulletImg,lv9BulletImg,lv10BulletImg,
+        lv1EnemyNormalImg,lv1EnemyTakeDmgImg,lv2EnemyNormalImg,lv2EnemyTakeDmgImg,
+        lv3EnemyNormalImg,lv3EnemyTakeDmgImg,lv4EnemyNormalImg,lv4EnemyTakeDmgImg,
+
+        enemySpawningHoleImg
+
+    ]);
 
     //for rotating tower
     function handleTowerRotate(e){
@@ -975,60 +1016,12 @@ const lastimeScoreFetched= useRef(0);
 
 
                 </Layer>
-
-                <Layer>
-                     {bulletData.map((element,index)=>{
-                            
-                            return (<Image
-                                    key={element.id}
-                                    width={70}
-                                    height={70}
-                                    offsetX={35}
-                                    offsetY={35}
-                                    image={bulletImgArr[element.bulletImg]}
-                                    x={element.startingX+element.distance*Math.cos(element.bulletAngle*2*Math.PI/360)}
-                                    y={element.startingY+element.distance*Math.sin(element.bulletAngle*2*Math.PI/360)}>
-                                    </Image>);
-
-                        })}
-                </Layer>
                 
-
-                <Layer>
-                    {enemyData.map(element=>{
-                        return(<Rect
-                        key={element.enemyHpId}
-                        height={30}
-                        fill="red"
-                        width={150*(element.enemyCurrentHp/element.enemyHp)}
-                        offsetY={95}
-                        offsetX={75}
-                        x={element.startingX + element.distance*Math.cos(element.enemyAngle*2*Math.PI/360)}
-                        y={element.startingY + element.distance*Math.sin(element.enemyAngle*2*Math.PI/360)}>
-                        </Rect>
-
-                        );
-                    })}
-                    {enemyData.map(element=>{
-                        return (<Image
-                        key={element.enemyId}
-                        width={160}
-                        height={160}
-                        offsetX={80}
-                        offsetY={80}
-                        image={element.enemyState===-1?enemySpawningHoleImg:
-                            enemyImgArr[element.enemyLevel-1][element.enemyState]
-                        }
-                        x={element.startingX + element.distance*Math.cos(element.enemyAngle*2*Math.PI/360)}
-                        y={element.startingY + element.distance*Math.sin(element.enemyAngle*2*Math.PI/360)}
-                        scaleX={element.startingX>=980?-1:1}>
-                        </Image>);
-                    })}
-                    
-
-
-
-                </Layer>
+                <Layer ref={bulletData}></Layer>
+                
+                <Layer ref = {enemyHealthData}></Layer>
+                
+                <Layer ref = {enemyBodyData}></Layer>
                 
 
             </Stage>
