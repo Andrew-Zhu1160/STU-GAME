@@ -101,10 +101,30 @@ const towerGameSchema= new mongoose.Schema({
         bulletAppearance:{type:String,default:'tower10Bullet.png'},
         cost:{type:Number,default:1100000},
 
-        hp:{type:Number,default:150000}
+        hp:{type:Number,default:47000}
     },
     //edit here to add more tower
     //.........................
+    towerLv11:{
+        damage:{type:Number,default:700},
+        fireDelay:{type:Number,default:220},
+        
+        numOfBulletsPerRound:{type:Number,default:7},
+        
+        cost:{type:Number,default:60000},
+
+        hp:{type:Number,default:47500}
+    },
+    towerLv12:{
+        damage:{type:Number,default:900},
+        fireDelay:{type:Number,default:500},
+        
+        numOfBulletsPerRound:{type:Number,default:9},
+        
+        cost:{type:Number,default:70000},
+
+        hp:{type:Number,default:48500}
+    },
     enemyLv1:{
         hp:{type:Number,default:100},
         appearance:{type:String,default:'enemyLv1.png'},

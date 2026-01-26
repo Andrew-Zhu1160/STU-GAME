@@ -360,7 +360,17 @@ app.get('/api/towerShop', async(req,res)=>{
                     damage:towerGameSetting.towerLv10.damage,
                     cost:towerGameSetting.towerLv10.cost,
                     owned:playerData.towerGameAssets.Lv10towers
-                }
+                },
+                tower11:{
+                    damage:towerGameSetting.towerLv11.damage,
+                    cost:towerGameSetting.towerLv11.cost,
+                    owned:playerData.towerGameAssets.Lv11towers
+                },
+                tower12:{
+                    damage:towerGameSetting.towerLv12.damage,
+                    cost:towerGameSetting.towerLv12.cost,
+                    owned:playerData.towerGameAssets.Lv12towers
+                },
             };
             return res.status(201).json(responseObj);
             
@@ -389,7 +399,7 @@ app.get('/api/towerShop', async(req,res)=>{
 
 app.post('/api/addTower',[
     speedClickLimiter, 
-    body('purchasedTowerLevel').isInt({ min: 1, max: 10 }),
+    body('purchasedTowerLevel').isInt({ min: 1, max: 12 }),
     validate
     ],async (req,res)=>{
     if(!req.session.playerName){
@@ -411,7 +421,9 @@ app.post('/api/addTower',[
                             towerGameSetting.towerLv7.cost,
                             towerGameSetting.towerLv8.cost,
                             towerGameSetting.towerLv9.cost,
-                            towerGameSetting.towerLv10.cost
+                            towerGameSetting.towerLv10.cost,
+                            towerGameSetting.towerLv11.cost,
+                            towerGameSetting.towerLv12.cost
         ];
         if(thePlayer.speedCoins<towerCostArr[purchasedTowerLevel-1]){
             return res.sendStatus(400);
@@ -463,7 +475,16 @@ app.post('/api/addTower',[
                 thePlayer.towerGameAssets.Lv10towers++;
                 thePlayer.speedCoins-=towerGameSetting.towerLv10.cost;
                 break;
+            case 11:
+                thePlayer.towerGameAssets.Lv11towers++;
+                thePlayer.speedCoins-=towerGameSetting.towerLv11.cost;
+                break;
+            case 12:
+                thePlayer.towerGameAssets.Lv12towers++;
+                thePlayer.speedCoins-=towerGameSetting.towerLv12.cost;
+                break;
             default:break;
+            //edit here to add more towers
 
     }
     thePlayer.markModified('towerGameAssets');
@@ -501,6 +522,8 @@ app.get('/api/getUserTowerCollection',async (req,res)=>{
                 thePlayer.towerGameAssets.Lv8towers,
                 thePlayer.towerGameAssets.Lv9towers,
                 thePlayer.towerGameAssets.Lv10towers,
+                thePlayer.towerGameAssets.Lv11towers,
+                thePlayer.towerGameAssets.Lv12towers,
             ],
             towerLayout:thePlayer.towerGameAssets.towerDeployLayout
         })
@@ -516,7 +539,7 @@ app.get('/api/getUserTowerCollection',async (req,res)=>{
 
 app.post('/api/editTowerDeploy',[
     body('updatedDeploy').isArray({ min: 3, max: 3 }),
-    body('updatedDeploy.*').isInt({ min: 0, max: 10 }),
+    body('updatedDeploy.*').isInt({ min: 0, max: 12 }),
     validate
 ],async (req,res)=>{
     //...................
@@ -564,7 +587,9 @@ app.get('/api/towerGame/getTowerDeploy',async (req,res)=>{
                                 {...towerGameSetting.towerLv7},
                                 {...towerGameSetting.towerLv8},
                                 {...towerGameSetting.towerLv9},
-                                {...towerGameSetting.towerLv10}
+                                {...towerGameSetting.towerLv10},
+                                {...towerGameSetting.towerLv11},
+                                {...towerGameSetting.towerLv12},
         ];
         //..........................
         //edit here to add more tower

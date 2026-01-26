@@ -21,6 +21,8 @@ const playerSchema = new mongoose.Schema({
         Lv8towers: { type: Number, default: 0 },
         Lv9towers: { type: Number, default: 0 },
         Lv10towers: { type: Number, default: 0 },
+        Lv11towers: { type: Number, default: 0 },
+        Lv12towers: { type: Number, default: 0 },
 
 
         

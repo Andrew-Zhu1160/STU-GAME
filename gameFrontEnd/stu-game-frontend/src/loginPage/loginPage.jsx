@@ -4,6 +4,12 @@ import fortImage from '../images/Fort-Login-Page.png';
 
 
 
+//updates panel
+import update1 from '../images/towerGameImg/towerLv11.png';
+import update2 from '../images/towerGameImg/towerLv12.png';
+
+
+
 const StyleMain={
     width:'100%',
     height:'100%',
@@ -257,6 +263,17 @@ function LoginPage({switchPage,styleDisplay}) {
                 </button>
 
 
+
+        </div>
+
+
+        {/*change the content inside here when major
+        update is released*/ }
+        <div className={styles.updateShowCase}>
+            
+            <img src = {update2}></img>
+            <img src={update1}></img>
+            <h1>New Tower!!</h1>
 
         </div>
 

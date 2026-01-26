@@ -15,6 +15,8 @@ import lv7Tower from '../images/towerGameImg/towerLv7.png';
 import lv8Tower from '../images/towerGameImg/towerLv8.png';
 import lv9Tower from '../images/towerGameImg/towerLv9.png';
 import lv10Tower from '../images/towerGameImg/towerLv10.png';
+import lv11Tower from '../images/towerGameImg/towerLv11.png';
+import lv12Tower from '../images/towerGameImg/towerLv12.png';
 
 
 //----------------------------
@@ -48,6 +50,8 @@ function MainPage({switchPage,styleDisplay}) {
                                 <img src={lv8Tower} className={styles.towerShowCase}/>,
                                 <img src={lv9Tower} className={styles.towerShowCase}/>,
                                 <img src={lv10Tower} className={styles.towerShowCase}/>,
+                                <img src = {lv11Tower} className={styles.towerShowCase}></img>,
+                                <img src = {lv12Tower} className={styles.towerShowCase}></img>
     
     ]);
     //................
@@ -63,7 +67,7 @@ function MainPage({switchPage,styleDisplay}) {
     const towerDeployArr=useRef([
         lv1Tower,lv2Tower,lv3Tower,lv4Tower,
         lv5Tower,lv6Tower,lv7Tower,lv8Tower,
-        lv9Tower,lv10Tower
+        lv9Tower,lv10Tower,lv11Tower,lv12Tower
     ]);
 
     //..........................
@@ -116,7 +120,10 @@ function MainPage({switchPage,styleDisplay}) {
                                         data.tower7.damage,
                                         data.tower8.damage,
                                         data.tower9.damage,
-                                        data.tower10.damage
+                                        data.tower10.damage,
+                                        data.tower11.damage,
+                                        data.tower12.damage,
+
                                             
                     ];
                     //....................
@@ -132,7 +139,10 @@ function MainPage({switchPage,styleDisplay}) {
                                         data.tower7.cost,
                                         data.tower8.cost,
                                         data.tower9.cost,
-                                        data.tower10.cost
+                                        data.tower10.cost,
+                                        data.tower11.cost,
+                                        data.tower12.cost,
+
                     ];
                     //....................
                     //edit here to add more tower
@@ -147,6 +157,8 @@ function MainPage({switchPage,styleDisplay}) {
                                         data.tower8.owned,
                                         data.tower9.owned,
                                         data.tower10.owned,
+                                        data.tower11.owned,
+                                        data.tower12.owned,
 
                     ]);
                     //....................
@@ -279,6 +291,8 @@ function MainPage({switchPage,styleDisplay}) {
     const[val8,setVal8]=useState(0);
     const[val9,setVal9]=useState(0);
     const[val10,setVal10]=useState(0);
+    const[val11,setVal11]=useState(0);
+    const[val12,setVal12]=useState(0);
     //....................
     //edit here to add more tower
     //.......................
@@ -610,6 +624,40 @@ function MainPage({switchPage,styleDisplay}) {
                                     }}></input>
                                     
                                 </div>
+
+                                <div>
+                                    <img src ={towerDeployArr.current[10]}></img>
+                                    <input type="number" max={userTowerCollection.current[10]} min={0} value={val11}
+                                    onChange={(e)=>{
+                                        if(parseInt(e.target.value,10)>userTowerCollection.current[10]){
+                                            setVal11(userTowerCollection.current[10]);
+                                            
+                                        }else if(parseInt(e.target.value,10)<0){
+                                            setVal11(0);
+                                            
+                                        }else{
+                                            setVal11(parseInt(e.target.value,10));
+                                        }
+                                    }}></input>
+                                    
+                                </div>
+
+                                <div>
+                                    <img src ={towerDeployArr.current[11]}></img>
+                                    <input type="number" max={userTowerCollection.current[11]} min={0} value={val12}
+                                    onChange={(e)=>{
+                                        if(parseInt(e.target.value,10)>userTowerCollection.current[11]){
+                                            setVal12(userTowerCollection.current[11]);
+                                            
+                                        }else if(parseInt(e.target.value,10)<0){
+                                            setVal12(0);
+                                            
+                                        }else{
+                                            setVal12(parseInt(e.target.value,10));
+                                        }
+                                    }}></input>
+                                    
+                                </div>
                                 
 
                                 
@@ -619,11 +667,11 @@ function MainPage({switchPage,styleDisplay}) {
                                 //edit here to add more tower
                                 //.....................
                                 setShowTooMuchDeploy(false);
-                                if((val1+val2+val3+val4+val5+val6+val7+val8+val9+val10)>userTowerDeploy.current.length){
-                                    console.log((val1+val2+val3+val4+val5+val6+val7+val8+val9+val10));
+                                if((val1+val2+val3+val4+val5+val6+val7+val8+val9+val10+val11+val12)>userTowerDeploy.current.length){
+                                    console.log((val1+val2+val3+val4+val5+val6+val7+val8+val9+val10+val11+val12));
                                 setTimeout(()=>{setShowTooMuchDeploy(true)},10)
                                 }else{
-                                    const tempArr=[val1,val2,val3,val4,val5,val6,val7,val8,val9,val10];
+                                    const tempArr=[val1,val2,val3,val4,val5,val6,val7,val8,val9,val10,val11,val12];
                                     let tempDeployArr=[];
                                     for(let i =0;i<tempArr.length;++i){
                                         for(let j=0;j<tempArr[i];++j){

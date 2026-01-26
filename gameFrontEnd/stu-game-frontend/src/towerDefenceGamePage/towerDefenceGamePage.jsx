@@ -21,6 +21,8 @@ import lv7Tower from '../images/towerGameImg/towerLv7.png';
 import lv8Tower from '../images/towerGameImg/towerLv8.png';
 import lv9Tower from '../images/towerGameImg/towerLv9.png';
 import lv10Tower from '../images/towerGameImg/towerLv10.png';
+import lv11Tower from '../images/towerGameImg/towerLv11.png';
+import lv12Tower from '../images/towerGameImg/towerLv12.png';
 //edit here to add more tower
 //...........................
 
@@ -30,7 +32,9 @@ import lv1Bullet from '../images/towerGameImg/tower1Bullet.png';
 import lv4Bullet from '../images/towerGameImg/tower4Bullet.png';
 import lv6Bullet from '../images/towerGameImg/tower6Bullet.png';
 import lv9Bullet from '../images/towerGameImg/tower9Bullet.png';
-import lv10Bullet from '../images/towerGameImg/tower10Bullet.png'
+import lv10Bullet from '../images/towerGameImg/tower10Bullet.png';
+import lv11Bullet from '../images/towerGameImg/tower11Bullet.png';
+import lv12Bullet from '../images/towerGameImg/tower12Bullet.png';
 
 const tower1X = 660,tower1Y=860,tower2X=1300,tower2Y=860,tower3X=980,tower3Y=1300;
 
@@ -61,8 +65,10 @@ function TowerDefenceGamePage({switchPage,styleDisplay}){
     const[lv8TowerImg] = useImage(lv8Tower);
     const[lv9TowerImg] = useImage(lv9Tower);
     const[lv10TowerImg] = useImage(lv10Tower);
+    const[lv11TowerImg] = useImage(lv11Tower);
+    const[lv12TowerImg] = useImage(lv12Tower);
     //....................
-    //edit here to add more tower
+    //edit here to add more tower and bullets
     //....................
     //bullets
     const[lv1BulletImg] = useImage(lv1Bullet);
@@ -70,6 +76,8 @@ function TowerDefenceGamePage({switchPage,styleDisplay}){
     const[lv6BulletImg] = useImage(lv6Bullet);
     const[lv9BulletImg] = useImage(lv9Bullet);
     const[lv10BulletImg] = useImage(lv10Bullet);
+    const[lv11BulletImg] = useImage(lv11Bullet);
+    const[lv12BulletImg] = useImage(lv12Bullet);
 
     //enemies
     const[lv1EnemyNormalImg] = useImage(lv1EnemyNormal);
@@ -85,13 +93,15 @@ function TowerDefenceGamePage({switchPage,styleDisplay}){
 
    
     
-
+    //edit here to add more tower
 
     const towerImgArr = [lv1TowerImg,lv2TowerImg,lv3TowerImg,lv4TowerImg,lv5TowerImg
-        ,lv6TowerImg,lv7TowerImg,lv8TowerImg,lv9TowerImg,lv10TowerImg
+        ,lv6TowerImg,lv7TowerImg,lv8TowerImg,lv9TowerImg,lv10TowerImg,lv11TowerImg,
+        lv12TowerImg,
     ];
     const bulletImgArr=[lv1BulletImg,lv1BulletImg,lv1BulletImg,lv4BulletImg,lv4BulletImg,
-        lv6BulletImg,lv6BulletImg,lv6BulletImg,lv9BulletImg,lv10BulletImg
+        lv6BulletImg,lv6BulletImg,lv6BulletImg,lv9BulletImg,lv10BulletImg,lv11BulletImg,
+        lv12BulletImg,
         ];
 
 
@@ -231,7 +241,8 @@ const lastimeScoreFetched= useRef(0);
 //only first load
 const isFirstLoad=useRef(true);
 
-
+//kill enemy lag patch
+const isDisplayCoinAdd = useRef(false);
    
 
     
@@ -380,7 +391,7 @@ const isFirstLoad=useRef(true);
                 console.log(gameDifficultyRef.current);
 
             }
-            const enemyHealthBuffer = Math.min(gameDifficultyRef.current*8,12000);
+            const enemyHealthBuffer = Math.min(gameDifficultyRef.current**2.5,12000);
             const enemyDamageBuffer = Math.min(gameDifficultyRef.current*4,1000);
 
             
@@ -389,20 +400,34 @@ const isFirstLoad=useRef(true);
                 
                 if(coinAdd.current>=600){
                     let temp = coinAdd.current;
+
+                    setCoinAddDisplay(c=>null);
+                    setTimeout(()=>{setCoinAddDisplay(c=>temp);
+                        
+                    },5);
                     coinAdd.current=0;
                     
                     updateCoins(temp);
+                    
+
+                    isDisplayCoinAdd.current=true;
+
+                    
                    
                     
 
                 }
+                /*
                 if(coinAdd.current>0){
                     
+                    if(isDisplayCoinAdd.current){
+                        isDisplayCoinAdd.current = false;
                     setCoinAddDisplay(c=>null);
-                    setTimeout(()=>{setCoinAddDisplay(c=>coinAdd.current)},5)
+                    setTimeout(()=>{setCoinAddDisplay(c=>coinAdd.current)},5);
+                    }
                   
                     
-                }
+                }*/
                 
 
                 //check if all towers are destroyed and game over
@@ -841,9 +866,9 @@ const isFirstLoad=useRef(true);
     }
 
 
-
+    //edit here to add more tower
     },[styleDisplay, 
-        lv1BulletImg,lv4BulletImg,lv6BulletImg,lv9BulletImg,lv10BulletImg,
+        lv1BulletImg,lv4BulletImg,lv6BulletImg,lv9BulletImg,lv10BulletImg,lv11BulletImg,lv12BulletImg,
         lv1EnemyNormalImg,lv1EnemyTakeDmgImg,lv2EnemyNormalImg,lv2EnemyTakeDmgImg,
         lv3EnemyNormalImg,lv3EnemyTakeDmgImg,lv4EnemyNormalImg,lv4EnemyTakeDmgImg,
 
@@ -912,7 +937,7 @@ const isFirstLoad=useRef(true);
                 <h1>{coinDisplay}</h1>
             </div>
 
-            {coinAddDisplay?<div className={styles.coinPopout}>
+            {coinAddDisplay!==null?<div className={styles.coinPopout}>
                 <img src = {speedCoins}></img>
                 <h1>+{coinAddDisplay}</h1>
             </div>:null}
