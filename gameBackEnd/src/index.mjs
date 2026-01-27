@@ -74,7 +74,7 @@ app.use(session({
         sameSite:process.env.NODE_ENV === 'production' ? 'none' : 'lax',
 
         //safari specific
-        partitioned: process.env.NODE_ENV === 'production'
+        //partitioned: process.env.NODE_ENV === 'production'
 
         //production block end
 
@@ -784,7 +784,7 @@ app.post('/api/logout', (req, res) => {
             sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax', // MATCH SESSION CONFIG
 
             //safari specific
-            partitioned: process.env.NODE_ENV === 'production'
+            //partitioned: process.env.NODE_ENV === 'production'
             //end of production block
         
         });
