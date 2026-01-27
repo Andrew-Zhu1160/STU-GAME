@@ -71,7 +71,7 @@ app.use(session({
         //for production
         maxAge:1000 * 60 * 60 * 24 * 7,
         secure:process.env.NODE_ENV==='production',
-        sameSite:process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+        sameSite:process.env.NODE_ENV === 'production' ? 'none' : 'lax'
 
         //safari specific
         //partitioned: process.env.NODE_ENV === 'production'
@@ -781,7 +781,7 @@ app.post('/api/logout', (req, res) => {
             //for production
             httpOnly: true,
             secure: process.env.NODE_ENV === 'production', // ADD THIS
-            sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax', // MATCH SESSION CONFIG
+            sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax' // MATCH SESSION CONFIG
 
             //safari specific
             //partitioned: process.env.NODE_ENV === 'production'
