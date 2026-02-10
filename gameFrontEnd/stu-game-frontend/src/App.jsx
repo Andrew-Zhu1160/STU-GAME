@@ -7,12 +7,13 @@ import MainPage from './mainPage/mainPage.jsx'
 
 import TowerDefenceGamePage from './towerDefenceGamePage/towerDefenceGamePage.jsx';
 
+import BallClutchGamePage from './ballClutchGamePage/ballClutchGamePage.jsx';
 
 
 
 function App() {
 const[displayPage,setDisplayPage] = useState([
-  true,false,false
+  true,false,false,false
 ]);
 
 
@@ -88,13 +89,7 @@ checkLoginStatus();
   return(
     <div style={{ width: '100vw', height: '100vh' ,position:'absolute'}}>
 
-      {/*<LoginPage styleDisplay={{display: displayPage[0]?'flex':'none'}} switchPage={(pageIndex)=>{
-        setDisplayPage(d=>{
-          let temp=d.map(_=>false);
-          temp[pageIndex]=true;
-          return temp;
-        })
-      }} />*/}
+      
 
       {displayPage[0]&&(<LoginPage styleDisplay={{display: 'flex'}} 
       switchPage={(pageIndex) => {
@@ -102,13 +97,7 @@ checkLoginStatus();
         }}/>
         )}
         
-      {/*<MainPage styleDisplay={{display: displayPage[1]?'flex':'none'}} switchPage={(pageIndex)=>{
-        setDisplayPage(d=>{
-          let temp=d.map(_=>false);
-          temp[pageIndex]=true;
-          return temp;
-        })
-      }} />*/}
+    
 
       {displayPage[1]&&(<MainPage styleDisplay={{display: 'flex'}} 
       switchPage={(pageIndex) => {
@@ -116,13 +105,7 @@ checkLoginStatus();
         }}/>
         )}
 
-      {/*<TowerDefenceGamePage styleDisplay={{display: displayPage[2]?'flex':'none'}} switchPage={(pageIndex)=>{
-        setDisplayPage(d=>{
-          let temp=d.map(_=>false);
-          temp[pageIndex]=true;
-          return temp;
-        })
-      }}/>*/}
+      
       {displayPage[2] && (
       <TowerDefenceGamePage 
         styleDisplay={{display: 'flex'}} // This triggers the useEffect inside the game page
@@ -132,7 +115,14 @@ checkLoginStatus();
         />
       )}
 
-
+      {displayPage[3] && (
+      <BallClutchGamePage
+        styleDisplay={{display: 'flex'}} // This triggers the useEffect inside the game page
+        switchPage={(pageIndex) => {
+          setDisplayPage(d => d.map((_, i) => i === pageIndex));
+        }} 
+        />
+      )}
 
 
 

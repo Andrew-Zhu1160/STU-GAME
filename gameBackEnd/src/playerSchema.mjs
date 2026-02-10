@@ -6,7 +6,9 @@ const playerSchema = new mongoose.Schema({
                 unique:true},
     playerPassword:{type:String},
 
-    speedCoins:{type:Number,default:0},
+    speedCoins:{type:Number,default:0,
+        min:[0,"coins cannot be negative"]
+    },
 
 
     
@@ -28,9 +30,26 @@ const playerSchema = new mongoose.Schema({
         
         highestScore: { type: Number, default: 0 },
 
-        towerDeployLayout:{type:[Number],default:[0,0,0]}
+        towerDeployLayout:{type:[{type:Number,min:0,max:12}],default:[1,0,0]}
 
         
+
+    },
+
+
+
+
+    ballGameAssets:{
+        //edit here to add more ball
+        ballSelectionStatus:{type:[{type:Number,
+            min:[0,"invalid entry"],
+            max:[2,"invalid index"]
+        }],default:[2,0,0,0]},
+
+        highestScore:{type:Number,default:0}
+        //edit here when add more balls
+
+
 
     }
 
@@ -43,30 +62,8 @@ const playerSchema = new mongoose.Schema({
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+},{ 
+    optimisticConcurrency: true //prevent race codition
 });
 const Player = mongoose.model('Player',playerSchema);
 export default Player;

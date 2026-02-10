@@ -24,12 +24,21 @@ import lv12Tower from '../images/towerGameImg/towerLv12.png';
 //----------------------------
 
 
+//image imports for ballclutch game shop
+import ballNo1 from '../images/ballClutchGameImg/ballNo1.png';
+import ballNo2 from '../images/ballClutchGameImg/ballNo2.png';
+import ballNo3 from '../images/ballClutchGameImg/ballNo3.png';
+import ballNo4 from '../images/ballClutchGameImg/ballNo4.png';
+//
+
 
 
 //gamecoins
 import speedCoins from '../images/towerGameImg/speedCoin.png';
 
 
+//for debug method
+const isDev = import.meta.env.VITE_MODE==='DEV';
 
 
 
@@ -76,8 +85,36 @@ function MainPage({switchPage,styleDisplay}) {
     
     
     
+   
+    //start of ballClutch variable
+    const ballImgArr = [ballNo1,ballNo2,ballNo3,ballNo4];
+    const [ballIndex,setBallIndex] = useState(0);
+    //0 means the ball is not owned, 1 means owned but not selected to game
+    //2 means owned, and selected for game
+    const [ballOwnedStatusArr,setBallOwnedStatusArr] = useState([0,0,0,0]);
+    const[ballGameSettingArr,setBallGameSettingArr] = useState([{},{},{},{}]);
+
+    const [ballCluctch_showPurchaseOrSelect,
+        setBallClutch_showPurchaseOrSelect
+    ] = useState(false);
+
+    const[ballClutch_warningMessage,
+        setBallClutch_warningMessage
+    ]=useState('');
+    const[displayBallClutch_warningMessage,
+        setDisplayBallClutch_warningMessage
+    ]=useState(false);
+
+    useEffect(()=>{
+        if(ballCluctch_showPurchaseOrSelect){
+            setDisplayBallClutch_warningMessage(false)
+
+        }
+    },[ballCluctch_showPurchaseOrSelect])
     
-    
+     //edit here to add more game
+
+
     
     
     
@@ -181,10 +218,51 @@ function MainPage({switchPage,styleDisplay}) {
 
             
         }
+        //..........................
+        //edit here to add more game
+        //...........................
+
+        async function loadBallGameShop(){
+            if(styleDisplay.display==='flex'){
+                try{
+                    const response = await fetch(
+                        `${import.meta.env.VITE_API_URL}/ballGame/getUserBallStatus`, { credentials: 'include' }
+                    );
+                    if(response.ok){
+                        const {data} = await response.json();
+                        if(isDev){console.log(data);}
+                        setBallOwnedStatusArr([...data]);
+
+                    }
+                }catch(error){
+                    if(isDev){console.log(error)}
+                }
+                //also fetch some setting from the assets
+                try{
+                    const response = await fetch(
+                        `${import.meta.env.VITE_API_URL}/ballGame/getBallGameSetting`, { credentials: 'include' }
+
+                    );
+                    if(response.ok){
+                        const {data} = await response.json();
+                        if(isDev){console.log(data)}
+                        setBallGameSettingArr([...data]);
+                        
+                    }
+
+                }catch(error){
+                    if(isDev){console.log(error)}
+                }
+
+
+            }
+        }
 
         fetchWelcomeMessage();
 
         loadTowerGameShop();
+
+        loadBallGameShop();
 
     }, [styleDisplay]);
 
@@ -217,6 +295,11 @@ function MainPage({switchPage,styleDisplay}) {
     //edit here to add more game
     //....................
     const towerGameCard = createGameCard(towerIcon,"Tower Defense","hsla(240, 94%, 55%, 0.68)",openEnterPanel);
+
+    const ballClutchGameCard = createGameCard(ballNo1,"Ball Clutch","hsla(15, 100%, 50%, 0.87)",openEnterPanel);
+
+
+
     
 
     const[readyToEnter,setReadyToEnter]=useState(false);
@@ -263,7 +346,11 @@ function MainPage({switchPage,styleDisplay}) {
         getUserCoins();
     },[updateCoin])
 
+
+    //........................................
     //specific game shop
+    //very important section..................
+
     const[openSpecificGameShop,setOpenSpecificGameShop]
     =useState([false,false]);
 
@@ -300,7 +387,22 @@ function MainPage({switchPage,styleDisplay}) {
     const[showTooMuchDeploy,setShowTooMuchDeploy]
     =useState(false);
     
+    //end of tower defencse variable
+
+
+
+
+
+
+
     
+
+
+
+
+
+
+
     
 
 
@@ -351,6 +453,23 @@ function MainPage({switchPage,styleDisplay}) {
                         })
                         
                     }}></img>
+
+
+                    {/*edit here to add more game */}
+
+
+                    <img src={ballNo1}
+                    style={{width:'17vw'}}
+                    onClick={()=>{
+                        setOpenSpecificGameShop(o=>{
+                            let temp=o.map(_=>false);
+                            temp[1]=true;
+                            return temp;
+                        })
+                        
+                    }}></img>
+
+
 
 
                 </div>
@@ -804,6 +923,178 @@ function MainPage({switchPage,styleDisplay}) {
                     {/*end of tower defence shop */}
 
 
+
+
+                    {/* start of Ball Clutch shop */}
+
+                    <div style={{display:openSpecificGameShop[1]?'block':'none'}}>
+
+                        <button className={styles.imageSliderUp}
+                        onClick={()=>{
+                            setBallIndex(b=>{
+                                if(b>=ballImgArr.length-1){
+                                    return 0;
+                                }
+                                return b+1;
+                            });
+                        }}>^</button>
+
+                        {/*reuse some style from already existed style */}
+
+                        <div className={styles.towerDisplayPanel}>
+                            <img src={ballImgArr[ballIndex]}
+                            className={styles.towerShowCase}
+                            style={{width:'200px',height:'200px'}}></img>
+                            <h1>Ball No {ballIndex+1}</h1>
+
+                            <h1>{ballOwnedStatusArr[ballIndex]===0?"not Owned":
+                                ballOwnedStatusArr[ballIndex]===1?"owned, not selected":
+                                ballOwnedStatusArr[ballIndex]===2?"owned, selected":""}
+                            </h1>
+
+                            {ballOwnedStatusArr[ballIndex]===0?
+                            <button className={styles.buyButton}
+                            onClick={()=>{
+                                setBallClutch_showPurchaseOrSelect(true);
+
+                            }}>buy: {ballGameSettingArr[ballIndex].cost} $</button>:
+                            ballOwnedStatusArr[ballIndex]===1?
+                            <button className={styles.buyButton}
+                            onClick = {()=>{
+                                setBallClutch_showPurchaseOrSelect(true);
+                            }}>Select this Ball ?</button>:
+                            ""}
+                            
+                        </div>
+
+
+
+                        <button className={styles.imageSliderDown}
+                         onClick={()=>{
+                            setBallIndex(b=>{
+                                if(b<=0){
+                                    return ballImgArr.length-1;
+                                }
+                                return b-1;
+                            });
+                        }}>^</button>
+
+
+                        <div className={styles.generalPopup}
+                        style = {{display:ballCluctch_showPurchaseOrSelect?'flex':'none'}}>
+
+                            <h1>{ballOwnedStatusArr[ballIndex]===0?`buy ball No ${ballIndex+1}`:
+                                ballOwnedStatusArr[ballIndex]===1?"select this ball?":""}</h1>
+                            {ballOwnedStatusArr[ballIndex]===0?
+                            <button className={styles.generalYesPopupButton}
+                            onClick={async ()=>{
+                                try{
+                                    const response = await fetch(`${import.meta.env.VITE_API_URL}/ballGame/changeBallStatusArr`,
+                                        {method:'POST',
+                                        credentials: 'include',
+                                        headers: {'Content-Type': 'application/json'},
+                                        body: JSON.stringify({
+                                            mode:'purchaseNewBall',
+                                            purchasedBallNumber:ballIndex+1,
+                                            selectedBallNumber:1
+                                        })
+                                        }
+                                    );
+                                    if(response.ok){
+                                        const {data} = await response.json();
+                                        if(isDev){console.log(data)}
+                                        setBallOwnedStatusArr(b=>[...data]);
+                                        setUpdateCoin(u=>u+1);
+                                        setBallClutch_showPurchaseOrSelect(b=>false);
+
+                                    }else{
+                                        const{message} = await response.json();
+                                        if(isDev){console.log(message)}
+                                        setBallClutch_warningMessage(message);
+                                        setDisplayBallClutch_warningMessage(false);
+                                        setTimeout(()=>{setDisplayBallClutch_warningMessage(true)},10);
+
+                                       
+
+
+                                    }
+                                    
+                                }catch(error){
+                                    if(isDev){console.log(error)}
+                                }
+
+                            }}>yes -{ballGameSettingArr[ballIndex]?.cost} $</button>:
+                            ballOwnedStatusArr[ballIndex]===1?
+                            <button className={styles.generalYesPopupButton}
+                            onClick={async ()=>{
+                                try{
+                                    const response = await fetch(`${import.meta.env.VITE_API_URL}/ballGame/changeBallStatusArr`,
+                                        {method:'POST',
+                                        credentials: 'include',
+                                        headers: {'Content-Type': 'application/json'},
+                                        body: JSON.stringify({
+                                            mode:'selectBall',
+                                            purchasedBallNumber:1,
+                                            selectedBallNumber:ballIndex+1
+                                        })
+                                        }
+                                    );
+                                    if(response.ok){
+                                        const {data} = await response.json();
+                                        if(isDev){console.log(data)}
+                                        setBallOwnedStatusArr(b=>[...data]);
+                                        setBallClutch_showPurchaseOrSelect(b=>false);
+
+                                    }else{
+                                        const{message} = await response.json();
+                                        if(isDev){console.log(message)}
+                                        setBallClutch_warningMessage(message);
+                                        setDisplayBallClutch_warningMessage(false);
+                                        setTimeout(()=>{setDisplayBallClutch_warningMessage(true)},10);
+
+                                    }
+
+
+
+                                }catch(error){
+
+                                }
+
+
+                            }}>yes 😍</button>:""}
+
+                            <button className={styles.generalNoPopupButton}
+                            onClick={()=>{
+                                setBallClutch_showPurchaseOrSelect(b=>false);
+                            }}>
+                                nope ❌
+                            </button>
+
+
+                            {!displayBallClutch_warningMessage?''
+                        :<h1 className={styles.welcomeTag}
+                        style={{backgroundColor:'red',display:'flex'}}>
+                            {ballClutch_warningMessage}</h1>}
+
+
+
+                        </div>
+
+                        
+
+
+
+
+
+
+
+
+
+                    </div>
+
+
+
+
             </div>
 
 
@@ -812,6 +1103,8 @@ function MainPage({switchPage,styleDisplay}) {
             
             {/*more game card here*/ }
             {towerGameCard}
+
+            {ballClutchGameCard}
 
 
 
@@ -827,6 +1120,9 @@ function MainPage({switchPage,styleDisplay}) {
                             switchPage(2);
                             break;
                         //add more game entry here
+                        case 'Ball Clutch':
+                            switchPage(3);
+                            break;
                         default:
                             break;
                     }
@@ -847,6 +1143,44 @@ function MainPage({switchPage,styleDisplay}) {
 
 
             </div>
+            
+
+
+                {/*start of ball clutch*/}
+
+                
+
+                
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

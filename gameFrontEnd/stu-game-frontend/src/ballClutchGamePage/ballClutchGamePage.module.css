@@ -1,0 +1,273 @@
+@font-face {
+    font-family: honk;
+    src: url(../fonts/Honk-Regular-VariableFont_MORF\,SHLN.ttf);
+}
+@font-face {
+    font-family: BGS;
+    src: url(../fonts/BitcountGridSingleInk-VariableFont_CRSV\,ELSH\,ELXP\,SZP1\,SZP2\,XPN1\,XPN2\,YPN1\,YPN2\,slnt\,wght.ttf);
+}
+
+
+
+
+.gameWorld{
+    position:relative;
+    top:50%;
+    left:50%;
+    transform: translateX(-50%) translateY(-50%);
+    width:1500px;
+    height:2000px;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: cover;
+    background-attachment: fixed;
+
+    border: 20px solid rgb(128, 0, 255);
+    border-radius: 50px;
+
+    overflow:hidden;
+    
+}
+
+.gameOverScreen{
+    position:absolute;
+    background-color: rgba(65, 65, 66, 0.538);
+    width:100%;
+    height:100%;
+    z-index: 6;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    row-gap: 2vh;
+    font-family: honk;
+    font-size: 3em;
+
+}
+
+.gamePausedScreen{
+    position:absolute;
+    background-color: rgba(65, 65, 66, 0.538);
+    width:100%;
+    height:100%;
+    z-index: 6;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    row-gap: 2vh;
+    font-family: honk;
+    font-size: 3em;
+
+}
+
+.pauseGameButton{
+    display:flex;
+    justify-content: center;
+    align-items: center;
+    position: absolute;
+    width:10%;
+    max-width: 150px;
+    max-height: 150px;
+    height:auto;
+    border-radius: 75px;
+    background-color: rgba(235, 18, 18, 0.784);
+    border: 10px solid rgb(255, 119, 0);
+    bottom: 5px;
+    right:5px;
+    z-index: 3;
+    font-family: honk,Aerial;
+    font-size: 6em;
+}
+.pauseGameButton:hover{
+    transform: scaleX(1.5) scaleY(1.5);
+}
+.pauseGameButton:active{
+    transform: none;
+}
+
+
+
+
+.exitGameButton{
+    width:50%;
+    height:7%;
+    margin-bottom:3%;
+    border:none;
+    background-color: rgba(255, 183, 0, 0.741);
+    
+    border-radius: 20px;
+    font-family: honk,Aerial;
+    font-size: 1.5em;
+    
+    font-weight: bold;
+    
+    
+    border-bottom: 1px solid rgb(67, 56, 1);
+    transform:none;
+}
+.exitGameButton:hover{
+    transform:translateX(-10px);
+    border-bottom: 10px solid rgb(67, 56, 1);
+}
+.exitGameButton:active{
+    border-bottom: 1px solid rgb(67, 56, 1);
+    transform:none;
+
+}
+
+
+
+.resumeGameButton{
+    width:50%;
+    height:auto;
+    margin-bottom:3%;
+    border:none;
+    background-color: rgba(22, 214, 1, 0.589);
+    
+    border-radius: 20px;
+    font-family: honk,Aerial;
+    font-size: 1.5em;
+    
+    font-weight: bold;
+    
+    
+    border-bottom: 1px solid rgb(1, 67, 7);
+    transform:none;
+}
+.resumeGameButton:hover{
+    transform:translateX(-10px);
+    border-bottom: 10px solid rgb(1, 67, 7);
+}
+.resumeGameButton:active{
+     border-bottom: 1px solid rgb(1, 67, 7);
+    transform:none;
+
+}
+
+
+
+.coinDisplayPanel{
+    display:flex;
+    height:20vh;
+    max-height:150px;
+    align-items: center;
+    padding-left: 10px;
+    position: absolute;
+    top:50px;
+    left:50px;
+    z-index: 4;
+    font-family: honk,Aerial;
+    font-size: 4em;
+}
+.coinDisplayPanel>img{
+    width:10vw;
+    height:auto;
+    max-width:150px;
+    max-height:150px;
+}
+
+.scoreDisplayPanel{
+    display:flex;
+    height:20vh;
+    max-height:150px;
+    align-items: center;
+    padding-right: 10px;
+    position: absolute;
+    top:50px;
+    right:100px;
+    z-index: 4;
+    font-family: honk,Aerial;
+    font-size: 4em;
+
+}
+
+
+
+
+.coinPopout{
+    z-index: 4;
+    display:flex;
+    position: absolute;
+    background-color: rgba(255, 140, 0, 0.678);
+    font-family: BGS,Aerial;
+    font-size: 3em;
+    width:45%;
+    border-radius: 20px;
+    height:10vh;
+    max-height:200px;
+    justify-content: center;
+    align-items: center;
+    animation: coinPop 1s ease-in-out ;
+    animation-fill-mode: forwards;
+    transform:  translateX(-50%);
+    top:5vh;
+    left:50%;
+
+}
+.coinPopout>img{
+    width:10vw;
+    height:auto;
+    max-width:150px;
+    max-height:150px;
+}
+@keyframes coinPop {
+    0%{
+        opacity: 0;
+        transform:  translateX(-50%) scaleX(2) scaleY(2);
+    }
+    30%{
+        opacity: 1;
+        transform: translateX(-50%);
+    }
+    100%{
+        opacity: 0;
+        transform:  translateX(-50%);
+    }
+    
+}
+
+
+
+
+.countdownPanel{
+     z-index: 4;
+    display:flex;
+    position: absolute;
+    background-color: rgba(255, 0, 0, 0.678);
+    font-family: honk,Aerial;
+    font-size: 16em;
+
+    
+    width:45vw;
+    height:45vw;
+    max-width: 700px;
+    max-height: 700px;
+    border-radius:390px;
+    border: 30px solid rgba(255, 204, 0, 0.91);
+    
+
+    justify-content: center;
+    align-items: center;
+    
+    
+    transform:  translateX(-50%) translateY(-50%);
+    top:50%;
+    left:50%;
+
+    animation: countdownAnimation 0.7s linear;
+    animation-fill-mode: forwards;
+
+}
+
+@keyframes countdownAnimation {
+    0%{
+        transform: translateX(-50%) translateY(-50%) scaleX(1.5) scaleY(1.5) rotateZ(400deg);
+    }
+    20%{
+        transform: translateX(-50%) translateY(-50%);
+    }
+    100%{
+        transform: translateX(-50%) translateY(-50%);
+        opacity: 0;
+    }
+    
+}

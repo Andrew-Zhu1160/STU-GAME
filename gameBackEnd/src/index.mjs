@@ -19,7 +19,8 @@ import MongoStore from 'connect-mongo';
 import helmet from 'helmet';
 import { rateLimit } from 'express-rate-limit';
 
-
+//for ball clutch game
+import BallGameConfig from './ballGameSchema.mjs';
 
 
 
@@ -114,6 +115,14 @@ if(!towerGameSetting){
 await towerGameSetting.save();
 
 
+//get ballGame stats from DB
+let ballGameSetting = await BallGameConfig.findOne({Name:"ballGameSettingSheet"});
+if(!ballGameSetting){
+    ballGameSetting = new BallGameConfig({Name:"ballGameSettingSheet"});
+}
+
+await ballGameSetting.save();
+
 
 
 
@@ -145,7 +154,7 @@ app.use('/api/', globalLimiter);
 //specfic limitter
 const speedClickLimiter = rateLimit({
     windowMs: 2000, // 2 seconds
-    limit: 1,       // 1 action per 2 seconds
+    limit: 2,       // 1 action per 2 seconds
     message: { 
         message: " Action too frequent." 
     }
@@ -172,7 +181,9 @@ const validate = (req, res, next) => {
 
 
 app.post(`/api/signUp`,singUpLoginLimiter,async (req,res)=>{
-    //register new player
+    
+    try{
+        //register new player
     const {newPlayerName,newPlayerPassword} = req.body;
     if(!newPlayerName || !newPlayerPassword){
         return res.status(400).json({message:'playerName and playerPassword required!'});
@@ -193,8 +204,10 @@ app.post(`/api/signUp`,singUpLoginLimiter,async (req,res)=>{
         return res.status(400).json({message:'playerName must be 3-30 characters long and can only contain letters, numbers, and underscores!'});
     }
 
+
+
+
     //create new player
-    try{
         const hashedPassword = await hashPassword(newPlayerPassword);
 
 
@@ -289,7 +302,7 @@ app.get('/api/getUserCoins',async (req,res)=>{
     try {
         if (req.session.playerName===undefined) {
             
-            return res.sendStatus(401); 
+            return res.status(401).json({message:'Player not found'}); 
         }
 
         const thePlayer = await Player.findOne({ playerName: req.session.playerName });
@@ -302,7 +315,7 @@ app.get('/api/getUserCoins',async (req,res)=>{
         return res.status(200).json({ userCoins: thePlayer.speedCoins });
     } catch (error) {
         console.error(error);
-        return res.sendStatus(500);
+        return res.status(500).json({message:'unkown error'});
     }
 })
 
@@ -572,6 +585,8 @@ app.post('/api/editTowerDeploy',[
 
 
 
+
+
 app.get('/api/towerGame/getTowerDeploy',async (req,res)=>{
     if(!req.session.playerName){
         return res.sendStatus(404);
@@ -669,6 +684,7 @@ app.get('/api/towerGame/getEnemyAttribute',(req,res)=>{
     }
 });
 
+
 app.get('/api/towerGame/getCoinsAndScores',async (req,res)=>{
     if(!req.session.playerName){
         return res.sendStatus(404);
@@ -688,6 +704,7 @@ app.get('/api/towerGame/getCoinsAndScores',async (req,res)=>{
         return res.sendStatus(500);
     }
 });
+
 
 
 
@@ -718,6 +735,7 @@ app.post('/api/towerGame/addCoins',[
 
 
 
+
 app.post('/api/towerGame/updateScoreRecord',[
     speedClickLimiter,
     body('newScore').isInt({ min: 0, max: 999999999 }),
@@ -741,7 +759,6 @@ app.post('/api/towerGame/updateScoreRecord',[
             currentHighestScore:thePlayer.towerGameAssets.highestScore
         });
     }
-
 
     }catch(error){
         return res.sendStatus(500)
@@ -796,10 +813,314 @@ app.post('/api/logout', (req, res) => {
 
 //this should work
 
+//-----------------------------------
+//end of towergame route!!!!
+//----------------------------------
 
 
 
 
+
+
+
+//-----------------------
+//start of bouncy ball game
+//----------------------------
+
+
+//session authorization
+
+//from now on, all post request eith send a json with updated data,
+//or send a failed status code with a json object witha message attribute
+//some helper middleware
+
+
+//must have safty check to make sure old user's array get updated to the correct length when new ball is added to the setting, otherwise it will cause unpredicted bugs
+const expectedBallArrayLength = 4;
+const expectedPlatformArrayLength = 3;
+
+//very important migate old user fuction
+async function migrateOldUserData(req,res,next){
+    try{
+        let thePlayer = await Player.findOne({playerName:req.session.playerName});
+        if(!thePlayer){return res.status(404).json({message:'player not found'})}
+        await thePlayer.save();
+
+        //now do the migration
+        thePlayer = await Player.findOne({playerName:req.session.playerName});
+        if(!thePlayer){return res.status(404).json({message:'player not found'})};
+        if(thePlayer.ballGameAssets.ballSelectionStatus.length<expectedBallArrayLength){
+            //these are old data that needs expansion
+            const lengthDifference = expectedBallArrayLength-thePlayer.ballGameAssets.ballSelectionStatus.length;
+            for(let i=0;i<lengthDifference;++i){
+                thePlayer.ballGameAssets.ballSelectionStatus.push(0);
+            }
+            thePlayer.markModified('ballGameAssets');
+            await thePlayer.save();
+        }
+        next();
+    }catch(error){
+        if(error.name){
+            if(error.name==='Version Error'){
+                return res.status(400).json({message:'server busy'});
+            }
+            return res.status(500).json({message:'unknown error'});
+        }
+        return res.status(500).json({message:'internet error'})
+    }
+
+}
+async function updateBallGameSetting(req,res,next){
+    try{
+        if(!ballGameSetting){return res.status(404).json({message:'setting sheet missing'})}
+        if(ballGameSetting.balls.length<expectedBallArrayLength||
+            ballGameSetting.platforms.length<expectedPlatformArrayLength
+        ){
+            const lengthDifference = expectedBallArrayLength-ballGameSetting.balls.length;
+            for(let i=0; i<lengthDifference;++i){
+                //push a average ball setting
+                ballGameSetting.balls.push({
+                    cost:1000000,
+                    width:200,
+                    height:200,
+                    friction:8,
+                    density:0.0035
+
+                });
+            }
+            const lengthDifference2 = expectedPlatformArrayLength-ballGameSetting.platforms.length;
+            for(let i =0;i<lengthDifference2;++i){
+                //push a default platform
+                ballGameSetting.platforms.push({
+                    friction:1000
+                });
+            }
+            ballGameSetting.markModified('balls');
+            ballGameSetting.markModified('platforms');
+            await ballGameSetting.save();
+        }
+        next();
+
+    }catch(error){
+        return res.status(500).json({message:'internet error'})
+    }
+}
+
+
+
+function checkSession(req,res,next){
+    if(!req.session.playerName){
+        return res.status(400).json({message:'player not found'});
+    }else{
+        next();
+    }
+}
+function checkBallGameSetting(req,res,next){
+    if(!ballGameSetting){
+        return res.status(404).json({message: 'fail to load setting'})
+    }else{
+        next();
+    }
+}
+
+function validateInput(req,res,next){
+    const error = validationResult(req);
+    console.log(error);
+    if(!error.isEmpty()){
+        return res.status(400).json({message:'invalid input'})
+    }else{
+        next();
+    }
+
+}
+//some universal endpoint here
+const addSpeedCoinsLimiter = rateLimit({windowMs: 500, limit: 1 });
+app.post('/api/addSpeedCoins',checkSession,addSpeedCoinsLimiter,
+    body('addCoinAmount').exists().isInt({min:0,max:999999999}),
+    validateInput,
+    async (req,res)=>{
+        try{
+            const {addCoinAmount} = req.body;
+            const thePlayer = await Player.findOne({playerName:req.session.playerName});
+            if(!thePlayer){return res.status(404).json({message:'user no longer there'})}
+            thePlayer.speedCoins+= addCoinAmount;
+            await thePlayer.save();
+            return res.sendStatus(200);
+
+        }catch(error){
+            if(error.name){
+                if(error.name==='VersionError'){
+                    return res.status(400).json({message:'server busy, request failed'});
+                }
+                return res.status(500).json({message:'unknown error'})
+
+            }
+            return res.status(500).json({message:'internet error'})
+        }
+    }
+);
+
+
+
+
+const ballGameBaseRoute = "/api/ballGame";
+
+
+
+const getUserBallStatusLimiter = rateLimit({windowMs: 2000, limit: 2 });
+app.get(`${ballGameBaseRoute}/getUserBallStatus`,checkSession,
+    getUserBallStatusLimiter,migrateOldUserData,async (req,res)=>{
+        try{
+            const thePlayer = await Player.findOne({playerName:req.session.playerName});
+            if(!thePlayer){return res.sendStatus(404);}
+            return res.status(200).json({data:thePlayer.ballGameAssets.ballSelectionStatus});
+        }catch(error){
+            return res.sendStatus(500);
+        }
+    }
+);
+
+
+const getBallGameSettingLimiter = rateLimit({windowMs: 1000, limit: 1 });
+app.get(`${ballGameBaseRoute}/getBallGameSetting`,checkSession,getBallGameSettingLimiter,
+    checkBallGameSetting,updateBallGameSetting,
+    (req,res)=>{
+        try{
+            
+            return res.status(200).json({data:ballGameSetting.balls});
+
+        }catch(error){
+            return res.sendStatus(500);
+        }
+    }
+)
+
+
+//edit here to add more ball
+const changeBallStatusArrLimiter = rateLimit({windowMs: 1000, limit: 1,message: { message: " Action too frequent." } });
+app.post(`${ballGameBaseRoute}/changeBallStatusArr`,checkSession, changeBallStatusArrLimiter,checkBallGameSetting,
+    migrateOldUserData,
+    updateBallGameSetting,
+    body('purchasedBallNumber').exists().isInt({min:1,max:4}),
+    body('mode').exists().isString(),
+    body('selectedBallNumber').exists().isInt({min:1,max:4}),
+    validateInput,
+    async(req,res)=>{
+        try{
+            const thePlayer= await Player.findOne({playerName:req.session.playerName});
+            if(!thePlayer){return res.status(401).json({message:'player no longer exist'})}
+            if(req.body.mode==='purchaseNewBall'){
+                const ballCost = ballGameSetting.balls[req.body.purchasedBallNumber-1].cost;
+                
+                    //success
+                    
+                    thePlayer.speedCoins-=ballCost;
+                    thePlayer.ballGameAssets.ballSelectionStatus[req.body.purchasedBallNumber-1]=1;
+                    thePlayer.markModified('ballGameAssets');
+                    await thePlayer.save();
+                    return res.status(200).json({
+                        data: thePlayer.ballGameAssets.ballSelectionStatus
+                    });
+
+                
+
+            }else if(req.body.mode==='selectBall'){
+                for(let i=0;i<thePlayer.ballGameAssets.ballSelectionStatus.length;++i){
+                    if(thePlayer.ballGameAssets.ballSelectionStatus[i]===2){
+                        thePlayer.ballGameAssets.ballSelectionStatus[i]=1;
+
+                    }
+                }
+                if(thePlayer.ballGameAssets.ballSelectionStatus[req.body.selectedBallNumber-1]===1){
+                    thePlayer.ballGameAssets.ballSelectionStatus[req.body.selectedBallNumber-1]=2;
+                }
+                thePlayer.markModified('ballGameAssets');
+                await thePlayer.save();
+                return res.status(200).json({
+                    data:thePlayer.ballGameAssets.ballSelectionStatus
+                })
+
+
+
+            }else{
+                return res.status(400).json({message:'invalid mode'});
+            }
+        }catch(error){
+            if(error.name){
+                if(error.name==='ValidationError'){
+                    return res.status(400).json({message:'not enough coins 😭'})
+
+                }else if(error.name ==='VersionError'){
+                    return res.status(400).json({message:'server busy, try again'})
+                    
+                }
+                return res.status(500).json({message:'unknown error'})
+
+            }
+            return res.status(500).json({message:'unknown error,try again'})
+        }
+
+    });
+
+
+    const getSelectedBallLimiter = rateLimit({windowMs: 1000, limit: 1 });
+    app.get(`${ballGameBaseRoute}/getSelectedBall`,checkSession,getSelectedBallLimiter,checkBallGameSetting,
+        migrateOldUserData,
+        async(req,res)=>{
+        try{
+            const thePlayer = await Player.findOne({playerName:req.session.playerName});
+            if(!thePlayer){return res.sendStatus(404)}
+            return res.status(200).json({data:thePlayer.ballGameAssets.ballSelectionStatus});
+
+        }catch(error){
+            return res.sendStatus(500);
+
+        }
+    });
+
+    const getPlatformSettingLimiter = rateLimit({windowMs: 1000, limit: 1 });
+    app.get(`${ballGameBaseRoute}/getPlatformSetting`,checkSession,getPlatformSettingLimiter,checkBallGameSetting,
+        updateBallGameSetting,
+        async(req,res)=>{
+        try{
+            return res.status(200).json({data:ballGameSetting.platforms}); 
+        }catch(error){
+            return res.sendStatus(500);
+        }
+    });
+
+    const updateBallGameScoreLimiter = rateLimit({windowMs:1000,limit:1});
+    app.post(`${ballGameBaseRoute}/updateScore`,checkSession,updateBallGameScoreLimiter,
+        body('newScore').exists().isInt({min:0,max:999999999}),
+        validateInput,
+        async (req,res)=>{
+            try{
+                const thePlayer = await Player.findOne({playerName:req.session.playerName});
+                const {newScore}=req.body;
+                if(!thePlayer){return res.status(404).json({message:'player no longer exist'})}
+                if(thePlayer.ballGameAssets.highestScore<newScore){
+                    thePlayer.ballGameAssets.highestScore = newScore;
+                    thePlayer.markModified('ballGameAssets');
+                    await thePlayer.save();
+                    return res.status(201).json({newHighScore:newScore});
+
+                }else{
+                    return res.status(201).json({newHighScore:thePlayer.ballGameAssets.highestScore});
+
+
+                }
+            }catch(error){
+                if(error.name){
+                    if(error.name==='VersionError'){
+                        return res.status(400).json({message:'server busy, request denined'});
+                    }
+                    return res.status(500).json({message:'unknown error'});
+                }
+                return res.status(500).json({message:'internet error'});
+            }
+
+        }
+    );
 
 
 
@@ -816,11 +1137,12 @@ app.post('/api/logout', (req, res) => {
 
 
 //for production comment out this
-//const PORT = process.env.PORT!==undefined ? process.env.PORT : 3000;
-/*app.listen(PORT,()=>{
+const PORT = process.env.PORT!==undefined ? process.env.PORT : 3000;
+app.listen(PORT,()=>{
     console.log(`sever started on port ${PORT}`);
     
-});*/
+});
+
 
 
 //for production
