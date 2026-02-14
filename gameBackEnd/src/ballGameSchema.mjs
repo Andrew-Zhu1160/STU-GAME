@@ -3,7 +3,7 @@ import mongoose from 'mongoose';
 const ballGameSchema = new mongoose.Schema({
     Name:{type:String,default:'unknown',unique:true},
 
-    //edit here to add balls
+    //edit here to add more balls
     balls:{type: [{
             number: { type: Number },
             cost: { type: Number },
@@ -37,6 +37,22 @@ const ballGameSchema = new mongoose.Schema({
             },
             {
             number:4,
+            cost:1000000,
+            width:200,
+            height:200,
+            friction:1.4,
+            density:0.0035
+            },
+            {
+            number:5,
+            cost:1000000,
+            width:200,
+            height:200,
+            friction:1.4,
+            density:0.0035
+            },
+            {
+            number:6,
             cost:1000000,
             width:200,
             height:200,

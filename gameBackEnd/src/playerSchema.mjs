@@ -44,7 +44,7 @@ const playerSchema = new mongoose.Schema({
         ballSelectionStatus:{type:[{type:Number,
             min:[0,"invalid entry"],
             max:[2,"invalid index"]
-        }],default:[2,0,0,0]},
+        }],default:[2,0,0,0,0,0]},
 
         highestScore:{type:Number,default:0}
         //edit here when add more balls

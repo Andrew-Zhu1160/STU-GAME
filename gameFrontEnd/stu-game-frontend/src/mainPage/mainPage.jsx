@@ -25,10 +25,13 @@ import lv12Tower from '../images/towerGameImg/towerLv12.png';
 
 
 //image imports for ballclutch game shop
+//edit here to add more balls
 import ballNo1 from '../images/ballClutchGameImg/ballNo1.png';
 import ballNo2 from '../images/ballClutchGameImg/ballNo2.png';
 import ballNo3 from '../images/ballClutchGameImg/ballNo3.png';
 import ballNo4 from '../images/ballClutchGameImg/ballNo4.png';
+import ballNo5 from '../images/ballClutchGameImg/ballNo5.png';
+import ballNo6 from '../images/ballClutchGameImg/ballNo6.png';
 //
 
 
@@ -88,14 +91,14 @@ function MainPage({switchPage,styleDisplay}) {
    
     //start of ballClutch variable
     //edit here to add more balls
-    const ballImgArr = [ballNo1,ballNo2,ballNo3,ballNo4];
+    const ballImgArr = [ballNo1,ballNo2,ballNo3,ballNo4,ballNo5,ballNo6];
     const [ballIndex,setBallIndex] = useState(0);
     //0 means the ball is not owned, 1 means owned but not selected to game
     //2 means owned, and selected for game
 
     //edit here to add more balls
-    const [ballOwnedStatusArr,setBallOwnedStatusArr] = useState([0,0,0,0]);
-    const[ballGameSettingArr,setBallGameSettingArr] = useState([{},{},{},{}]);
+    const [ballOwnedStatusArr,setBallOwnedStatusArr] = useState([0,0,0,0,0,0]);
+    const[ballGameSettingArr,setBallGameSettingArr] = useState([{},{},{},{},{},{}]);
 
     const [ballCluctch_showPurchaseOrSelect,
         setBallClutch_showPurchaseOrSelect
