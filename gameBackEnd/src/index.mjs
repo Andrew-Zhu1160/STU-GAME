@@ -867,10 +867,11 @@ app.post('/api/logout', (req, res) => {
 
 
 //edit here to add more balls
-const expectedBallArrayLength = 4;
+const expectedBallArrayLength = 6;
 const expectedPlatformArrayLength = 3;
 
 //very important migate old user fuction
+//edit here to add more balls
 async function migrateOldUserData(req,res,next){
     try{
         let thePlayer = await Player.findOne({playerName:req.session.playerName});
@@ -914,7 +915,7 @@ async function updateBallGameSetting(req,res,next){
                     cost:1000000,
                     width:200,
                     height:200,
-                    friction:8,
+                    friction:1.2,
                     density:0.0035
 
                 });
@@ -1032,9 +1033,9 @@ const changeBallStatusArrLimiter = rateLimit({windowMs: 1000, limit: 1,message: 
 app.post(`${ballGameBaseRoute}/changeBallStatusArr`,checkSession, changeBallStatusArrLimiter,checkBallGameSetting,
     migrateOldUserData,
     updateBallGameSetting,
-    body('purchasedBallNumber').exists().isInt({min:1,max:4}),
+    body('purchasedBallNumber').exists().isInt({min:1,max:6}),
     body('mode').exists().isString(),
-    body('selectedBallNumber').exists().isInt({min:1,max:4}),
+    body('selectedBallNumber').exists().isInt({min:1,max:6}),
     validateInput,
     async(req,res)=>{
         try{

@@ -16,6 +16,11 @@ import ball1 from '../images/ballClutchGameImg/ballNo1.png';
 import ball2 from '../images/ballClutchGameImg/ballNo2.png';
 import ball3 from '../images/ballClutchGameImg/ballNo3.png';
 import ball4 from '../images/ballClutchGameImg/ballNo4.png';
+import ball5 from '../images/ballClutchGameImg/ballNo5.png';
+import ball6 from '../images/ballClutchGameImg/ballNo6.png';
+//edit here to add more balls
+
+
 const isDev = import.meta.env.VITE_MODE === 'DEV';
 
 
@@ -145,11 +150,14 @@ function BallClutchGamePage({switchPage,styleDisplay}){
     const isFirstLoad = useRef(true);
 
     //image imports
+    //edit here to add more balls
     const [ball1Img] = useImage(ball1);
     const [ball2Img] = useImage(ball2);
     const [ball3Img] = useImage(ball3);
     const [ball4Img] = useImage(ball4);
-    const ballImgArray = [ball1Img,ball2Img,ball3Img,ball4Img];
+    const[ball5Img] = useImage(ball5);
+    const[ball6Img] = useImage(ball6);
+    const ballImgArray = [ball1Img,ball2Img,ball3Img,ball4Img,ball5Img,ball6Img];
 
     const [borderSideImg]= useImage(borderSideTexture);
     const [borderBottomImg] = useImage(borderBottomTexture);
