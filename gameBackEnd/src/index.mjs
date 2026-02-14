@@ -101,22 +101,33 @@ try{
 
 //get the towerGameStats from DB
 
-let towerGameSetting = await TowerGameConfig.findOne({Name:"towerGameSettingSheet"});
+let towerGameSetting;
+try{
+towerGameSetting = await TowerGameConfig.findOne({Name:"towerGameSettingSheet"});
 if(!towerGameSetting){
     towerGameSetting = new TowerGameConfig({Name:"towerGameSettingSheet"});
 }
 //any changes to the setting before save goes here?
 
 await towerGameSetting.save();
+}catch(error){
+    console.log(error);
+    
+}
 
 
 //get ballGame stats from DB
-let ballGameSetting = await BallGameConfig.findOne({Name:"ballGameSettingSheet"});
+let ballGameSetting;
+try{
+ballGameSetting = await BallGameConfig.findOne({Name:"ballGameSettingSheet"});
 if(!ballGameSetting){
     ballGameSetting = new BallGameConfig({Name:"ballGameSettingSheet"});
 }
 
 await ballGameSetting.save();
+}catch(error){
+    console.log(error);
+}
 
 
 
@@ -158,7 +169,7 @@ const speedClickLimiter = rateLimit({
 //singup/login limmiter
 const singUpLoginLimiter = rateLimit({
     windowMs:5000,
-    limit:2,
+    limit:5,
     message:{
         message:"wait a bit and try again"
     }
@@ -171,6 +182,27 @@ const validate = (req, res, next) => {
         message: errors.array()[0].msg });}
     next();
 };
+
+
+//periodic updates:
+const updateSettingSheetLimiter = rateLimit({windowMs:30000,limit:1});
+app.get('/api/updateSettingSheet',updateSettingSheetLimiter,async (req,res)=>{
+    
+    try{
+        
+        const newTowerSetting = await TowerGameConfig.findOne({Name:"towerGameSettingSheet"});
+        if(!newTowerSetting){
+            return res.sendStatus(401);}
+        towerGameSetting=newTowerSetting;
+
+        const newBallSetting= await BallGameConfig.findOne({Name:"ballGameSettingSheet"});
+        if(!newBallSetting){return res.sendStatus(401);}
+        ballGameSetting = newBallSetting;
+        return res.sendStatus(201);
+    }catch(error){
+        return res.sendStatus(401);
+    }    
+});
 
 
 
@@ -414,6 +446,7 @@ app.post('/api/addTower',[
     body('purchasedTowerLevel').isInt({ min: 1, max: 12 }),
     validate
     ],async (req,res)=>{
+    try{
     if(!req.session.playerName){
         return res.sendStatus(404);
     }
@@ -422,7 +455,7 @@ app.post('/api/addTower',[
         return res.sendStatus(404);
     }
 
-    try{
+    
         const {purchasedTowerLevel} = req.body;
         const towerCostArr=[towerGameSetting.towerLv1.cost,
                             towerGameSetting.towerLv2.cost,
@@ -831,6 +864,9 @@ app.post('/api/logout', (req, res) => {
 
 
 //must have safty check to make sure old user's array get updated to the correct length when new ball is added to the setting, otherwise it will cause unpredicted bugs
+
+
+//edit here to add more balls
 const expectedBallArrayLength = 4;
 const expectedPlatformArrayLength = 3;
 

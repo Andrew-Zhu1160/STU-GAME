@@ -87,10 +87,13 @@ function MainPage({switchPage,styleDisplay}) {
     
    
     //start of ballClutch variable
+    //edit here to add more balls
     const ballImgArr = [ballNo1,ballNo2,ballNo3,ballNo4];
     const [ballIndex,setBallIndex] = useState(0);
     //0 means the ball is not owned, 1 means owned but not selected to game
     //2 means owned, and selected for game
+
+    //edit here to add more balls
     const [ballOwnedStatusArr,setBallOwnedStatusArr] = useState([0,0,0,0]);
     const[ballGameSettingArr,setBallGameSettingArr] = useState([{},{},{},{}]);
 
