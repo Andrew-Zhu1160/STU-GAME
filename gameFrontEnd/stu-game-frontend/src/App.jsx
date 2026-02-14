@@ -9,30 +9,32 @@ import TowerDefenceGamePage from './towerDefenceGamePage/towerDefenceGamePage.js
 
 import BallClutchGamePage from './ballClutchGamePage/ballClutchGamePage.jsx';
 
+//background styles
+import styles from './App.module.css'
 
+//periodic update setting sheet to reflect updates
+import { Stage, Layer, Circle, Group, Image,Rect } from 'react-konva';
+import Konva from "konva";
 
 function App() {
 const[displayPage,setDisplayPage] = useState([
   true,false,false,false
 ]);
 
+const isDev = import.meta.env.VITE_MODE ==='DEV';
+const updateSettingSheetRate=60000;
+async function processUpdateSettingSheet(){
+  try{
+    const response = await fetch(`${import.meta.env.VITE_API_URL}/updateSettingSheet`, { credentials: 'include' });
+    if(response.ok){
+      if(isDev){console.log('reflected most recent setting sheet')}
+    }
 
-//test code,delete this later, test cokkie handling
-/*
-useEffect(() => {
-  fetch(`${import.meta.env.VITE_API_URL}/profile`, { credentials: 'include' })
-    .then(res => res.json())
-    .then(data => {
-      if(data.loggedIn) {
-        console.log("Welcome back, " + data.playerName);
-        // Here you could automatically switchPage(1)
-      }
-    });
-}, []);
-*/
-//end of test code
-
-//it is super important to have credentials: 'include' in fetch requests to send cookies, in order fo backend to use req.session properly
+  }catch(error){
+    if(isDev){console.log(error)}
+    
+  }
+}
 
 
 
@@ -68,26 +70,47 @@ useEffect( () => {
 }
 checkLoginStatus();
 
+  
+  
+
+  const updateSheetProcess = setInterval(processUpdateSettingSheet,updateSettingSheetRate);
+
+  return ()=>{
+      clearInterval(updateSheetProcess);
+  }
+
 }, []);
 
 
 
 
-
-
-
-
-
-
-
-
+const particles = Array.from({ length: 12 });
 
 
 
 
 
   return(
-    <div style={{ width: '100vw', height: '100vh' ,position:'absolute'}}>
+    <div style={{ width: '100vw', height: '100vh' ,position:'absolute'}}
+    className={styles.appBackground}>
+
+      <div className={styles.particleContainer}>
+      {particles.map((_, i) => (
+        <div 
+          key={i} 
+          className={styles.particle} 
+          style={{
+            // Randomize start positions and animation timing
+            left: `${Math.random() * 100}%`,
+            top: `${Math.random() * 100}%`,
+            animationDelay: `${Math.random() * 5}s`,
+            animationDuration: `${10 + Math.random() * 15}s`,
+            width: `${100 + Math.random() * 50}px`,
+            height: `${100 + Math.random() * 50}px`,
+          }}
+        />
+      ))}
+    </div>
 
       
 

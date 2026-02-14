@@ -3,7 +3,8 @@
 
 .gameWorld{
     background-color: none;
-   
+   border: 30px solid hsla(251, 95%, 58%, 0.614); 
+   border-radius: 50px;
    
    background-position: center;
    background-repeat: no-repeat;
@@ -11,6 +12,8 @@
 
    
     position:absolute;
+    top:50vh;
+    left:50vw;
    
     
     width:1960px;
@@ -32,7 +35,7 @@
     height:150px;
     align-items: center;
     padding-left: 10px;
-    position: fixed;
+    position: absolute;
     top:0px;
     left:0px;
     z-index: 10;
@@ -48,7 +51,7 @@
 .coinPopout{
     z-index: 10;
     display:flex;
-    position: fixed;
+    position: absolute;
     background-color: rgba(0, 85, 255, 0.788);
     font-family: BGS,Aerial;
     font-size: 2.5em;
@@ -61,7 +64,7 @@
     animation-fill-mode: forwards;
     transform:  translateX(-50%);
     top:5vh;
-    left:50vw;
+    left:50%;
 
 }
 .coinPopout>img{
@@ -99,7 +102,7 @@
     height:150px;
     align-items: center;
     padding-right: 10px;
-    position: fixed;
+    position: absolute;
     top:0px;
     right:0px;
     z-index: 10;
@@ -109,7 +112,7 @@
 }
 .difficultyLevelDisplay{
     z-index: 11;
-    position: fixed;
+    position: absolute;
     background-color: rgba(255, 25, 0, 0.788);
     font-family: honk,Aerial;
     font-size: 2.5em;
@@ -122,7 +125,7 @@
     animation-fill-mode: forwards;
     transform:  translateX(-50%);
     top:5vh;
-    left:50vw;
+    left:50%;
 
 }
 @keyframes difficultyAnimation {
@@ -146,9 +149,9 @@
 
 
 .gameOverScreen{
-    position: fixed;
-    width:100vw;
-    height:100vh;
+    position: absolute;
+    width:100%;
+    height:100%;
     justify-content: center;
     align-items: center;
     row-gap: 2vh;
@@ -198,9 +201,9 @@
 
 
 .pauseScreen{
-    position: fixed;
-    width:100vw;
-    height:100vh;
+    position: absolute;
+    width:100%;
+    height:100%;
     justify-content: center;
     align-items: center;
     row-gap: 2vh;
@@ -215,7 +218,7 @@
     display:flex;
     justify-content: center;
     align-items: center;
-    position: fixed;
+    position: absolute;
     width:150px;
     height:150px;
     border-radius: 75px;

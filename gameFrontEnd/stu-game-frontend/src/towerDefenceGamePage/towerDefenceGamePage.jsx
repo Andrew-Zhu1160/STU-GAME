@@ -55,6 +55,7 @@ import enemySpawningHole from '../images/towerGameImg/enemySpawningHole.png';
 import speedCoins from '../images/towerGameImg/speedCoin.png'
 
 function TowerDefenceGamePage({switchPage,styleDisplay}){
+    const isDev = import.meta.env.VITE_MODE==='DEV';
     const[lv1TowerImg] = useImage(lv1Tower);
     const[lv2TowerImg] = useImage(lv2Tower);
     const[lv3TowerImg] = useImage(lv3Tower);
@@ -178,7 +179,8 @@ function TowerDefenceGamePage({switchPage,styleDisplay}){
    const previousHighScore=useRef(0);
 
 
-
+   //world scaling
+   const scaleFactor = useRef(window.innerHeight/1960);
   
 
 
@@ -193,11 +195,11 @@ function TowerDefenceGamePage({switchPage,styleDisplay}){
             })
         })
         if(response.ok){
-            console.log('updated')
+            if(isDev){console.log('updated coins from tower defence');}
         }
         
         }catch(error){
-            console.log(error);
+            if(isDev){console.log(error);}
         }
    }
 
@@ -252,11 +254,13 @@ const isDisplayCoinAdd = useRef(false);
             const centerX = 980 - (window.innerWidth / 2);
             const centerY = 980 - (window.innerHeight / 2);
 
+            /*
             window.scrollTo({
                 top: centerY,
                 left: centerX,
                 behavior: 'instant' // 'instant' prevents the user from seeing the "jump" from (0,0)
             });
+            */
             //end of start config
             //auto focous main screen
             if(rotateController.current){
@@ -283,7 +287,7 @@ const isDisplayCoinAdd = useRef(false);
                     
                 }
                 }catch(error){
-                    console.log(error);
+                    if(isDev){console.log(error);}
 
                 }
             }
@@ -296,12 +300,12 @@ const isDisplayCoinAdd = useRef(false);
                     const response = await fetch(`${import.meta.env.VITE_API_URL}/towerGame/getEnemyAttribute`,{credentials: 'include'});
                     if(response.ok){
                         const data = await response.json();
-                        console.log(data);
+                        if(isDev){console.log(data);}
                         enemyAttributeArr.current=data?[...data]:null;
                     }
 
                 }catch(error){
-                    console.log(error);
+                    if(isDev){console.log(error);}
                 }
 
             }
@@ -319,7 +323,7 @@ const isDisplayCoinAdd = useRef(false);
                     }
 
                 }catch(error){
-                    console.log(error);
+                    if(isDev){console.log(error);}
                 }
 
             }
@@ -388,7 +392,7 @@ const isDisplayCoinAdd = useRef(false);
                 setGameDifficulty(g=>g+1);
                 setTimeout(()=>{setShowDifficulty(s=>true)},500);
                 gameDifficultyRef.current+=1;
-                console.log(gameDifficultyRef.current);
+                if(isDev){console.log(gameDifficultyRef.current);}
 
             }
             const enemyHealthBuffer = Math.min(gameDifficultyRef.current**2.5,12000);
@@ -753,7 +757,7 @@ const isDisplayCoinAdd = useRef(false);
 
                 if(EnemyBodyRef&&EnemyHealthRef&&EnemyAttributeArr!==null){
                     const isSpawningTime = Math.floor(frame.time/EnemySpawnRate)>Math.floor(lastFrame/EnemySpawnRate);
-                    if(isSpawningTime){
+                    if(isSpawningTime&&(Tower1Ref||Tower2Ref||Tower3Ref)){
                         for(let i=0;i<EnemySpawnAmount;++i){
                             const enemyLevelRandom = Math.floor(Math.random()*EnemyLevelRange)+1;
                             const randomAngle=Math.random()*360;
@@ -928,7 +932,8 @@ const isDisplayCoinAdd = useRef(false);
     
     
     return (
-        <div  style={{...styleDisplay,backgroundImage:`url(${backgroundArr[randomBackground]})`}}
+        <div  style={{...styleDisplay,backgroundImage:`url(${backgroundArr[randomBackground]})`,
+        transform: `translateX(-50%) translateY(-50%) scaleX(${ scaleFactor.current}) scaleY(${ scaleFactor.current}) `}}
         className={styles.gameWorld} 
         tabIndex="0" onKeyDown={handleTowerRotate} ref={rotateController}>
 
@@ -965,7 +970,7 @@ const isDisplayCoinAdd = useRef(false);
             }}>X</button>
 
             <div className = {styles.pauseScreen}
-            style={{display:displayPauseScreen?'flex':'none'}}>
+            style={{display:displayPauseScreen&&!displayGameOverScreen?'flex':'none'}}>
                 <h1>Are you Tired? </h1>
                 <button className={styles.resumeGame}
                 onClick={()=>{

@@ -204,6 +204,11 @@ function BallClutchGamePage({switchPage,styleDisplay}){
         }
     }
 
+
+
+    //game window size
+    const scaleFactor = useRef(window.innerHeight/2000);
+
     useEffect(()=>{
         if(styleDisplay.display === 'flex'){
 
@@ -768,7 +773,8 @@ function BallClutchGamePage({switchPage,styleDisplay}){
 
     return(
         <div style={{...styleDisplay,
-        backgroundImage:`url(${backgroundArray[randomBackgroundIndex.current]})`}}
+        backgroundImage:`url(${backgroundArray[randomBackgroundIndex.current]})`,
+        transform: `translateX(-50%) translateY(-50%) scaleX(${ scaleFactor.current}) scaleY(${ scaleFactor.current}) `}}
         className={styles.gameWorld}
         tabIndex="0" onKeyDown={handleBallControl} onKeyUp={handleKeyUp} ref={jumpController}>
             
