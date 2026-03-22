@@ -1,0 +1,7 @@
+---
+alwaysApply: true
+---
+
+Never modefy exisiting code when being asked to add new feature unless the new features cannot be added without rewriting exisiting codes, and i that case, tell me exactly where do you rewrite old code
+
+More consise comment and less comments in general

@@ -59,7 +59,38 @@
     
 }
 
+.loadingScreen{
+    position:fixed;
+    width:100vw;
+    height:100vh;
+    justify-content: center;
+    align-items: center;
+    font-family: BGS,Aerial;
+    font-size: 2em;
+    row-gap: 2vh;
+    background-color: rgba(73, 65, 75, 0.792);
+    z-index: 10;
+    flex-direction: column;
 
+}
+.loadingScreen>img{
+    width:30vw;
+    height: auto;
+    animation:spinner 3s linear 0s infinite;
+    animation-fill-mode: forwards;
+    animation-direction: normal;
+
+}
+@keyframes spinner {
+    0%{
+        transform:rotateZ(0deg) scaleX(1) scaleY(1)
+    }
+    
+    100%{
+        transform: rotateZ(360deg) scaleX(1) scaleY(1);
+    }
+    
+}
 
 
 
@@ -274,9 +305,11 @@
 .sideNavBar{
     display:flex;
     flex-direction: column;
-    flex-wrap: wrap;
     align-items: center;
     width:20vw;
+    height:100vh;
+    overflow-y:auto;
+    overflow-x:hidden;
     border-right: 15px solid rgba(128, 128, 128, 0.574);
     background-color: rgba(0, 0, 0, 0.655);
 }

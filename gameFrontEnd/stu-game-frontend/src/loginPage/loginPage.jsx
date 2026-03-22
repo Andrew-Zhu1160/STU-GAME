@@ -1,6 +1,7 @@
-import { useState } from "react";
+import { useState,useEffect } from "react";
 import styles from './loginPage.module.css';
 import fortImage from '../images/Fort-Login-Page.png';
+import loadingGear from '../images/loadingGear.png';
 
 
 
@@ -40,8 +41,34 @@ const StylePanel={
 }
 
 
+const testLoadingDelay = 2000;
+const isDev = import.meta.env.VITE_MODE==='DEV';
 
 function LoginPage({switchPage,styleDisplay}) {
+    /*-----------------------------------------------------------
+    loading spinner
+    ------------------------------------------------------------- */
+    const [displayLoadingScreen,setDisplayLoadingScreen] = useState(false);
+    const[loadingDots,setLoadingDots] = useState("");
+    useEffect(()=>{
+        let dotProcessId;
+        if(displayLoadingScreen){
+            dotProcessId = setInterval(()=>{
+                setLoadingDots(l=>{
+                    l=l+"."
+                if(l.length >=8){l=""}
+                return l;});      
+            },500)
+        }
+        return ()=>{
+            if(dotProcessId){clearInterval(dotProcessId);}
+        }
+
+    },[displayLoadingScreen]);
+
+    /*-------------------------------------
+    end of loading spinner
+    --------------------------------------- */
     function createRings(widths,colors,animateDelay,animateDuration,animateDirection='normal'){
         return(<div className={styles.ring} style={{width:`${widths}px`,
                                             height:`${widths*1.06}px`,
@@ -89,6 +116,8 @@ function LoginPage({switchPage,styleDisplay}) {
     async function handleSignUp(){
         //sign up logic
         try{
+            setDisplayLoadingScreen(true);
+
             setWarningDisplay(false);
             //hid ui
             const response = await fetch(`${import.meta.env.VITE_API_URL}/signUp`,{
@@ -167,6 +196,16 @@ function LoginPage({switchPage,styleDisplay}) {
         }catch(error){
             setWarningMessage(error.message);
             setWarningDisplay(true);
+        }finally{
+            //get rid of loading
+            if(isDev){
+                await new Promise((resolve,reject)=>{
+                    setTimeout(()=>{resolve();},testLoadingDelay);
+                });
+            }
+            setDisplayLoadingScreen(false);
+            //get rid of loading
+
         }
 
 
@@ -176,6 +215,8 @@ function LoginPage({switchPage,styleDisplay}) {
 
 
   async function handleLogin(){
+    try{
+    setDisplayLoadingScreen(true);
     setWarningDisplay(false);
         const loginResponse = await fetch(`${import.meta.env.VITE_API_URL}/login`,{
             method: 'POST',
@@ -203,6 +244,18 @@ function LoginPage({switchPage,styleDisplay}) {
             switchPage(1);
 
         }
+    }catch(error){
+        if(isDev){console.log(error);}
+    }finally{
+        //get rid of loading
+        if(isDev){
+            await new Promise((resolve,reject)=>{
+                setTimeout(()=>{resolve();},testLoadingDelay);
+            });
+        }
+        setDisplayLoadingScreen(false);
+        //get rid of loading
+    }
 
 
 
@@ -214,6 +267,14 @@ function LoginPage({switchPage,styleDisplay}) {
 
 
     return(<div style={{...StyleMain,...styleDisplay}}>
+
+        <div style = {{display:displayLoadingScreen?"flex":"none"}}
+            className={styles.loadingScreen}>
+                <img src = {loadingGear}></img>
+                <h1>loading {loadingDots}</h1>
+
+        </div>
+
          {ring1}{ring2}{ring3}{ring4}{ring5}{ring6}{ring7}{ring8}{ring9}{ring10}{ring11}{ring12}
          {fortIcon1}{fortIcon2}{fortIcon3}{fortIcon4}
          <h1 className={styles.gameTitle}>STU GAME</h1>

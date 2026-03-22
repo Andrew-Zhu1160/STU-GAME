@@ -9,6 +9,8 @@ import TowerDefenceGamePage from './towerDefenceGamePage/towerDefenceGamePage.js
 
 import BallClutchGamePage from './ballClutchGamePage/ballClutchGamePage.jsx';
 
+import PizzaSlicerGamePage from './pizzaSlicerGamePage/pizzaSlicerGamePage.jsx';
+
 //background styles
 import styles from './App.module.css'
 
@@ -18,7 +20,7 @@ import Konva from "konva";
 
 function App() {
 const[displayPage,setDisplayPage] = useState([
-  true,false,false,false
+  true,false,false,false,false
 ]);
 
 const isDev = import.meta.env.VITE_MODE ==='DEV';
@@ -140,6 +142,16 @@ const particles = Array.from({ length: 12 });
 
       {displayPage[3] && (
       <BallClutchGamePage
+        styleDisplay={{display: 'flex'}} // This triggers the useEffect inside the game page
+        switchPage={(pageIndex) => {
+          setDisplayPage(d => d.map((_, i) => i === pageIndex));
+        }} 
+        />
+      )}
+
+
+      {displayPage[4] && (
+      <PizzaSlicerGamePage
         styleDisplay={{display: 'flex'}} // This triggers the useEffect inside the game page
         switchPage={(pageIndex) => {
           setDisplayPage(d => d.map((_, i) => i === pageIndex));

@@ -1,0 +1,5 @@
+---
+alwaysApply: true
+---
+
+always use camelCase naming convention for state, ref, and regular variable, capitilize all words for functional componenet name.

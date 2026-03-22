@@ -2,6 +2,7 @@ import { useEffect, useState,useRef } from "react";
 import styles from './mainPage.module.css';
 import shopIcon from '../images/gameShopIcon.png';
 import towerIcon from '../images/towerGameImg/towerLv1.png';
+import loadingGear from '../images/loadingGear.png';
 
 
 //image import for towerDefence game shop
@@ -36,21 +37,54 @@ import ballNo6 from '../images/ballClutchGameImg/ballNo6.png';
 
 
 
+//image imports fo pizza slicing game shop
+import skLv1 from '../images/pizzaSlicerGameImage/playerSk1.png';
+import skLv2 from '../images/pizzaSlicerGameImage/playerSk2.png';
+import skLv3 from '../images/pizzaSlicerGameImage/playerSk3.png';
+import skLv4 from '../images/pizzaSlicerGameImage/playerSk4.png';
+import pizza1 from '../images/pizzaSlicerGameImage/pizza1.png';
+//end of pizza slicing image
+
+
+
 //gamecoins
 import speedCoins from '../images/towerGameImg/speedCoin.png';
 
 
 //for debug method
 const isDev = import.meta.env.VITE_MODE==='DEV';
-
+const testLoadingDelay = 2000;
 
 
 
 function MainPage({switchPage,styleDisplay}) {
     const [welcomeMessage, setWelcomeMessage]=useState("");
     const [welcomeMessageLoaded, setWelcomeMessageLoaded]=useState(false);
+
+    /*-----------------------------------------------------------
+    loading spinner
+    ------------------------------------------------------------- */
+    const [displayLoadingScreen,setDisplayLoadingScreen] = useState(false);
+    const[loadingDots,setLoadingDots] = useState("");
+    useEffect(()=>{
+        let dotProcessId;
+        if(displayLoadingScreen){
+            dotProcessId = setInterval(()=>{
+                setLoadingDots(l=>{
+                    l=l+"."
+                if(l.length >=8){l=""}
+                return l;});      
+            },500)
+        }
+        return ()=>{
+            if(dotProcessId){clearInterval(dotProcessId);}
+        }
+
+    },[displayLoadingScreen]);
     
-    //for tower shop image slider
+    /*----------------------------------------------------------------
+   tower shop variable block start
+   ------------------------------------------------------------------- */ 
     const[towerIndex,setTowerIndex]=useState(0);
     const towerImgArr = useRef([<img src={lv1Tower} className={styles.towerShowCase}/>,
                                 <img src={lv2Tower} className={styles.towerShowCase}/>,
@@ -82,20 +116,59 @@ function MainPage({switchPage,styleDisplay}) {
         lv9Tower,lv10Tower,lv11Tower,lv12Tower
     ]);
 
+
+
+    //tower defence
+    const[openPurchasePanel,setOpenPurchasePanel]=
+    useState(false);
+    const[notEnoughMoneyWarning,setNotEnoughMoneyWarning]=
+    useState(false);
+
+    const[displayTowerSelection,setDisplayTowerSelection]
+    =useState(false);
+    //for tower deploy
+    const userTowerCollection=useRef([]);
+
+    const userTowerDeploy=useRef([]);
+    const[val1,setVal1]=useState(0);
+    const[val2,setVal2]=useState(0);
+    const[val3,setVal3]=useState(0);
+    const[val4,setVal4]=useState(0);
+    const[val5,setVal5]=useState(0);
+    const[val6,setVal6]=useState(0);
+    const[val7,setVal7]=useState(0);
+    const[val8,setVal8]=useState(0);
+    const[val9,setVal9]=useState(0);
+    const[val10,setVal10]=useState(0);
+    const[val11,setVal11]=useState(0);
+    const[val12,setVal12]=useState(0);
+    //....................
+    //edit here to add more tower
+    //.......................
+
+    const[showTooMuchDeploy,setShowTooMuchDeploy]
+    =useState(false);
+    
+
+
+
     //..........................
     //edit here to add more tower
     //..........................
     
-    
+   /*----------------------------------------------------------------
+   tower  variable block end
+   ------------------------------------------------------------------- */ 
     
    
-    //start of ballClutch variable
+    /*----------------------------------------------------------------
+   ballGame  variable block start
+   ------------------------------------------------------------------- */ 
     //edit here to add more balls
     const ballImgArr = [ballNo1,ballNo2,ballNo3,ballNo4,ballNo5,ballNo6];
     const [ballIndex,setBallIndex] = useState(0);
     //0 means the ball is not owned, 1 means owned but not selected to game
     //2 means owned, and selected for game
-
     //edit here to add more balls
     const [ballOwnedStatusArr,setBallOwnedStatusArr] = useState([0,0,0,0,0,0]);
     const[ballGameSettingArr,setBallGameSettingArr] = useState([{},{},{},{},{},{}]);
@@ -116,13 +189,52 @@ function MainPage({switchPage,styleDisplay}) {
             setDisplayBallClutch_warningMessage(false)
 
         }
-    },[ballCluctch_showPurchaseOrSelect])
+    },[ballCluctch_showPurchaseOrSelect]);
+
+
+    /*----------------------------------------------------------------
+   BallGame variable block end
+   ------------------------------------------------------------------- */ 
+
+
+
+   /*----------------------------------------------------------------
+   PizzaGame shop variable block start
+   ------------------------------------------------------------------- */ 
     
+
+    const skImgArr = [skLv1,skLv2,skLv3,skLv4];
+    const [skIndex,setSkIndex] = useState(0);
+
+    const [skOwnedStatusArr,setSkOwnedStatusArr] = useState([0,0,0,0]);
+    const [skGameSettingArr,setSkGameSettingArr] = useState([{},{},{},{}]);
+
+    const [pizzaSlicer_showPurchaseOrSelect,setPizzaSlicer_showPurchaseOrSelect] = useState(false);
+    const [pizzaSlicer_warningMessage,setPizzaSlicer_warningMessage] = useState('');
+    const [displayPizzaSlicer_warningMessage,setDisplayPizzaSlicer_warningMessage] = useState(false);
+    useEffect(()=>{
+        if(pizzaSlicer_showPurchaseOrSelect){
+            setDisplayPizzaSlicer_warningMessage(false)
+        }
+    },[pizzaSlicer_showPurchaseOrSelect]);
+
+
+
+    /*----------------------------------------------------------------
+   pizzaGame shop variable block end
+   ------------------------------------------------------------------- */ 
+
      //edit here to add more game
 
 
+
+
+
+
     
-    
+    /*---------------------------------------------------------------------
+    Page loading initilization block start
+    --------------------------------------------------------------------------- */
     
     useEffect(()=>{
         setWelcomeMessageLoaded(false);
@@ -130,6 +242,11 @@ function MainPage({switchPage,styleDisplay}) {
             console.log("Fetching welcome message");
             if(styleDisplay.display==='flex'){
             try{
+                //loading gear tester
+                setDisplayLoadingScreen(true);
+                //loading gear tester end
+
+
                 const response = await fetch(`${import.meta.env.VITE_API_URL}/currentPlayer`, { credentials: 'include' });
                 if(response.ok){
                 const data = await response.json();
@@ -140,17 +257,29 @@ function MainPage({switchPage,styleDisplay}) {
             }catch(error){
                 setWelcomeMessage("Sorry I forgot you, but welcome🤣");
                 
+            }finally{
+                //loading gear tester
+                if(isDev){
+                    await new Promise((resolve,reject)=>{
+                        setTimeout(()=>{resolve();},testLoadingDelay);
+                    });
+                }
+                //end of loading gear tester
+                setDisplayLoadingScreen(false);
             }
+
+
             setWelcomeMessageLoaded(true);
             
             }
-                
-  
-
+            
         }
         async function loadTowerGameShop(){
             if(styleDisplay.display==='flex'){
                 try{
+
+
+
                     const response = await fetch(`${import.meta.env.VITE_API_URL}/towerShop`, { credentials: 'include' });
                     if(response.ok){
                     const data = await response.json();
@@ -215,7 +344,6 @@ function MainPage({switchPage,styleDisplay}) {
 
                 }catch(error){
                     console.log(error)
-
                 }
 
 
@@ -224,60 +352,17 @@ function MainPage({switchPage,styleDisplay}) {
 
             
         }
-        //..........................
-        //edit here to add more game
-        //...........................
-
-        async function loadBallGameShop(){
-            if(styleDisplay.display==='flex'){
-                try{
-                    const response = await fetch(
-                        `${import.meta.env.VITE_API_URL}/ballGame/getUserBallStatus`, { credentials: 'include' }
-                    );
-                    if(response.ok){
-                        const {data} = await response.json();
-                        if(isDev){console.log(data);}
-                        setBallOwnedStatusArr([...data]);
-
-                    }
-                }catch(error){
-                    if(isDev){console.log(error)}
-                }
-                //also fetch some setting from the assets
-                try{
-                    const response = await fetch(
-                        `${import.meta.env.VITE_API_URL}/ballGame/getBallGameSetting`, { credentials: 'include' }
-
-                    );
-                    if(response.ok){
-                        const {data} = await response.json();
-                        if(isDev){console.log(data)}
-                        setBallGameSettingArr([...data]);
-                        
-                    }
-
-                }catch(error){
-                    if(isDev){console.log(error)}
-                }
-
-
-            }
-        }
-
+       
         fetchWelcomeMessage();
 
         loadTowerGameShop();
 
-        loadBallGameShop();
+        //loadBallGameShop();
 
     }, [styleDisplay]);
 
 
 
-
-
-    
-    
     
     function createGameCard(imageIcon,gameTitle,backgroundC,startGameFunction){
         return(
@@ -304,9 +389,11 @@ function MainPage({switchPage,styleDisplay}) {
 
     const ballClutchGameCard = createGameCard(ballNo1,"Ball Clutch","hsla(15, 100%, 50%, 0.87)",openEnterPanel);
 
+    const pizzaSlicingGameCard = createGameCard(pizza1, "Pizza Slicer","hsla(104, 100%, 50%, 0.87)",openEnterPanel);
 
 
-    
+
+
 
     const[readyToEnter,setReadyToEnter]=useState(false);
     const[gameName,setGameName] = useState("");
@@ -343,73 +430,158 @@ function MainPage({switchPage,styleDisplay}) {
 
             }catch(error){
                 console.log('unknown failure')
-
             }
 
 
 
         }
         getUserCoins();
-    },[updateCoin])
+    },[updateCoin]);
 
 
-    //........................................
-    //specific game shop
-    //very important section..................
+
+
+    /*---------------------------------------------------------------------
+    Page loading initilization block end
+    --------------------------------------------------------------------------- */
+
+
+    /*-----------------------------------------------------------------------
+    specific game shop section start
+    ---------------------------------------------------------------------- */
 
     const[openSpecificGameShop,setOpenSpecificGameShop]
-    =useState([false,false]);
+    =useState([false,false,false]);
+
+    async function loadBallGameShop(){
+            if(ballOwnedStatusArr[0]===0){
+            try{
+                //loading screen
+                setDisplayLoadingScreen(true);
+                //loading screen
+                const response = await fetch(
+                    `${import.meta.env.VITE_API_URL}/ballGame/getUserBallStatus`, { credentials: 'include' }
+                );
+                if(response.ok){
+                    const {data} = await response.json();
+                    if(isDev){console.log(data);}
+                    setBallOwnedStatusArr([...data]);
+
+                }
+            }catch(error){
+                if(isDev){console.log(error)}
+            }
+            }
+            //also fetch some setting from the assets
+            if(Object.keys(ballGameSettingArr[0]).length===0){
+            try{
+                const response = await fetch(
+                    `${import.meta.env.VITE_API_URL}/ballGame/getBallGameSetting`, { credentials: 'include' }
+
+                );
+                if(response.ok){
+                    const {data} = await response.json();
+                    if(isDev){console.log(data)}
+                    setBallGameSettingArr([...data]);
+                    
+                }
+
+            }catch(error){
+                if(isDev){console.log(error)}
+            }finally{
+                //get rid of loading
+                if(isDev){
+                    await new Promise((resolve,reject)=>{
+                        setTimeout(()=>{resolve();},testLoadingDelay);
+                    });
+                }
+                setDisplayLoadingScreen(false);
+                //get rid of loading
+
+            }
+        }
+
+
+        
+    }
+
+    async function loadPizzaGameShop(){
+        if(skOwnedStatusArr[0]===0){
+            //fetch
+            try{
+                //loading screen
+                setDisplayLoadingScreen(true);
+                //loading screen
+
+            const response = await fetch(`${import.meta.env.VITE_API_URL}/pizzaGame/getUserSkStatus`,
+                { credentials: 'include' }
+            );
+            if(response.ok){
+                const {data} = await response.json();
+                setSkOwnedStatusArr([...data]);
+                if(isDev){console.log(data);}
+            }
+            }catch(error){
+                if(isDev){console.log(error);}
+            }
+        }
+        if(Object.keys(skGameSettingArr[0]).length===0){
+            //fetch
+            try{
+                //loading screen
+                setDisplayLoadingScreen(true);
+                //loading screen
+
+                const response = await fetch(`${import.meta.env.VITE_API_URL}/pizzaGame/getPizzaGameSetting`,{credentials:'include'});
+                if(response.ok){
+                    const {data} = await response.json();
+                    setSkGameSettingArr([...data]);
+                    if(isDev){console.log(data)}
+                }
+            }catch(error){
+                if(isDev){console.log(error)}
+            }finally{
+                //get rid of loading
+                if(isDev){
+                    await new Promise((resolve,reject)=>{
+                        setTimeout(()=>{resolve();},testLoadingDelay);
+                    });
+                }
+                setDisplayLoadingScreen(false);
+                //get rid of loading
+            }
+        }
+
+    }
+    //lazy loading shops
+    useEffect(()=>{
+        switch(true){
+            case openSpecificGameShop[0]:
+                //loadTowerGameShop();
+                break;
+            case openSpecificGameShop[1]:
+                loadBallGameShop();
+                break;
+            case openSpecificGameShop[2]:
+                loadPizzaGameShop();
+                break;
+            default:
+                break;
+        }
+    },[openSpecificGameShop]);
 
     
     
-    //tower defence
-    const[openPurchasePanel,setOpenPurchasePanel]=
-    useState(false);
-    const[notEnoughMoneyWarning,setNotEnoughMoneyWarning]=
-    useState(false);
-
-    const[displayTowerSelection,setDisplayTowerSelection]
-    =useState(false);
-    //for tower deploy
-    const userTowerCollection=useRef([]);
-
-    const userTowerDeploy=useRef([]);
-    const[val1,setVal1]=useState(0);
-    const[val2,setVal2]=useState(0);
-    const[val3,setVal3]=useState(0);
-    const[val4,setVal4]=useState(0);
-    const[val5,setVal5]=useState(0);
-    const[val6,setVal6]=useState(0);
-    const[val7,setVal7]=useState(0);
-    const[val8,setVal8]=useState(0);
-    const[val9,setVal9]=useState(0);
-    const[val10,setVal10]=useState(0);
-    const[val11,setVal11]=useState(0);
-    const[val12,setVal12]=useState(0);
-    //....................
-    //edit here to add more tower
-    //.......................
-
-    const[showTooMuchDeploy,setShowTooMuchDeploy]
-    =useState(false);
-    
-    //end of tower defencse variable
-
-
-
-
-
-
-
     
 
+    /*-----------------------------------------------------------------------
+    specific game shop section start
+    ---------------------------------------------------------------------- */
 
 
 
 
 
-
-    
 
 
 
@@ -425,6 +597,13 @@ function MainPage({switchPage,styleDisplay}) {
             <h1 className={styles.welcomeTag}
             style={{display:welcomeMessageLoaded?'block':'none'}}>{welcomeMessage}</h1>
 
+            <div style = {{display:displayLoadingScreen?"flex":"none"}}
+            className={styles.loadingScreen}>
+                <img src = {loadingGear}></img>
+                <h1>loading {loadingDots}</h1>
+
+            </div>
+
 
             <img src={shopIcon}
             alt="Shop Icon"
@@ -434,7 +613,9 @@ function MainPage({switchPage,styleDisplay}) {
                 setUpdateCoin(u=>u+1);
             }}></img>
 
-            {/*the shop ui */}
+            {/*---------------------------------------
+            the shop ui start
+            ------------------------------------------ */}
 
             <div className = {styles.shopMainPage}
             style={{display:openShop?'flex':'none',
@@ -461,8 +642,7 @@ function MainPage({switchPage,styleDisplay}) {
                     }}></img>
 
 
-                    {/*edit here to add more game */}
-
+                    
 
                     <img src={ballNo1}
                     style={{width:'17vw'}}
@@ -475,13 +655,26 @@ function MainPage({switchPage,styleDisplay}) {
                         
                     }}></img>
 
+                    <img src={pizza1}
+                    style={{width:'17vw'}}
+                    onClick={()=>{
+                        setOpenSpecificGameShop(o=>{
+                            let temp=o.map(_=>false);
+                            temp[2]=true;
+                            return temp;
+                        })
+                    }}></img>
 
+
+                    {/*edit here to add more game */}
 
 
                 </div>
 
 
-                {/*Speed Coins Display */}
+                {/*-----------------------------
+                Speed Coins Display
+                ---------------------------------- */}
                 <div className={styles.coinDisplay}>
                     <img src = {speedCoins} style={{
                         height:'10vh',
@@ -494,12 +687,15 @@ function MainPage({switchPage,styleDisplay}) {
                     }}>{coinAmount}</h1>
 
                 </div>
+                
+                 {/*-----------------------------
+                Speed Coins Display end
+                ---------------------------------- */}
 
 
-
-                {/*towerDefence shop 
-                .........................
-                .........................*/}
+                {/*-----------------------------
+                start of tower defence shop ui
+                ----------------------------------*/}
                 <div style={{
                     display:openSpecificGameShop[0]?'block':'none'
                 }}>
@@ -557,6 +753,10 @@ function MainPage({switchPage,styleDisplay}) {
                                 //...................
                                 //edit here to add more tower
                                 //.................
+                                //loading screen
+                                setDisplayLoadingScreen(true);
+                                //loading screen
+
                                 const response = await fetch(`${import.meta.env.VITE_API_URL}/getUserTowerCollection`,{credentials: 'include'});
                                 if(response.ok){
                                     const {towerCollection,towerLayout} = await response.json();
@@ -574,6 +774,16 @@ function MainPage({switchPage,styleDisplay}) {
 
                             }catch(error){
                                 console.log(error);
+                            }finally{
+                                //get rid of loading
+                                if(isDev){
+                                    await new Promise((resolve,reject)=>{
+                                        setTimeout(()=>{resolve();},testLoadingDelay);
+                                    });
+                                }
+                                setDisplayLoadingScreen(false);
+                                //get rid of loading
+                                
                             }
 
                         
@@ -816,6 +1026,9 @@ function MainPage({switchPage,styleDisplay}) {
                                     }
                                     console.log(tempDeployArr)
                                     try{
+
+                                        setDisplayLoadingScreen(true)
+
                                     const response = await fetch(`${import.meta.env.VITE_API_URL}/editTowerDeploy`,{
                                         method:'POST',
                                         credentials: 'include',
@@ -831,6 +1044,15 @@ function MainPage({switchPage,styleDisplay}) {
                                     }
                                     }catch(error){
                                         console.log(error);
+                                    }finally{
+                                        //get rid of loading
+                                        if(isDev){
+                                            await new Promise((resolve,reject)=>{
+                                                setTimeout(()=>{resolve();},testLoadingDelay);
+                                            });
+                                        }
+                                        setDisplayLoadingScreen(false);
+                                        //get rid of loading
                                     }
 
 
@@ -866,6 +1088,9 @@ function MainPage({switchPage,styleDisplay}) {
                                     //....................
                                     //edit here to add more tower
                                     //.....................
+
+                                    setDisplayLoadingScreen(true);
+
                                     const response = await fetch(`${import.meta.env.VITE_API_URL}/addTower`,{
                                         method:'POST',
                                         credentials: 'include',
@@ -893,6 +1118,15 @@ function MainPage({switchPage,styleDisplay}) {
 
                                 }catch(error){
                                     console.log(error);
+                                }finally{
+                                    //get rid of loading
+                                    if(isDev){
+                                        await new Promise((resolve,reject)=>{
+                                            setTimeout(()=>{resolve();},testLoadingDelay);
+                                        });
+                                    }
+                                    setDisplayLoadingScreen(false);
+                                    //get rid of loading
                                 }
                             }
                         }}>yes ✅ -{towerCostArr.current[towerIndex]}$</button>
@@ -909,24 +1143,10 @@ function MainPage({switchPage,styleDisplay}) {
 
 
 
+                    {/*------------------------------------------
+                    end of tower defence shop 
+                    --------------------------------------------*/}
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-                    {/*end of tower defence shop */}
 
 
 
@@ -995,6 +1215,7 @@ function MainPage({switchPage,styleDisplay}) {
                             <button className={styles.generalYesPopupButton}
                             onClick={async ()=>{
                                 try{
+                                    setDisplayLoadingScreen(true);
                                     const response = await fetch(`${import.meta.env.VITE_API_URL}/ballGame/changeBallStatusArr`,
                                         {method:'POST',
                                         credentials: 'include',
@@ -1027,6 +1248,15 @@ function MainPage({switchPage,styleDisplay}) {
                                     
                                 }catch(error){
                                     if(isDev){console.log(error)}
+                                }finally{
+                                    //get rid of loading
+                                    if(isDev){
+                                        await new Promise((resolve,reject)=>{
+                                            setTimeout(()=>{resolve();},testLoadingDelay);
+                                        });
+                                    }
+                                    setDisplayLoadingScreen(false);
+                                    //get rid of loading
                                 }
 
                             }}>yes -{ballGameSettingArr[ballIndex]?.cost} $</button>:
@@ -1034,6 +1264,7 @@ function MainPage({switchPage,styleDisplay}) {
                             <button className={styles.generalYesPopupButton}
                             onClick={async ()=>{
                                 try{
+                                    setDisplayLoadingScreen(true);
                                     const response = await fetch(`${import.meta.env.VITE_API_URL}/ballGame/changeBallStatusArr`,
                                         {method:'POST',
                                         credentials: 'include',
@@ -1063,7 +1294,17 @@ function MainPage({switchPage,styleDisplay}) {
 
 
                                 }catch(error){
+                                    if(isDev){console.log(error)}
 
+                                }finally{
+                                    //get rid of loading
+                                    if(isDev){
+                                        await new Promise((resolve,reject)=>{
+                                            setTimeout(()=>{resolve();},testLoadingDelay);
+                                        });
+                                    }
+                                    setDisplayLoadingScreen(false);
+                                    //get rid of loading
                                 }
 
 
@@ -1079,10 +1320,177 @@ function MainPage({switchPage,styleDisplay}) {
 
                             {!displayBallClutch_warningMessage?''
                         :<h1 className={styles.welcomeTag}
-                        style={{backgroundColor:'red',display:'flex'}}>
+                        style={{backgroundColor:'red',display:'flex',justifyContent:'center'}}>
                             {ballClutch_warningMessage}</h1>}
 
 
+
+                        </div>
+
+                    
+                    </div>
+
+
+
+                    {/* start of pizza slicing shop */}
+
+                     <div style={{display:openSpecificGameShop[2]?'block':'none'}}>
+
+                        <button className={styles.imageSliderUp}
+                        onClick={()=>{
+                            setSkIndex(s=>{
+                                if(s>=skImgArr.length-1){
+                                    return 0;
+                                }
+                                return s+1;
+                            });
+                        }}>^</button>
+
+
+
+                        <div className={styles.towerDisplayPanel}>
+                            <img src={skImgArr[skIndex]}
+                            className={styles.towerShowCase}
+                            style={{width:'160px',height:'160px'}}>
+                            </img>
+                            <h1>shuriken level {skIndex+1}</h1>
+
+                            <h1>damage: {skGameSettingArr[skIndex].damage}</h1>
+
+                            <h1>{skOwnedStatusArr[skIndex]===0?"not Owned":
+                                skOwnedStatusArr[skIndex]===1?"owned, not selected":
+                                skOwnedStatusArr[skIndex]===2?"owned, selected":""}
+                            </h1>
+
+                            {skOwnedStatusArr[skIndex]===0?
+                            <button className={styles.buyButton}
+                            onClick={()=>{
+                                setPizzaSlicer_showPurchaseOrSelect(true);
+                            }}>buy: {skGameSettingArr[skIndex].cost} $</button>:
+                            skOwnedStatusArr[skIndex]===1?
+                            <button className={styles.buyButton}
+                            onClick = {()=>{
+                                setPizzaSlicer_showPurchaseOrSelect(true);
+                            }}>Select this shuriken ?</button>:
+                            ""}
+                        </div>
+
+                        <div className={styles.generalPopup}
+                        style = {{display:pizzaSlicer_showPurchaseOrSelect?'flex':'none'}} >
+                            <h1>{skOwnedStatusArr[skIndex]===0?`buy shuriken level ${skIndex+1}`:
+                                skOwnedStatusArr[skIndex]===1?"select this shuriken?":""}</h1>
+                            
+                            {skOwnedStatusArr[skIndex]===0?<button
+                            className={styles.generalYesPopupButton}
+                            onClick = {async()=>{
+                                try{
+                                    setDisplayLoadingScreen(true);
+                                    const response = await fetch(`${import.meta.env.VITE_API_URL}/pizzaGame/changeSkStatusArr`,
+                                        {method:'POST',
+                                        credentials: 'include',
+                                        headers: {'Content-Type': 'application/json'},
+                                        body: JSON.stringify({
+                                            mode:'purchaseNewSk',
+                                            purchasedSkNumber:skIndex+1,
+                                            selectedSkNumber:1
+                                        })
+                                        }
+                                    );
+                                    if(response.ok){
+                                        const {data} = await response.json();
+                                        setSkOwnedStatusArr([...data]);
+                                        if(isDev){console.log(data);}
+                                        setUpdateCoin(u=>u+1);
+                                        setPizzaSlicer_showPurchaseOrSelect(false);
+
+                                    }else{
+                                        const {message} = await response.json();
+                                        setPizzaSlicer_warningMessage(message);
+                                        setDisplayPizzaSlicer_warningMessage(false);
+                                        setTimeout(()=>{
+                                            setDisplayPizzaSlicer_warningMessage(true);
+                                        },50);
+
+
+                                    }
+
+                                }catch(error){
+                                    if(isDev){console.log(error)}
+                                }finally{
+                                    //get rid of loading
+                                    if(isDev){
+                                        await new Promise((resolve,reject)=>{
+                                            setTimeout(()=>{resolve();},testLoadingDelay);
+                                        });
+                                    }
+                                    setDisplayLoadingScreen(false);
+                                    //get rid of loading
+                                }
+
+                            }}> yes -{skGameSettingArr[skIndex].cost}$
+                            </button>:
+                            skOwnedStatusArr[skIndex]===1?<button
+                            className={styles.generalYesPopupButton}
+                            onClick = {async()=>{
+                                try{
+                                    setDisplayLoadingScreen(true);
+                                    const response = await fetch(`${import.meta.env.VITE_API_URL}/pizzaGame/changeSkStatusArr`,
+                                        {method:'POST',
+                                        credentials: 'include',
+                                        headers: {'Content-Type': 'application/json'},
+                                        body: JSON.stringify({
+                                            mode:'selectSk',
+                                            purchasedSkNumber:1,
+                                            selectedSkNumber:skIndex+1
+                                        })
+                                        }
+                                    );
+                                    if(response.ok){
+                                        const {data}  =await response.json();
+                                        setSkOwnedStatusArr([...data]);
+                                        if(isDev){console.log(data);}
+                                        setPizzaSlicer_showPurchaseOrSelect(false);
+
+                                    }else{
+                                        const {message} = await response.json();
+                                        setPizzaSlicer_warningMessage(message);
+                                        setDisplayPizzaSlicer_warningMessage(false);
+                                        setTimeout(()=>{
+                                            setDisplayPizzaSlicer_warningMessage(true);
+                                        },50);
+
+                                    }
+
+                                }catch(error){
+                                    if(isDev){console.log(error);}
+                                }finally{
+                                    //get rid of loading
+                                    if(isDev){
+                                        await new Promise((resolve,reject)=>{
+                                            setTimeout(()=>{resolve();},testLoadingDelay);
+                                        });
+                                    }
+                                    setDisplayLoadingScreen(false);
+                                    //get rid of loading
+
+                                }
+
+                            }}> yes 😍
+                            </button>:""}
+
+                            <button className={styles.generalNoPopupButton}
+                            onClick={()=>{
+                                setPizzaSlicer_showPurchaseOrSelect(p=>false);
+                            }}>
+                                nope ❌
+                            </button>
+
+                            {!displayPizzaSlicer_warningMessage?''
+                        :<h1 className={styles.welcomeTag}
+                        style={{backgroundColor:'red',display:'flex',justifyContent:'center'}}>
+                            {pizzaSlicer_warningMessage}</h1>}
+
+                        
 
                         </div>
 
@@ -1096,12 +1504,31 @@ function MainPage({switchPage,styleDisplay}) {
 
 
 
-                    </div>
+                        <button className = {styles.imageSliderDown}
+                        onClick={()=>{
+                            setSkIndex(s=>{
+                                if(s<=0){
+                                    return skImgArr.length-1;
+                                }
+                                return s-1;
+                            });
+                        }}> ^</button>
 
 
+                        
+                        
+                    
+                    
+                    
+                    
+                    </div>           
 
 
             </div>
+
+            {/*---------------------------------------
+            the shop ui end
+            ------------------------------------------ */}
 
 
             
@@ -1112,9 +1539,13 @@ function MainPage({switchPage,styleDisplay}) {
 
             {ballClutchGameCard}
 
+            {pizzaSlicingGameCard}
 
 
 
+            {/*----------------------------------------------
+            enter game panel start
+            ------------------------------------------------- */}
             <div className={styles.enterGameConfirmPanel}
             style={{display:readyToEnter?'flex':'none'}}>
                 <h1 className={styles.enterConfirm}
@@ -1129,6 +1560,9 @@ function MainPage({switchPage,styleDisplay}) {
                         case 'Ball Clutch':
                             switchPage(3);
                             break;
+                        case 'Pizza Slicer':
+                            switchPage(4);
+                            break;
                         default:
                             break;
                     }
@@ -1142,52 +1576,19 @@ function MainPage({switchPage,styleDisplay}) {
                     setReadyToEnter(false);
                 }}>nope 😴</button>
 
-
-
-
-
-
-
             </div>
             
+            {/*----------------------------------------------
+            enter game panel end
+            ------------------------------------------------- */}
 
-
-                {/*start of ball clutch*/}
+       
 
                 
 
-                
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+         {/*----------------------------------------------
+            logout panel start
+            ------------------------------------------------- */}
 
 
 
@@ -1202,6 +1603,7 @@ function MainPage({switchPage,styleDisplay}) {
                 onClick={async ()=>{
                     //the logout logic
                     try{
+                        setDisplayLoadingScreen(true);
                         const response = await fetch(`${import.meta.env.VITE_API_URL}/logout`, {
                          method: 'POST',
                         credentials: 'include' // Important to send cookie
@@ -1216,6 +1618,15 @@ function MainPage({switchPage,styleDisplay}) {
 
                     }catch(error){
                         console.log(error);
+                    }finally{
+                        //get rid of loading
+                        if(isDev){
+                            await new Promise((resolve,reject)=>{
+                                setTimeout(()=>{resolve();},testLoadingDelay);
+                            });
+                        }
+                        setDisplayLoadingScreen(false);
+                        //get rid of loading
                     }
 
                 }}>Yes ✅</button>
@@ -1225,6 +1636,12 @@ function MainPage({switchPage,styleDisplay}) {
             onClick={()=>{
                 setDisplayLogoutScreen(d=>true)
             }}>X</button>
+
+            {/*----------------------------------------------
+            logout panel end
+            ------------------------------------------------- */}
+
+
 
 
         </div>

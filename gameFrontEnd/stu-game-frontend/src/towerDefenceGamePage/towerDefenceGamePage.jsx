@@ -4,6 +4,8 @@ import { Stage, Layer, Circle, Group, Image,Rect } from 'react-konva';
 import Konva from "konva";
 import useImage from 'use-image';
 
+import loadingGear from '../images/loadingGear.png';
+
 //texture input
 import background1 from '../images/towerGameImg/towerGameBackground.png';
 import background2 from '../images/towerGameImg/towerGameBackground2.png';
@@ -54,8 +56,35 @@ import enemySpawningHole from '../images/towerGameImg/enemySpawningHole.png';
 //coins
 import speedCoins from '../images/towerGameImg/speedCoin.png'
 
+
+const isDev = import.meta.env.VITE_MODE==='DEV';
+const testLoadingDelay = 2000;
+
+
 function TowerDefenceGamePage({switchPage,styleDisplay}){
-    const isDev = import.meta.env.VITE_MODE==='DEV';
+
+    /*-----------------------------------------------------------
+    loading spinner
+    ------------------------------------------------------------- */
+    const [displayLoadingScreen,setDisplayLoadingScreen] = useState(false);
+    const[loadingDots,setLoadingDots] = useState("");
+    useEffect(()=>{
+        let dotProcessId;
+        if(displayLoadingScreen){
+            dotProcessId = setInterval(()=>{
+                setLoadingDots(l=>{
+                    l=l+"."
+                if(l.length >=8){l=""}
+                return l;});      
+            },500)
+        }
+        return ()=>{
+            if(dotProcessId){clearInterval(dotProcessId);}
+        }
+
+    },[displayLoadingScreen]);
+
+    
     const[lv1TowerImg] = useImage(lv1Tower);
     const[lv2TowerImg] = useImage(lv2Tower);
     const[lv3TowerImg] = useImage(lv3Tower);
@@ -250,6 +279,7 @@ const isDisplayCoinAdd = useRef(false);
     
     useEffect(()=>{
         if(styleDisplay.display==='flex'){
+            
 
             const centerX = 980 - (window.innerWidth / 2);
             const centerY = 980 - (window.innerHeight / 2);
@@ -270,6 +300,8 @@ const isDisplayCoinAdd = useRef(false);
             //fetching user tower layout
             async function getUserTower(){
                 try{
+                setDisplayLoadingScreen(true);
+
                 const response = await fetch(`${import.meta.env.VITE_API_URL}/towerGame/getTowerDeploy`,{credentials: 'include'});
                 if(response.ok){
                     const data = await response.json(); 
@@ -289,6 +321,15 @@ const isDisplayCoinAdd = useRef(false);
                 }catch(error){
                     if(isDev){console.log(error);}
 
+                }finally{
+                    //loading gear tester
+                    if(isDev){
+                        await new Promise((resolve,reject)=>{
+                            setTimeout(()=>{resolve();},testLoadingDelay);
+                        });
+                    }
+                    setDisplayLoadingScreen(false);
+                    //end of loading gear tester
                 }
             }
             
@@ -297,6 +338,7 @@ const isDisplayCoinAdd = useRef(false);
             //fetching enemy setting
             async function getEnemy(){
                 try{
+                    setDisplayLoadingScreen(true);
                     const response = await fetch(`${import.meta.env.VITE_API_URL}/towerGame/getEnemyAttribute`,{credentials: 'include'});
                     if(response.ok){
                         const data = await response.json();
@@ -306,6 +348,15 @@ const isDisplayCoinAdd = useRef(false);
 
                 }catch(error){
                     if(isDev){console.log(error);}
+                }finally{
+                    //loading gear tester
+                    if(isDev){
+                        await new Promise((resolve,reject)=>{
+                            setTimeout(()=>{resolve();},testLoadingDelay);
+                        });
+                    }
+                    setDisplayLoadingScreen(false);
+                    //end of loading gear tester
                 }
 
             }
@@ -315,6 +366,7 @@ const isDisplayCoinAdd = useRef(false);
             //get user coins and highest scores
             async function getUserCoinsAndScores(){
                 try{
+                    setDisplayLoadingScreen(true);
                     const response = await fetch(`${import.meta.env.VITE_API_URL}/towerGame/getCoinsAndScores`,{credentials: 'include'});
                     if(response.ok){
                         const data = await response.json();
@@ -324,6 +376,15 @@ const isDisplayCoinAdd = useRef(false);
 
                 }catch(error){
                     if(isDev){console.log(error);}
+                }finally{
+                    //loading gear tester
+                    if(isDev){
+                        await new Promise((resolve,reject)=>{
+                            setTimeout(()=>{resolve();},testLoadingDelay);
+                        });
+                    }
+                    setDisplayLoadingScreen(false);
+                    //end of loading gear tester
                 }
 
             }
@@ -936,6 +997,14 @@ const isDisplayCoinAdd = useRef(false);
         transform: `translateX(-50%) translateY(-50%) scaleX(${ scaleFactor.current}) scaleY(${ scaleFactor.current}) `}}
         className={styles.gameWorld} 
         tabIndex="0" onKeyDown={handleTowerRotate} ref={rotateController}>
+
+
+            <div style = {{display:displayLoadingScreen?"flex":"none"}}
+            className={styles.loadingScreen}>
+                <img src = {loadingGear}></img>
+                <h1>loading {loadingDots}</h1>
+
+            </div>
 
             <div className={styles.coinDisplayPanel}>
                 <img src={speedCoins}></img>

@@ -12,6 +12,7 @@ const playerSchema = new mongoose.Schema({
 
 
     
+    
     towerGameAssets:{
         Lv1towers: { type: Number, default: 1 },
         Lv2towers: { type: Number, default: 0 },
@@ -50,6 +51,18 @@ const playerSchema = new mongoose.Schema({
         //edit here when add more balls
 
 
+
+    },
+
+
+    pizzaGameAssets:{
+        skSelectionStatus:{
+            type:[{type:Number,
+                min:[0,"invalid entry"],
+                max:[2,"invalid index"]
+            }],default:[2,0,0,0]
+        },
+        highestScore:{type:Number,default:0}
 
     }
 

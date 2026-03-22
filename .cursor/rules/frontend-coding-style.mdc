@@ -1,0 +1,9 @@
+---
+alwaysApply: true
+---
+
+for a new .jsx file, it will usually be a new gamePage, setup boilerplate like the style in /gameFrontEnd/stu-game-frontend/src/ballClutchGamePage/ballClutchGamePage.jsx
+
+In rare cases i will ask you to create new files, in that case use camelCase naming for jsx file name
+
+always create a .module.css for every new jsx file i ask you to create in gameFrontEnd/stu-game-frontend

@@ -1,0 +1,5 @@
+---
+alwaysApply: true
+---
+
+always use the fetch, assign, save pattern, do not use atomic updates, reference the stle here at /gameBackEnd/src/index.mjs.

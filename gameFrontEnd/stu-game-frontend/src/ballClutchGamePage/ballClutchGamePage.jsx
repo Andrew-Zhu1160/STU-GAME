@@ -6,6 +6,8 @@ import useImage from 'use-image';
 
 import Matter from 'matter-js';
 
+import loadingGear from '../images/loadingGear.png';
+
 import background1 from '../images/ballClutchGameImg/ballGameBackground1.jpg';
 import background2 from '../images/ballClutchGameImg/ballGameBackground2.jpg';
 import background3 from '../images/ballClutchGameImg/ballGameBackground3.jpg';
@@ -40,10 +42,45 @@ const BALL_CATEGORY = 0x0001;
 const WALL_CATEGORY = 0x0002;
 const PLATFORM_CATEGORY = 0x0004;
 
+const testLoadingDelay = 2000;
+
 
 function BallClutchGamePage({switchPage,styleDisplay}){
     //state variables for game page related button and game over page display
+
+    /*-----------------------------------------------------------
+    loading spinner
+    ------------------------------------------------------------- */
+    const [displayLoadingScreen,setDisplayLoadingScreen] = useState(false);
+    const[loadingDots,setLoadingDots] = useState("");
+    useEffect(()=>{
+        let dotProcessId;
+        if(displayLoadingScreen){
+            dotProcessId = setInterval(()=>{
+                setLoadingDots(l=>{
+                    l=l+"."
+                if(l.length >=8){l=""}
+                return l;});      
+            },500)
+        }
+        return ()=>{
+            if(dotProcessId){clearInterval(dotProcessId);}
+        }
+
+    },[displayLoadingScreen]);
+    
+
+
+
+
+
+
+
+
+
+
     const randomBackgroundIndex = useRef(Math.floor(Math.random()*backgroundArray.length));
+    //reusable code for all pages
     const [isGameOver,setIsGameOver] = useState(false);
     const isGameOverRef = useRef(false);
 
@@ -97,7 +134,6 @@ function BallClutchGamePage({switchPage,styleDisplay}){
         }catch(error){
             if(isDev){console.log(error)}
         }
-
     }
 
 
@@ -227,6 +263,8 @@ function BallClutchGamePage({switchPage,styleDisplay}){
 
             async function LoadGameSetting(){
                 try{
+                    setDisplayLoadingScreen(true);
+
                     let response = await fetch(`${import.meta.env.VITE_API_URL}/ballGame/getSelectedBall`,{credentials:'include'});
                     if(response.ok){
                         const result1 = await response.json();
@@ -327,6 +365,15 @@ function BallClutchGamePage({switchPage,styleDisplay}){
 
                 }catch(error){
                     if(isDev){console.log("error loading game setting",error)}
+                }finally{
+                    //get rid of loading
+                    if(isDev){
+                        await new Promise((resolve,reject)=>{
+                            setTimeout(()=>{resolve();},testLoadingDelay);
+                        });
+                    }
+                    setDisplayLoadingScreen(false);
+                    //get rid of loading
                 }
             }
 
@@ -785,6 +832,13 @@ function BallClutchGamePage({switchPage,styleDisplay}){
         transform: `translateX(-50%) translateY(-50%) scaleX(${ scaleFactor.current}) scaleY(${ scaleFactor.current}) `}}
         className={styles.gameWorld}
         tabIndex="0" onKeyDown={handleBallControl} onKeyUp={handleKeyUp} ref={jumpController}>
+
+            <div style = {{display:displayLoadingScreen?"flex":"none"}}
+            className={styles.loadingScreen}>
+                <img src = {loadingGear}></img>
+                <h1>loading {loadingDots}</h1>
+
+            </div>
             
             <div className={styles.gameOverScreen}
             style={{display:isGameOver?'flex':'none'}}>

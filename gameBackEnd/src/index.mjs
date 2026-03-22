@@ -10,6 +10,8 @@ import 'dotenv/config'
 import Player from './playerSchema.mjs';
 //import towerGameCofig
 import TowerGameConfig from './towerGameSchema.mjs';
+//import pizzaGameConfig
+import PizzaGameConfig from './pizzaGameSchema.mjs';
 
 //pasword hashing functions
 import {hashPassword,verifyPassword} from './passwordScure.mjs';
@@ -75,7 +77,7 @@ app.use(session({
         sameSite:process.env.NODE_ENV === 'production' ? 'none' : 'lax',
 
         //safari specific
-        //partitioned: process.env.NODE_ENV === 'production'
+        //partitioned: process.env.NODE_ENV === 'production', commentedout because it doesn't work
 
         //production block end
 
@@ -130,7 +132,17 @@ await ballGameSetting.save();
 }
 
 
-
+//get pizzaGame stats from DB
+let pizzaGameSetting;
+try{
+pizzaGameSetting = await PizzaGameConfig.findOne({Name:"pizzaGameSettingSheet"});
+if(!pizzaGameSetting){
+    pizzaGameSetting = new PizzaGameConfig({Name:"pizzaGameSettingSheet"});
+}
+await pizzaGameSetting.save();
+}catch(error){
+    console.log(error);
+}
 
 
 
@@ -183,6 +195,27 @@ const validate = (req, res, next) => {
     next();
 };
 
+//some universal endpoint here and functions here
+function checkSession(req,res,next){
+    if(!req.session.playerName){
+        return res.status(400).json({message:'player not found'});
+    }else{
+        next();
+    }
+}
+function validateInput(req,res,next){
+    const error = validationResult(req);
+    console.log(error);
+    if(!error.isEmpty()){
+        return res.status(400).json({message:'invalid input'})
+    }else{
+        next();
+    }
+
+}
+
+
+
 
 //periodic updates:
 const updateSettingSheetLimiter = rateLimit({windowMs:30000,limit:1});
@@ -198,11 +231,49 @@ app.get('/api/updateSettingSheet',updateSettingSheetLimiter,async (req,res)=>{
         const newBallSetting= await BallGameConfig.findOne({Name:"ballGameSettingSheet"});
         if(!newBallSetting){return res.sendStatus(401);}
         ballGameSetting = newBallSetting;
+
+
+         //edit here to add more games
         return res.sendStatus(201);
+
+       
+
     }catch(error){
         return res.sendStatus(401);
     }    
 });
+
+
+
+const addSpeedCoinsLimiter = rateLimit({windowMs: 500, limit: 1 });
+app.post('/api/addSpeedCoins',checkSession,addSpeedCoinsLimiter,
+    body('addCoinAmount').exists().isInt({min:0,max:999999999}),
+    validateInput,
+    async (req,res)=>{
+        try{
+            const {addCoinAmount} = req.body;
+            const thePlayer = await Player.findOne({playerName:req.session.playerName});
+            if(!thePlayer){return res.status(404).json({message:'user no longer there'})}
+            thePlayer.speedCoins+= addCoinAmount;
+            await thePlayer.save();
+            return res.sendStatus(200);
+
+        }catch(error){
+            if(error.name){
+                if(error.name==='VersionError'){
+                    return res.status(400).json({message:'server busy, request failed'});
+                }
+                return res.status(500).json({message:'unknown error'})
+
+            }
+            return res.status(500).json({message:'internet error'})
+        }
+    }
+);
+
+
+
+
 
 
 
@@ -796,51 +867,6 @@ app.post('/api/towerGame/updateScoreRecord',[
 
 
 
-
-
-
-
-
-
-
-
-
-//finally the logout logic
-app.post('/api/logout', (req, res) => {
-    // Check if user is logged in
-    if (!req.session.playerName) {
-        return res.status(400).json({ message: 'Not logged in' });
-    }
-
-    const playerName = req.session.playerName;
-
-    // Destroy the session
-    req.session.destroy((err) => {
-        if (err) {
-            console.error('Session destruction error:', err);
-            return res.status(500).json({ message: 'Logout failed' });
-        }
-
-        // Clear the session cookie
-        res.clearCookie('connect.sid', {
-            //for production
-            httpOnly: true,
-            secure: process.env.NODE_ENV === 'production', // ADD THIS
-            sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax', // MATCH SESSION CONFIG
-
-            //safari specific
-            //partitioned: process.env.NODE_ENV === 'production'
-            //end of production block
-        
-        });
-
-        console.log(`${playerName} logged out successfully`);
-        return res.status(200).json({ message: 'Logged out successfully' });
-    });
-});
-
-//this should work
-
 //-----------------------------------
 //end of towergame route!!!!
 //----------------------------------
@@ -851,12 +877,12 @@ app.post('/api/logout', (req, res) => {
 
 
 
-//-----------------------
-//start of bouncy ball game
-//----------------------------
+//-----------------------------------------
+//start of bouncy ball game rounte
+//------------------------------------
 
 
-//session authorization
+
 
 //from now on, all post request eith send a json with updated data,
 //or send a failed status code with a json object witha message attribute
@@ -940,13 +966,7 @@ async function updateBallGameSetting(req,res,next){
 
 
 
-function checkSession(req,res,next){
-    if(!req.session.playerName){
-        return res.status(400).json({message:'player not found'});
-    }else{
-        next();
-    }
-}
+
 function checkBallGameSetting(req,res,next){
     if(!ballGameSetting){
         return res.status(404).json({message: 'fail to load setting'})
@@ -955,42 +975,8 @@ function checkBallGameSetting(req,res,next){
     }
 }
 
-function validateInput(req,res,next){
-    const error = validationResult(req);
-    console.log(error);
-    if(!error.isEmpty()){
-        return res.status(400).json({message:'invalid input'})
-    }else{
-        next();
-    }
 
-}
-//some universal endpoint here
-const addSpeedCoinsLimiter = rateLimit({windowMs: 500, limit: 1 });
-app.post('/api/addSpeedCoins',checkSession,addSpeedCoinsLimiter,
-    body('addCoinAmount').exists().isInt({min:0,max:999999999}),
-    validateInput,
-    async (req,res)=>{
-        try{
-            const {addCoinAmount} = req.body;
-            const thePlayer = await Player.findOne({playerName:req.session.playerName});
-            if(!thePlayer){return res.status(404).json({message:'user no longer there'})}
-            thePlayer.speedCoins+= addCoinAmount;
-            await thePlayer.save();
-            return res.sendStatus(200);
 
-        }catch(error){
-            if(error.name){
-                if(error.name==='VersionError'){
-                    return res.status(400).json({message:'server busy, request failed'});
-                }
-                return res.status(500).json({message:'unknown error'})
-
-            }
-            return res.status(500).json({message:'internet error'})
-        }
-    }
-);
 
 
 
@@ -1041,7 +1027,7 @@ app.post(`${ballGameBaseRoute}/changeBallStatusArr`,checkSession, changeBallStat
         try{
             const thePlayer= await Player.findOne({playerName:req.session.playerName});
             if(!thePlayer){return res.status(401).json({message:'player no longer exist'})}
-            if(req.body.mode==='purchaseNewBall'){
+            if(req.body?.mode==='purchaseNewBall'){
                 const ballCost = ballGameSetting.balls[req.body.purchasedBallNumber-1].cost;
                 
                     //success
@@ -1056,7 +1042,7 @@ app.post(`${ballGameBaseRoute}/changeBallStatusArr`,checkSession, changeBallStat
 
                 
 
-            }else if(req.body.mode==='selectBall'){
+            }else if(req.body?.mode==='selectBall'){
                 for(let i=0;i<thePlayer.ballGameAssets.ballSelectionStatus.length;++i){
                     if(thePlayer.ballGameAssets.ballSelectionStatus[i]===2){
                         thePlayer.ballGameAssets.ballSelectionStatus[i]=1;
@@ -1156,6 +1142,239 @@ app.post(`${ballGameBaseRoute}/changeBallStatusArr`,checkSession, changeBallStat
 
 
 
+    /*--------------------------------------
+    end of ballGame route
+    ---------------------------------------- */
+
+
+
+
+
+
+    /*--------------------------------------
+    start of pizzaGame route
+    ---------------------------------------- */
+
+
+    const pizzaGameBaseRoute = "/api/pizzaGame";
+    //just like every new game, define a base route for the game, 
+    const getPizzaSlicingSettingLimiter = rateLimit({windowMs: 1000, limit: 1 });
+
+    const expectedSkArrayLength = 4;
+    const expectedPizzaArrayLength = 7;
+
+    async function migrateOldUserData_pizzaGame(req,res,next){
+        try{
+            let thePlayer = await Player.findOne({playerName:req.session.playerName});
+            if(!thePlayer){return res.status(404).json({message:'player not found'})};
+            if(thePlayer.pizzaGameAssets.skSelectionStatus.length<expectedSkArrayLength){
+                const lengthDifference = expectedSkArrayLength-thePlayer.pizzaGameAssets.skSelectionStatus.length;
+                for(let i=0;i<lengthDifference;++i){
+                    thePlayer.pizzaGameAssets.skSelectionStatus.push(0);
+                }
+                thePlayer.markModified('pizzaGameAssets');
+                await thePlayer.save();
+            }
+            next();
+
+        }catch(error){
+            if(error.name){
+                if(error.name==='VersionError'){
+                    return res.status(400).json({message:'server busy, request denied'});
+                }
+                return res.status(500).json({message:'unknown error'});
+            }
+            return res.status(500).json({message:'internet error, try again'});
+        }
+
+    }
+
+    async function updatePizzaGameSetting(req,res,next){
+
+        try{
+            if(!pizzaGameSetting){return res.status(404).json({message:'setting sheet missing'})}
+            if(pizzaGameSetting.sks.length<expectedSkArrayLength||
+                pizzaGameSetting.pizzas.length<expectedPizzaArrayLength
+            ){
+                const lengthDifference = expectedSkArrayLength-pizzaGameSetting.sks.length;
+                const baseDamage = pizzaGameSetting.sks[pizzaGameSetting.sks.length-1].damage;
+                for(let i=0;i<lengthDifference;++i){
+                    pizzaGameSetting.sks.push({
+                        number:i+1,
+                        cost:100000,
+                        width:190,
+                        height:190,
+                        damage:baseDamage+i
+                    });
+                }
+                const lengthDifference2 = expectedPizzaArrayLength-pizzaGameSetting.pizzas.length;
+                for(let i=0;i<lengthDifference2;++i){
+                    pizzaGameSetting.pizzas.push({
+                        width:450,
+                        height:450, 
+                    });
+                }
+                pizzaGameSetting.markModified('sks');
+                pizzaGameSetting.markModified('pizzas');
+                await pizzaGameSetting.save();
+            }
+            next();
+
+        }catch(error){
+            return res.status(500).json({message:'internet error, try again'});
+        }
+            
+    }
+    //edit here to add more pizzaGame route
+
+    const getUserSkStatusLimiter = rateLimit({windowMs: 1000, limit: 1 });
+    app.get(`${pizzaGameBaseRoute}/getUserSkStatus`,checkSession,getUserSkStatusLimiter,
+        migrateOldUserData_pizzaGame,
+        async(req,res)=>{
+        try{
+            const thePlayer = await Player.findOne({playerName:req.session.playerName});
+            if(!thePlayer){return res.status(404).json({message:'player not found'})};
+            return res.status(200).json({data:thePlayer.pizzaGameAssets.skSelectionStatus});
+        }catch(error){
+            return res.sendStatus(500);
+        }
+    });
+
+
+    const getPizzaGameSettingLimiter = rateLimit({windowMs: 1000, limit: 1 });
+    app.get(`${pizzaGameBaseRoute}/getPizzaGameSetting`,checkSession,getPizzaGameSettingLimiter,
+        updatePizzaGameSetting,
+        (req,res)=>{
+            try{
+                return res.status(200).json({data:pizzaGameSetting.sks})
+            }catch(error){
+                return res.sendStatus(500);
+
+            }
+        }
+    )
+
+    const changeSkStatusArrLimiter = rateLimit({windowMs:1000,limit:1,message: { message: " Action too frequent." }});
+    app.post(`${pizzaGameBaseRoute}/changeSkStatusArr`,checkSession,
+        changeSkStatusArrLimiter,
+        migrateOldUserData_pizzaGame,
+        updatePizzaGameSetting,
+        body('mode').exists().isString(),
+        body('purchasedSkNumber').exists().isInt({min:1,max:4}),
+        body('selectedSkNumber').exists().isInt({min:1,max:4}),
+        validateInput,
+        async(req,res)=>{
+            try{
+                const thePlayer= await Player.findOne({playerName:req.session.playerName});
+                if(!thePlayer){return res.status(404).json({message:'player no longer exists'});}
+                if(req.body?.mode === "purchaseNewSk"){
+                    const skCost = pizzaGameSetting.sks[req.body.purchasedSkNumber-1].cost;
+                    thePlayer.speedCoins-=skCost;
+                    thePlayer.pizzaGameAssets.skSelectionStatus[req.body.purchasedSkNumber-1]=1;
+                    thePlayer.markModified('pizzaGameAssets');
+                    await thePlayer.save();
+                    return res.status(200).json({
+                        data:thePlayer.pizzaGameAssets.skSelectionStatus
+                    })
+
+                }else if (req.body?.mode==="selectSk"){
+                    for(let i =0;i<thePlayer.pizzaGameAssets.skSelectionStatus.length;++i){
+                        if(thePlayer.pizzaGameAssets.skSelectionStatus[i]===2){
+                            thePlayer.pizzaGameAssets.skSelectionStatus[i]=1;
+                        }
+                    }
+                    if (thePlayer.pizzaGameAssets.skSelectionStatus[req.body.selectedSkNumber-1]===1){
+                        thePlayer.pizzaGameAssets.skSelectionStatus[req.body.selectedSkNumber-1]=2;
+                    }
+                    await thePlayer.save();
+                    return res.status(200).json({
+                        data:thePlayer.pizzaGameAssets.skSelectionStatus
+                    });
+
+                }else{
+                    return res.status(400).json({message:"invalid mode"})
+                }
+                
+
+            }catch(error){
+                if(error.name){
+                    if(error.name==='ValidationError'){
+                        return res.status(400).json({message:'not enough coins 😭'})
+    
+                    }else if(error.name ==='VersionError'){
+                        return res.status(400).json({message:'server busy, try again'})
+                        
+                    }
+                    return res.status(500).json({message:'unknown error'})
+    
+                }
+                return res.status(500).json({message:'unknown error,try again'})
+            }
+        }
+    );
+
+
+
+    const getPizzaGameSetting2Limiter = rateLimit({windowMs: 1000, limit: 1 });
+    app.get(`${pizzaGameBaseRoute}/getPizzaGameSetting2`,checkSession,updatePizzaGameSetting,getPizzaGameSetting2Limiter,
+        async(req,res)=>{
+            try{
+                return res.status(200).json({data:pizzaGameSetting.pizzas});
+            }catch(error){
+                return res.sendStatus(500);
+            }
+        }
+    );
+
+
+
+
+
+    const updatePizzaGameScoreLimiter = rateLimit({windowMs:1000,limit:1});
+    app.post(`${pizzaGameBaseRoute}/updateScore`,checkSession,updatePizzaGameScoreLimiter,
+        body('newScore').exists().isInt({min:0,max:999999999}),
+        validateInput,
+        async (req,res)=>{
+            try{
+                const thePlayer = await Player.findOne({playerName:req.session.playerName});
+                const {newScore}=req.body;
+                if(!thePlayer){return res.status(404).json({message:'player no longer exist'})}
+                if(thePlayer.pizzaGameAssets.highestScore<newScore){
+                    thePlayer.pizzaGameAssets.highestScore = newScore;
+                    thePlayer.markModified('pizzaGameAssets');
+                    await thePlayer.save();
+                    return res.status(201).json({newHighScore:newScore});
+
+                }else{
+                    return res.status(201).json({newHighScore:thePlayer.pizzaGameAssets.highestScore});
+
+
+                }
+            }catch(error){
+                if(error.name){
+                    if(error.name==='VersionError'){
+                        return res.status(400).json({message:'server busy, request denined'});
+                    }
+                    return res.status(500).json({message:'unknown error'});
+                }
+                return res.status(500).json({message:'internet error'});
+            }
+
+        }
+    );
+
+
+
+    
+
+    
+    /*--------------------------------------
+    end of pizzaGame route
+    ---------------------------------------- */
+
+    
+    
+    
 
 
 
@@ -1164,6 +1383,42 @@ app.post(`${ballGameBaseRoute}/changeBallStatusArr`,checkSession, changeBallStat
 
 
 
+
+//finally the logout logic
+app.post('/api/logout', (req, res) => {
+    // Check if user is logged in
+    if (!req.session.playerName) {
+        return res.status(400).json({ message: 'Not logged in' });
+    }
+
+    const playerName = req.session.playerName;
+
+    // Destroy the session
+    req.session.destroy((err) => {
+        if (err) {
+            console.error('Session destruction error:', err);
+            return res.status(500).json({ message: 'Logout failed' });
+        }
+
+        // Clear the session cookie
+        res.clearCookie('connect.sid', {
+            //for production
+            httpOnly: true,
+            secure: process.env.NODE_ENV === 'production', // ADD THIS
+            sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax', // MATCH SESSION CONFIG
+
+            //safari specific
+            //partitioned: process.env.NODE_ENV === 'production'
+            //end of production block
+        
+        });
+
+        console.log(`${playerName} logged out successfully`);
+        return res.status(200).json({ message: 'Logged out successfully' });
+    });
+});
+
+//this should work
 
 
 
