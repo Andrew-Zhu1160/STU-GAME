@@ -1,4 +1,4 @@
-import { useState,useEffect } from "react";
+import { useState,useEffect,useRef } from "react";
 import styles from './loginPage.module.css';
 import fortImage from '../images/Fort-Login-Page.png';
 import loadingGear from '../images/loadingGear.png';
@@ -8,6 +8,21 @@ import loadingGear from '../images/loadingGear.png';
 //updates panel
 import update1 from '../images/towerGameImg/towerLv11.png';
 import update2 from '../images/towerGameImg/towerLv12.png';
+
+//for playground
+import Matter from 'matter-js';
+import { Stage, Layer, Circle, Group, Image as KonvaImage,Rect } from 'react-konva';
+import Konva from "konva";
+import lv1Tower from '../images/towerGameImg/towerLv1.png';
+import lv3Tower from '../images/towerGameImg/towerLv3.png';
+import lv6Tower from '../images/towerGameImg/towerLv6.png';
+import lv10Tower from '../images/towerGameImg/towerLv10.png';
+import ball5 from '../images/ballClutchGameImg/ballNo5.png';
+import ball4 from '../images/ballClutchGameImg/ballNo4.png';
+import pizza1 from '../images/pizzaSlicerGameImage/pizza1.png';
+import pizza3 from '../images/pizzaSlicerGameImage/pizza3.png';
+import spinningBlade from '../images/spinningBlade.png';
+
 
 
 
@@ -22,23 +37,7 @@ const StyleMain={
     position:'relative',
     overflow:'hidden'
 }
-const StylePanel={
-    width:'60%',
-    minHeight:'50vh',
-    background:'linear-gradient(170deg, hsla(57, 88%, 65%, 0.70) 0%, hsla(229, 89%, 62%, 0.70) 100%)',
-    borderRadius:'15px',
-    boxShadow:'0 8px 32px 0 rgba(31, 38, 135, 0.37)',
-    backdropFilter:'blur(8.5px)',
-    border:'15px solid rgba(46, 52, 64, 1)',
-    display:'flex',
-    flexDirection:'column',
-    justifyContent:'center',
-    padding:'20px',
-    
-    flexWrap:'wrap'
-    
-    
-}
+
 
 
 const testLoadingDelay = 2000;
@@ -69,34 +68,15 @@ function LoginPage({switchPage,styleDisplay}) {
     /*-------------------------------------
     end of loading spinner
     --------------------------------------- */
-    function createRings(widths,colors,animateDelay,animateDuration,animateDirection='normal'){
-        return(<div className={styles.ring} style={{width:`${widths}px`,
-                                            height:`${widths*1.06}px`,
-                                            border: `50px solid ${colors}`,
-                                            borderBottom:'none',
-                                            animationDirection:animateDirection,
-                                            animationDelay:`${animateDelay}`,
-                                            animationDuration:`${animateDuration}`}}></div>);
-    }
-    const ring1=createRings(100,'hsl(204, 72%, 64%)','0.1s','5.5s');
-    const ring2=createRings(230,'hsla(146, 85%, 60%, 1.00)','0.2s','6s','reverse');
-    const ring3=createRings(360,'hsla(63, 89%, 49%, 1.00)','0.3s','6.5s');
-    const ring4=createRings(490,'hsla(15, 89%, 49%, 1.00)','0.4s','7s','reverse');
-    const ring5=createRings(620,'hsl(204, 72%, 64%)','0.1s','7.5s','normal');
-    const ring6=createRings(750,'hsla(146, 85%, 60%, 1.00)','0.2s','8s','reverse');
-    const ring7=createRings(880,'hsla(63, 89%, 49%, 1.00)','0.3s','8.5s','normal');
-    const ring8=createRings(1010,'hsla(15, 89%, 49%, 1.00)','0.4s','9s','reverse');
-    const ring9=createRings(1140,'hsl(204, 72%, 64%)','0.1s','9.5s','normal');
-    const ring10=createRings(1270,'hsla(146, 85%, 60%, 1.00)','0.2s','10s','reverse');
-    const ring11=createRings(1400,'hsla(63, 89%, 49%, 1.00)','0.3s','10.5s','normal');
-    const ring12=createRings(1530,'hsla(15, 89%, 49%, 1.00)','0.4s','11s','reverse');
+    
+    
 
 
 
     const fortIcon1 = <img src={fortImage} className={styles.fortR}></img>
     const fortIcon2 = <img src={fortImage} className={styles.fortL}></img>
-    const fortIcon3 = <img src={fortImage} className={styles.fortBL}></img>
-    const fortIcon4 = <img src={fortImage} className={styles.fortBR}></img>
+   
+    
 
 
 
@@ -261,12 +241,199 @@ function LoginPage({switchPage,styleDisplay}) {
 
     }
 
+    //game mini playground
+    const engineRef= useRef(Matter.Engine.create());
+    const playBallRef=useRef(null);
+    const imageArr=useRef(null);
+    const wallRef=useRef(null);
+    const playBallBodyRef=useRef(null);
+
+    const stageRef=useRef(null);
+    const spinningBladeRef=useRef(null);
+    const spinningBladeBodyRef=useRef(null);
+
+    const [dimensions, setDimensions] = useState({
+        width: window.innerWidth,
+        height: window.innerHeight,
+    });
+    const dimentionsRef=useRef({
+        width: window.innerWidth,
+        height: window.innerHeight,
+    });
+
+    useEffect(()=>{
+        dimentionsRef.current={...dimensions};
+
+    },[dimensions]);
+
+    const remainingBall = useRef(20);
+    const pIdCounter = useRef(1);
+    //image pre decoder
+    const preloadAndDecode = async (src) => {
+        const img = new Image();
+        img.src = src;
+        img.decoding = 'async';
+        await img.decode();
+        return img; // This is now a "hot" bitmap ready for Konva
+    };
+    
+    useEffect(()=>{
+        if(styleDisplay?.display==='flex'){
+           
+            const handleResize = () => {
+                    setDimensions({
+                        width: window.innerWidth,
+                        height: window.innerHeight,
+                    });
+                };
+             window.addEventListener('resize', handleResize);
+            
+             async function loadImage(){
+                try{
+                    setDisplayLoadingScreen(true)
+                    const allImage=await Promise.all([
+                        preloadAndDecode(lv1Tower),
+                        preloadAndDecode(lv3Tower),
+                        preloadAndDecode(lv6Tower),
+                        preloadAndDecode(lv10Tower),
+                        preloadAndDecode(ball4),
+                        preloadAndDecode(ball5),
+                        preloadAndDecode(pizza1),
+                        preloadAndDecode(pizza3),
+                        preloadAndDecode(spinningBlade)
+                    ]);
+                    imageArr.current=[...allImage];
+
+            }catch(error){
+                if(isDev)console.log(error);
+
+            }finally{
+                //get rid of loading
+                if(isDev){
+                    await new Promise((resolve,reject)=>{
+                        setTimeout(()=>{resolve();},testLoadingDelay);
+                    });
+                }
+                setDisplayLoadingScreen(false);
+                //get rid of loading
+            }
+
+
+             }
+             loadImage();
+             playBallBodyRef.current=[];
+             wallRef.current=[];
+             wallRef.current.push(Matter.Bodies.rectangle(dimentionsRef.current.width/2,dimentionsRef.current.height+25,10000,50,{isStatic:true}));
+             wallRef.current.push(Matter.Bodies.rectangle(-25,dimentionsRef.current.height/2,50,10000,{isStatic:true}));
+             wallRef.current.push(Matter.Bodies.rectangle(dimentionsRef.current.width+25,dimentionsRef.current.height/2,50,10000,{isStatic:true}));
+             Matter.Composite.add(engineRef.current.world,[...wallRef.current]);
+
+             spinningBladeBodyRef.current=Matter.Bodies.polygon(dimentionsRef.current.width/10,dimentionsRef.current.height/10,3,dimentionsRef.current.width/8,{
+                isStatic:true,
+                restitution: 10,
+                friction: 0.01
+             });
+             Matter.Composite.add(engineRef.current.world,spinningBladeBodyRef.current);
+             
+             
+
+             const anim =  new Konva.Animation((frame)=>{
+                if(!imageArr.current||!playBallRef.current||!wallRef.current||!stageRef.current||!spinningBladeRef.current){return;}
+
+                //create the spinning balde visual if it is not there
+                if(!spinningBladeRef.current?.image()){
+                    spinningBladeRef.current.x(dimentionsRef.current.width/10);
+                    spinningBladeRef.current.y(dimentionsRef.current.height/10);
+                    spinningBladeRef.current.width(dimentionsRef.current.width/5);
+                    spinningBladeRef.current.height(dimentionsRef.current.width/5);
+                    spinningBladeRef.current.image(imageArr.current[imageArr.current.length-1]);
+                    spinningBladeRef.current.offsetX(dimentionsRef.current.width/10);
+                    spinningBladeRef.current.offsetY(dimentionsRef.current.width/10)
+
+
+                    spinningBladeRef.current.on('dragmove', () => {
+                        const pos = {x:spinningBladeRef.current.x(),y:spinningBladeRef.current.y()};
+                        Matter.Body.setPosition(spinningBladeBodyRef.current, { x: pos.x, y: pos.y });
+                    });
+
+                }
+
+               
+
+
+                Matter.Engine.update(engineRef.current,frame.timeDiff);
+                const lastFrame = frame.time-frame.timeDiff;
+                const spawnBallFrequency = 500;
+                const isSpawnTime  = Math.floor(frame.time/spawnBallFrequency)>Math.floor(lastFrame/spawnBallFrequency);
+                if(isSpawnTime&&remainingBall.current>0){
+                    pIdCounter.current++;
+                    remainingBall.current--;
+                    const newBallBody = Matter.Bodies.circle(dimentionsRef.current.width/2,-200,dimentionsRef.current.width/20,{
+                        pId:pIdCounter.current
+                    });
+                    Matter.Composite.add(engineRef.current.world, newBallBody);
+                    playBallBodyRef.current.push(newBallBody);
+                    const newBallNode= new Konva.Image({
+                        width:dimentionsRef.current.width/10 +5,
+                        height:dimentionsRef.current.width/10+5,
+                        offsetX:(dimentionsRef.current.width/10 +5)/2,
+                        offsetY:(dimentionsRef.current.width/10 +5)/2,
+                        image:imageArr.current[Math.floor(Math.random()*imageArr.current.length-1)],
+                        pId:pIdCounter.current
+                    });
+                    playBallRef.current.add(newBallNode);
+
+
+                }
+                for (let i = 0;i<playBallBodyRef.current.length;++i){
+                    
+                    const ballNode = playBallRef.current.findOne(node=>node.getAttr("pId")===playBallBodyRef.current[i].pId);
+                    if(playBallBodyRef.current[i].position.x>dimentionsRef.current.width+50||playBallBodyRef.current[i].position.x<-50||
+                        playBallBodyRef.current[i].position.y>dimentionsRef.current.height+50|| playBallBodyRef.current[i].position.y<-300
+                    ){
+                        Matter.Body.setPosition(playBallBodyRef.current[i],{x:dimentionsRef.current.width/2,y:0});
+                    }
+
+                    if(ballNode){ballNode.x(playBallBodyRef.current[i].position.x);
+                        ballNode.y(playBallBodyRef.current[i].position.y);
+                        ballNode.rotation(playBallBodyRef.current[i].angle*180/Math.PI)
+                    }
+                }
+
+                //update walls
+                Matter.Body.setPosition(wallRef.current[0], { x: dimentionsRef.current.width/2, y: dimentionsRef.current.height+25 });
+                Matter.Body.setPosition(wallRef.current[1], { x: -25, y: dimentionsRef.current.height/2 });
+                Matter.Body.setPosition(wallRef.current[2], { x: dimentionsRef.current.width+25, y:dimentionsRef.current.height/2 });
+
+               //update spinner
+               spinningBladeRef.current.rotate(9);
+               Matter.Body.setAngle(spinningBladeBodyRef.current,spinningBladeRef.current.rotation()*Math.PI/180);
+
+
+
+             });
+
+             anim.start();
+
+
+
+            return () =>{ window.removeEventListener('resize', handleResize);anim.stop();}
+        }
+
+    },[styleDisplay?.display])
+
 
 
 
 
 
     return(<div style={{...StyleMain,...styleDisplay}}>
+        <Stage width={dimensions.width} height={dimensions.height} ref={stageRef}>
+            <Layer ref={playBallRef}></Layer>
+            <Layer>
+                <KonvaImage ref={spinningBladeRef} draggable={true}></KonvaImage>
+            </Layer>
+        </Stage>
 
         <div style = {{display:displayLoadingScreen?"flex":"none"}}
             className={styles.loadingScreen}>
@@ -275,8 +442,8 @@ function LoginPage({switchPage,styleDisplay}) {
 
         </div>
 
-         {ring1}{ring2}{ring3}{ring4}{ring5}{ring6}{ring7}{ring8}{ring9}{ring10}{ring11}{ring12}
-         {fortIcon1}{fortIcon2}{fortIcon3}{fortIcon4}
+         
+         
          <h1 className={styles.gameTitle}>STU GAME</h1>
         
         
@@ -287,21 +454,22 @@ function LoginPage({switchPage,styleDisplay}) {
         
         
         
-        <div style={{...StylePanel}}>
-            <h2 className={styles.instructionText}>Enter Game Name</h2>
+        <div className={styles.card}>
+            <div className={styles.content}>
+            <h2 className={styles.heading}>Enter Game Name</h2>
             
             
-            <input type="text" className={styles.inputText} value={gameNameInput} 
+            <input type="text" className={styles.para} value={gameNameInput} 
             onChange={(e)=>{setGameNameInput(e.target.value);}}
             ></input>
 
 
 
-            <h2 className={styles.instructionText}>Enter Password</h2>
+            <h2 className={styles.heading}>Enter Password</h2>
             
             
             
-            <input className={styles.inputText} type='text'
+            <input className={styles.para} type='text'
             value={passwordInput} 
             onChange={(e)=>{setPasswordInput(e.target.value);}}
             ></input>
@@ -314,17 +482,17 @@ function LoginPage({switchPage,styleDisplay}) {
             
             
             
-            <button className={styles.inputButton}
+            <button className={styles.btn}
             onClick={handleSignUp}>Sign Up 😊</button>
 
 
            
-            <button className={styles.inputButton} onClick={handleLogin}>
+            <button className={styles.btn} onClick={handleLogin}>
                 Log In 😍
                 </button>
 
-
-
+            </div>
+            
         </div>
 
 

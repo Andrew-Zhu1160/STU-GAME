@@ -3,29 +3,531 @@
     src: url(../fonts/Honk-Regular-VariableFont_MORF\,SHLN.ttf);
 }
 
+/*test new background*/
+.container {
 
-
-
-
-.background{
-    background-image: url(../images/mainPageBackground.png);
-    background-size: cover;
-    background-position: center;
-    background-attachment: fixed;
-    background-repeat: no-repeat;
-    flex-direction: column;
-    align-items: center;
-    width: 100%;
-    height: 100%;
+    box-sizing: border-box;
+  width: 100vw;
+  height: 100vh;
+  background: #cae9f1;
+  flex-direction: row;
+  position: relative;
+  justify-content: left;
+  flex-wrap: wrap;
+  padding-top: 20vh;
+     gap:5vw;
     overflow-y: auto;
-    opacity: 1;
-
-    
-
-
-    position: relative;
-
+    padding-left: 5vw;
+  background-image: 
+  radial-gradient(4px 100px at 0px 235px, #272257, #0000),
+    radial-gradient(4px 100px at 300px 235px, #272257, #0000),
+    radial-gradient(1.5px 1.5px at 150px 117.5px, #272257 100%, #0000 150%),
+    radial-gradient(4px 100px at 0px 252px, #272257, #0000),
+    radial-gradient(4px 100px at 300px 252px, #272257, #0000),
+    radial-gradient(1.5px 1.5px at 150px 126px, #272257 100%, #0000 150%),
+    radial-gradient(4px 100px at 0px 150px, #272257, #0000),
+    radial-gradient(4px 100px at 300px 150px, #272257, #0000),
+    radial-gradient(1.5px 1.5px at 150px 75px, #272257 100%, #0000 150%),
+    radial-gradient(4px 100px at 0px 253px, #272257, #0000),
+    radial-gradient(4px 100px at 300px 253px, #272257, #0000),
+    radial-gradient(1.5px 1.5px at 150px 126.5px, #272257 100%, #0000 150%),
+    radial-gradient(4px 100px at 0px 204px, #272257, #0000),
+    radial-gradient(4px 100px at 300px 204px, #272257, #0000),
+    radial-gradient(1.5px 1.5px at 150px 102px, #272257 100%, #0000 150%),
+    radial-gradient(4px 100px at 0px 134px, #272257, #0000),
+    radial-gradient(4px 100px at 300px 134px, #272257, #0000),
+    radial-gradient(1.5px 1.5px at 150px 67px, #272257 100%, #0000 150%),
+    radial-gradient(4px 100px at 0px 179px, #272257, #0000),
+    radial-gradient(4px 100px at 300px 179px, #272257, #0000),
+    radial-gradient(1.5px 1.5px at 150px 89.5px, #272257 100%, #0000 150%),
+    radial-gradient(4px 100px at 0px 299px, #272257, #0000),
+    radial-gradient(4px 100px at 300px 299px, #272257, #0000),
+    radial-gradient(1.5px 1.5px at 150px 149.5px, #272257 100%, #0000 150%),
+    radial-gradient(4px 100px at 0px 215px, #272257, #0000),
+    radial-gradient(4px 100px at 300px 215px, #272257, #0000),
+    radial-gradient(1.5px 1.5px at 150px 107.5px, #272257 100%, #0000 150%),
+    radial-gradient(4px 100px at 0px 281px, #272257, #0000),
+    radial-gradient(4px 100px at 300px 281px, #272257, #0000),
+    radial-gradient(1.5px 1.5px at 150px 140.5px, #272257 100%, #0000 150%),
+    radial-gradient(4px 100px at 0px 158px, #272257, #0000),
+    radial-gradient(4px 100px at 300px 158px, #272257, #0000),
+    radial-gradient(1.5px 1.5px at 150px 79px, #272257 100%, #0000 150%),
+    radial-gradient(4px 100px at 0px 210px, #272257, #0000),
+    radial-gradient(4px 100px at 300px 210px, #272257, #0000),
+    radial-gradient(1.5px 1.5px at 150px 105px, #272257 100%, #0000 150%);
+  background-size:
+    300px 235px,
+    300px 235px,
+    300px 235px,
+    300px 252px,
+    300px 252px,
+    300px 252px,
+    300px 150px,
+    300px 150px,
+    300px 150px,
+    300px 253px,
+    300px 253px,
+    300px 253px,
+    300px 204px,
+    300px 204px,
+    300px 204px,
+    300px 134px,
+    300px 134px,
+    300px 134px,
+    300px 179px,
+    300px 179px,
+    300px 179px,
+    300px 299px,
+    300px 299px,
+    300px 299px,
+    300px 215px,
+    300px 215px,
+    300px 215px,
+    300px 281px,
+    300px 281px,
+    300px 281px,
+    300px 158px,
+    300px 158px,
+    300px 158px,
+    300px 210px,
+    300px 210px,
+    300px 210px;
+  animation: hi 150s linear infinite;
 }
+
+@keyframes hi {
+  0% {
+    background-position:
+      0px 220px,
+      3px 220px,
+      151.5px 337.5px,
+      25px 24px,
+      28px 24px,
+      176.5px 150px,
+      50px 16px,
+      53px 16px,
+      201.5px 91px,
+      75px 224px,
+      78px 224px,
+      226.5px 350.5px,
+      100px 19px,
+      103px 19px,
+      251.5px 121px,
+      125px 120px,
+      128px 120px,
+      276.5px 187px,
+      150px 31px,
+      153px 31px,
+      301.5px 120.5px,
+      175px 235px,
+      178px 235px,
+      326.5px 384.5px,
+      200px 121px,
+      203px 121px,
+      351.5px 228.5px,
+      225px 224px,
+      228px 224px,
+      376.5px 364.5px,
+      250px 26px,
+      253px 26px,
+      401.5px 105px,
+      275px 75px,
+      278px 75px,
+      426.5px 180px;
+  }
+  to {
+    background-position:
+      0px 6800px,
+      3px 6800px,
+      151.5px 6917.5px,
+      25px 13632px,
+      28px 13632px,
+      176.5px 13758px,
+      50px 5416px,
+      53px 5416px,
+      201.5px 5491px,
+      75px 17175px,
+      78px 17175px,
+      226.5px 17301.5px,
+      100px 5119px,
+      103px 5119px,
+      251.5px 5221px,
+      125px 8428px,
+      128px 8428px,
+      276.5px 8495px,
+      150px 9876px,
+      153px 9876px,
+      301.5px 9965.5px,
+      175px 13391px,
+      178px 13391px,
+      326.5px 13540.5px,
+      200px 14741px,
+      203px 14741px,
+      351.5px 14848.5px,
+      225px 18770px,
+      228px 18770px,
+      376.5px 18910.5px,
+      250px 5082px,
+      253px 5082px,
+      401.5px 5161px,
+      275px 6375px,
+      278px 6375px,
+      426.5px 6480px;
+  }
+}
+.container::-webkit-scrollbar {
+    width: 10px; /* Slim and modern */
+}
+
+/* 2. The background track (the 'rail') */
+.container::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.05); /* Very subtle glass effect */
+    backdrop-filter: blur(4px);
+    border-radius: 10px;
+}
+
+/* 3. The draggable handle (the 'thumb') */
+.container::-webkit-scrollbar-thumb {
+    background: linear-gradient(180deg, #007bff 0%, #00d4ff 100%);
+    border-radius: 10px;
+    border: 2px solid rgba(255, 255, 255, 0.1); /* Creates a 'floating' look */
+    box-shadow: 0 0 10px rgba(0, 212, 255, 0.3);
+}
+
+/* 4. Hover state for the handle */
+.container::-webkit-scrollbar-thumb:hover {
+    background: #00d4ff;
+    box-shadow: 0 0 15px rgba(0, 212, 255, 0.6);
+}
+
+
+
+/*tutorial page style
+*/
+
+.tutorialPanel {
+    position: fixed;
+    /* Adjust 'top' to match your topNavBar height exactly */
+    bottom: 5vh; 
+    left: 50vw;
+    transform: translateX(-50%);
+    
+    /* Same width as your nav bar setup */
+    width: 95vw; 
+    max-width: 1200px;
+    height: 60vh;
+    
+    /* Background: Deeper "Midnight" Blue */
+    background: linear-gradient(180deg, rgba(15, 23, 42, 0.95) 0%, rgba(30, 41, 59, 0.9) 100%);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(0, 212, 255, 0.3);
+    border-top: none; /* Smooth connection to the nav bar */
+    border-radius:  20px;
+    
+    z-index: 3; /* Just below the nav bar if nav bar is 100+ */
+    display: flex;
+    flex-direction: column;
+    
+    /* Animation */
+    animation: slideInBottom 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes slideInBottom {
+    from {
+        opacity: 0;
+        bottom: 5vh; /* Starts lower */
+    }
+    to {
+        opacity: 1;
+        bottom: 10vh; /* Ends right under nav */
+    }
+}
+
+.tutorialInner {
+    padding: 30px 50px;
+    overflow-y: auto;
+    flex: 1;
+}
+
+/* Typography & Scrollbar */
+.tutorialInner h1 {
+    font-family: honk, Arial;
+    color: #00d4ff;
+    text-shadow: 0 0 8px rgba(0, 212, 255, 0.4);
+    margin-bottom: 20px;
+}
+
+.tutorialInner h2 {
+    font-family: BGS, Arial;
+    color: #00fffb;
+    text-shadow: 0 0 8px rgba(0, 212, 255, 0.4);
+    margin-bottom: 20px;
+}
+
+.tutorialInner p {
+    white-space: pre-wrap;
+    line-height: 1.7;
+    color: #e2e8f0;
+    font-size: 1.05rem;
+}
+
+
+
+
+/* Premium Scrollbar */
+.tutorialInner::-webkit-scrollbar {
+    width: 6px;
+}
+.tutorialInner::-webkit-scrollbar-thumb {
+    background: #00d4ff;
+    border-radius: 10px;
+}
+
+
+
+@keyframes slideInDown {
+    0% {
+        opacity: 0;
+        transform: translateY(-50px) translateX(-50%) scale(0.95);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(-50%) translateX(-50%) scale(1);
+    }
+}
+
+/* 2. Define a staggered Fade-In for buttons */
+@keyframes buttonPop {
+    0% { opacity: 0; transform: scale(0.5) translateY(10px); }
+    70% { transform: scale(1.1); }
+    100% { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+.topNavBar {
+    position: fixed;
+    top:5vh;
+    left:50vw;
+    transform: translateX(-50%) translateY(-50%);
+    display: flex;
+    align-items: center;
+    justify-content: left;
+    gap: 70px;
+    width: 90vw; /* Hugs the buttons for a premium look */
+    min-width: 400px;
+    min-height: 80px;
+    margin: 20px auto;
+    padding-left: 70px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    
+    background: rgba(15, 23, 42, 0.7); 
+    backdrop-filter: blur(15px);
+    
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 100px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
+    
+    animation: slideInDown 0.8s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+
+    z-index: 3;
+}
+
+.navButton {
+    position: relative;
+    all:unset;
+    cursor: pointer;
+    
+    /* Solid Blue Background with Depth */
+    background: linear-gradient(145deg, #1e40af, #1e3a8a); 
+    color: white;
+    
+    width: 65px;
+    height: 65px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 16px; /* High-end rounded square */
+    
+    /* The Clear Shadow you requested */
+    box-shadow: 
+        0 4px 0 #172554, /* Darker bottom edge for a 3D effect */
+        0 8px 15px rgba(0, 0, 0, 0.4);
+        
+    font-size: 1.6rem;
+    opacity: 1;
+    
+   
+    /* Ultra Smooth Transitions */
+    transition: 
+        transform 0.8s cubic-bezier(0.4, 0, 0.2, 1), 
+        box-shadow 0.4s ease,
+        color 0.4s ease;
+    
+    transform: rotate(0deg) scale(1);
+        
+    animation: buttonPop 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* Staggered Delay for Entrance */
+.navButton:nth-child(1) { animation-delay: 0.3s; }
+.navButton:nth-child(2) { animation-delay: 0.4s; }
+.navButton:nth-child(3) { animation-delay: 0.5s; }
+.navButton:nth-child(4) { animation-delay: 0.6s; }
+
+/* Redesigned Hover State */
+.navButton:hover {
+    /* Becomes Light Blue */
+    background: linear-gradient(145deg, #38bdf8, #0ea5e9); 
+    color: #0f172a; /* Darker icon color for contrast against light blue */
+    
+    /* 360 Spin + Scale */
+    transform: rotate(360deg) scale(1.15);
+   
+    
+    /* Glowy Shadow on hover */
+    box-shadow: 
+        0 0 20px rgba(56, 189, 248, 0.6),
+        0 10px 25px rgba(0, 0, 0, 0.3);
+}
+
+/* Pressed State */
+.navButton:active {
+    transform: scale(0.95) rotate(360deg);
+    box-shadow: 0 2px 0 #172554;
+}
+
+
+.navButtonRed {
+    all: unset;
+    cursor: pointer;
+    
+    /* Solid Blue Background with Depth */
+    background: linear-gradient(145deg, #af1e1e, #8a231e); 
+    color: white;
+    
+    width: 65px;
+    height: 65px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 16px; /* High-end rounded square */
+    
+    /* The Clear Shadow you requested */
+    box-shadow: 
+        0 4px 0 #541f17, /* Darker bottom edge for a 3D effect */
+        0 8px 15px rgba(0, 0, 0, 0.4);
+        
+    font-size: 1.6rem;
+    opacity: 1;
+    
+   
+    /* Ultra Smooth Transitions */
+    transition: 
+        transform 0.8s cubic-bezier(0.4, 0, 0.2, 1), 
+        box-shadow 0.4s ease,
+        color 0.4s ease;
+    
+    transform: rotate(0deg) scale(1);
+        
+    animation: buttonPop 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.navButtonRed:hover {
+    /* Becomes Light Blue */
+    background: linear-gradient(145deg, #f85e38, #e9320e); 
+    color: #0f172a; /* Darker icon color for contrast against light blue */
+    
+    /* 360 Spin + Scale */
+    transform: rotate(360deg) scale(1.15);
+   
+    
+    /* Glowy Shadow on hover */
+    box-shadow: 
+        0 0 20px rgba(248, 82, 56, 0.6),
+        0 10px 25px rgba(0, 0, 0, 0.3);
+}
+
+/* Pressed State */
+.navButtonRed:active {
+    transform: scale(0.95) rotate(360deg);
+    box-shadow: 0 2px 0 #541d17;
+}
+/*serch bar*/
+
+.searchContainer {
+    position: relative;
+    display: flex;
+    align-items: center;
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 30px;
+    padding: 4px 6px 4px 15px;
+    width: 240px;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    cursor: text;
+    z-index: 4;
+}
+
+/* Glow on Hover */
+.searchContainer:hover {
+    background: rgba(255, 255, 255, 0.15);
+    box-shadow: 0 0 15px rgba(255, 255, 255, 0.2);
+    border-color: rgba(255, 255, 255, 0.4);
+}
+
+/* Stronger Glow on Focus */
+.searchContainer:focus-within {
+    width: 280px;
+    background: rgba(255, 255, 255, 0.2);
+    border-color: #00d4ff; /* Light blue border focus */
+    box-shadow: 0 0 20px rgba(0, 212, 255, 0.4); /* Blue Glow */
+}
+
+.searchInput {
+    background: transparent;
+    border: none;
+    outline: none;
+    color: white;
+    font-size: 1rem;
+    width: 100%;
+    z-index: 5; /* Ensures text is selectable */
+}
+
+.searchInput::placeholder {
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.searchInsideButton {
+    /* Updated to Blue */
+    background: #007bff; 
+    background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
+    
+    border: none;
+    border-radius: 50%;
+    width: 34px;
+    height: 34px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    flex-shrink: 0; /* Prevents button from squishing */
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.searchInsideButton:hover {
+    transform: scale(1.1);
+    background: #00d4ff; /* Brighter blue on hover */
+    box-shadow: 0 0 10px rgba(0, 212, 255, 0.6);
+}
+
+.searchInsideButton:active {
+    transform: scale(0.95);
+}
+
+/*general tag for warning and brodcast*/
+
 
 .welcomeTag{
     font-size:1.5em;
@@ -37,30 +539,44 @@
     animation-fill-mode: forwards;
     width:60%;
     text-align: center;
+    transform: translateX(-50%) translateY(-50%);
+    left:50%;
+    top:5%;
     position:absolute;
-    top:0%;}
+    z-index: 20;
+   
+}
+.welcomeTagVar{
+    position: fixed;
+    background-color: hsla(1, 100%, 50%, 0.79) ;
+    top:20%;
+    font-family: honk;
+    
+}
 @keyframes tagDisplay {
     0%{
-        transform:translateY(-80%);
+        transform:translateY(-200px)  translateX(-50%);
         opacity: 0;
     }
     10%{
         opacity: 1;
-        transform:none;
+        transform:translateX(-50%) translateY(-50%);
     }
     90%{
         opacity: 1;
-        transform:none;
+        transform:translateX(-50%) translateY(-50%);
     }
     100%{
         opacity: 0;
-        transform:translateY(-80%);
+        transform:translateY(-200px) translateX(-50%);
     }
     
 }
 
 .loadingScreen{
     position:fixed;
+    top:0px;
+    left:0px;
     width:100vw;
     height:100vh;
     justify-content: center;
@@ -69,9 +585,10 @@
     font-size: 2em;
     row-gap: 2vh;
     background-color: rgba(73, 65, 75, 0.792);
-    z-index: 10;
+    z-index: 20;
     flex-direction: column;
 
+    animation: buttonPop 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 .loadingScreen>img{
     width:30vw;
@@ -93,172 +610,332 @@
 }
 
 
+/*more polish ui*/
 
+.card {
+  position: relative;
+  background: rgba(3, 68, 180, 0.65);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 320px;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+  padding: 32px;
+  overflow: hidden;
+  border-radius: 10px;
+  transition: all 0.5s cubic-bezier(0.23, 1, 0.320, 1);
+  z-index: 1;
 
+  opacity: 1;
+  animation: buttonPop 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) both;
 
-
-
-.shop{
-    position: fixed;
-    top: 10px;
-    right: 50px;
-    width: 120px;
-    height: 170px;
-    z-index:3;
-    cursor: pointer;
-
+  max-height: 70vh;
 }
-.shop:hover{
-    transform: scale(1.3);
-}
-.shop:active{
-    transform: scale(1);
+
+.content {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 20px;
+  color: #e8e8e8;
+  transition: all 0.5s cubic-bezier(0.23, 1, 0.320, 1);
+  z-index: 0;
 }
 
-.gameCard{
-    display:flex;
-    flex-direction: column;
-    align-items: center;
-    width:40%;
-    height: auto;
-    padding: 10px;
-    margin: 20px;
-    margin-top: 100px;
-    border-radius: 30px;
-    animation: gameCardLight 1s infinite;
-
+.content .heading {
+  font-weight: 700;
+  font-size: 32px;
 }
-@keyframes gameCardLight {
-    0%{
-        box-shadow: 10px 10px 15px rgba(255, 196, 0, 0.366);
+
+.content .para {
+  line-height: 1.5;
+}
+
+.content .btn {
+  color: #e8e8e8;
+  text-decoration: none;
+  padding: 10px;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  background: linear-gradient(-45deg, #f89b29 0%, #ff0f7b 100% );
+  border-radius: 5px;
+  box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+}
+
+.card::before {
+  content: "";
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  width: 20px;
+  height: 100%;
+  background: linear-gradient(-45deg, #f89b29 0%, #ff0f7b 100% );
+  z-index: 0;
+  transition: all 0.5s cubic-bezier(0.23, 1, 0.320, 1);
+}
+
+.card:hover::before {
+  width: 100%;
+}
+
+.card:hover {
+  box-shadow: none;
+}
+
+.card:hover .btn {
+  color: #212121;
+  background: #e8e8e8;
+}
+
+.content .btn:hover {
+  outline: 2px solid #e8e8e8;
+  background: transparent;
+  color: #e8e8e8;
+}
+
+.content .btn:active {
+  box-shadow: none;
+}
+
+
+.content >img{
+    width:50%;
+    height:auto;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/*a generic panel style*/
+
+@keyframes panelDrop {
+    0% {
+        opacity: 0;
+        transform: translateX(-50%) translateY(-90%) scale(0.95);
     }
-    50%{
-        box-shadow: 20px 20px 25px rgba(255, 255, 0, 1);
+    60% {
+        transform: translateX(-50%) translateY(-50%) scale(1.01);
     }
-    100%{
-        box-shadow: 10px 10px 15px rgba(255, 196, 0, 0.366);
-    }
-    
-}
-.gameCard:hover{
-    transform: scale(1.3);
-}
-.gameCard:active{
-    transform: scale(1);
-}
-.gameCardIcon{
-    width: 200px;
-    height: 200px;
-    margin: 10px; 
-}
-.gameCardTitle{
-    font-size: 3em;
-    color: white;
-    font-family: honk;
-    text-align: center;
-}
-
-
-
-.enterGameConfirmPanel{
-    position:fixed;
-    background-color: hsla(0, 1%, 38%, 0.793);
-    width:100vw;
-    height:100vh;
-
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    font-family: honk,Aerial;
-    text-align: center;
-    font-size: 3em;
-    z-index: 4;
-    
-
-}
-.enterGameButton{
-    width:50vw;
-    height:7%;
-    margin-bottom:3%;
-    border:none;
-    background-color: rgba(9, 255, 0, 0.741);
-    
-    border-radius: 20px;
-    font-family: Aerial;
-    font-weight: bold;
-    font-size: 0.7em;
-    color:white;
-    border-bottom: 1px solid rgb(1, 67, 1);
-    transform:none;
-
-}
-.enterGameButton:hover{
-    transform:translateX(-10px);
-    border-bottom: 10px solid rgb(1, 67, 1);
-}
-.enterGameButton:active{
-    
-    border-bottom: 1px solid rgb(1, 67, 1);
-    transform:none;
-}
-.enterConfirm{
-    animation: enterAnimation;
-    animation-duration: 1s;
-
-}
-.notEnterGameButton{
-    width:50vw;
-    height:7%;
-    margin-bottom:3%;
-    border:none;
-    background-color: rgba(255, 0, 0, 0.741);
-    font-weight: bold;
-    font-size: 0.7em;
-    color:white;
-    border-radius: 20px;
-    font-family: Aerial;
-    border-bottom: 1px solid rgb(67, 1, 1);
-    transform:none;
-
-}
-.notEnterGameButton:hover{
-    transform:translateX(-10px);
-    border-bottom: 10px solid rgb(67, 1, 1);
-
-}
-.notEnterGameButton:active{
-    
-    border-bottom: 1px solid rgb(67, 1, 1);
-    transform:none;
-}
-
-
-
-
-
-
-@keyframes enterAnimation {
-    0%{
-        transform:translateY(-50%);
-        opacity: 0.5;
-    }
-    100%{
-        transform:none;
+    100% {
         opacity: 1;
+        transform: translateX(-50%) translateY(-50%) scale(1);
     }
-    
+}
+
+/* The full-screen invisible click-blocker backdrop */
+.panelBackdrop {
+    position: fixed;
+    left:0px;
+    top:0px;
+    inset: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.55);
+    backdrop-filter: blur(4px);
+    /*-webkit-backdrop-filter: blur(4px);*/
+    z-index: 15;
+  
+    align-items: center;
+    justify-content: center;
+}
+.panelBackdropRed{
+    background: rgba(104, 0, 0, 0.517);
+}
+
+/* The actual board that drops in */
+.panelBoard {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translateX(-50%) translateY(-50%);
+
+    width: min(620px, 88vw);
+    min-height: 320px;
+    max-height: 75vh;
+
+    background: linear-gradient(160deg, #0f172a 0%, #1e1b4b 100%);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 28px;
+    box-shadow:
+        0 0 0 1px rgba(255,255,255,0.05),
+        0 30px 60px rgba(0, 0, 0, 0.6),
+        0 0 80px rgba(99, 102, 241, 0.12);
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+    padding: 48px 40px;
+
+    font-family: honk, Aerial;
+    text-align: center;
+    color: white;
+    z-index: 16;
+    overflow-y: auto;
+
+    animation: panelDrop 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+.panelBoardRed{
+    background: linear-gradient(160deg, #2a180f 0%, #4b1b1b 100%);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 28px;
+    box-shadow:
+        0 0 0 1px rgba(255,255,255,0.05),
+        0 30px 60px rgba(0, 0, 0, 0.6),
+        0 0 80px rgba(241, 99, 156, 0.12);
+
 }
 
 
 
+.panelBoard h1 {
+    font-size: 2em;
+    margin: 0 0 8px 0;
+    background: linear-gradient(135deg, #e0e7ff, #a5b4fc);
+    
+    background-clip: text;
+    font-family: honk;
+}
 
+/* ── CONFIRM button (yes / let's go / purchase) ── */
 
+.panelConfirmButton {
+    position: relative;
+    overflow: hidden;
+    cursor: pointer;
+    border: none;
+    border-radius: 14px;
+    padding: 14px 0;
+    width: 70%;
 
+    background: linear-gradient(145deg, #f59e0b, #d97706);
+    color: #1c1917;
+    font-family: honk, Aerial;
+    font-size: 1.2em;
+    font-weight: bold;
 
+    box-shadow:
+        0 4px 0 #92400e,
+        0 8px 20px rgba(245, 158, 11, 0.35);
 
+    transition:
+        transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1),
+        box-shadow 0.3s ease,
+        background 0.3s ease;
+}
+.panelConfirmButtonGreen{
+    background: linear-gradient(145deg, #2af50b, #4cd906);
+    box-shadow:
+        0 4px 0 #1b920e,
+        0 8px 20px rgba(11, 245, 34, 0.35);
 
+}
+/* shimmer sweep */
+.panelConfirmButton::before {
+    content: '';
+    position: absolute;
+    top: 0; left: -75%;
+    width: 50%; height: 100%;
+    background: linear-gradient(120deg, transparent, rgba(255,255,255,0.3), transparent);
+    transition: left 0.5s ease;
+}
+.panelConfirmButton:hover::before { left: 130%; }
 
+.panelConfirmButton:hover {
+    background: linear-gradient(145deg, #fbbf24, #f59e0b);
+    transform: translateY(-4px) scale(1.04);
+    box-shadow:
+        0 8px 0 #92400e,
+        0 16px 30px rgba(245, 158, 11, 0.5);
+}
+.panelConfirmButtonGreen:hover{
+    background: linear-gradient(145deg, #a1fb24, #0bf532);
+    box-shadow:
+        0 8px 0 #2b920e,
+        0 16px 30px rgba(38, 245, 11, 0.5);
 
+}
+
+.panelConfirmButton:active {
+    transform: translateY(2px) scale(0.97);
+    box-shadow: 0 2px 0 #92400e;
+    transition: transform 0.1s ease, box-shadow 0.1s ease;
+}
+.panelConfirmButtonGreen:active{
+    box-shadow: 0 2px 0 #0e923c;
+
+}
+/* ── CANCEL button (nope / no / close) ── */
+/* muted ghost style — present but not distracting */
+.panelCancelButton {
+    cursor: pointer;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 14px;
+    padding: 12px 0;
+    width: 70%;
+
+    background: rgba(255, 255, 255, 0.06);
+    color: rgba(255, 255, 255, 0.7);
+    font-family: honk, Aerial;
+    font-size: 1.1em;
+
+    box-shadow: none;
+
+    transition:
+        transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1),
+        background 0.3s ease,
+        color 0.3s ease,
+        border-color 0.3s ease;
+}
+
+.panelCancelButton:hover {
+    background: rgba(239, 68, 68, 0.15);
+    border-color: rgba(239, 68, 68, 0.5);
+    color: #fca5a5;
+    transform: translateY(-3px) scale(1.03);
+}
+
+.panelCancelButton:active {
+    transform: translateY(1px) scale(0.97);
+    transition: transform 0.1s ease;
+}
+
+/*end of panel style*/
 
 
 
@@ -268,64 +945,88 @@
 
 /*for shops*/
 
+@keyframes slideInUp {
+    0% {
+        opacity: 0;
+        transform:  translateY(50px) translateX(-50%) scale(0.95);
+    }
+    100% {
+        opacity: 1;
+        transform:  translateY(50px) translateX(-50%) scale(1);
+    }
+}
+
+
+
+.bottomNavBar{
+    position: fixed;
+    bottom:5vh;
+    left:50vw;
+    transform: translateY(50px) translateX(-50%) ;
+    display: flex;
+    align-items: center;
+    justify-content: left;
+    gap: 70px;
+    width: 90vw; /* Hugs the buttons for a premium look */
+    min-width: 400px;
+    min-height: 80px;
+    margin: 20px auto;
+    padding-left: 70px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    
+    background: rgba(15, 23, 42, 0.7); 
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 100px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
+    
+    animation: slideInUp 0.8s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+
+}
+
+.bottomNavBar > img{
+    
+    width:6vw;
+    height:auto;
+
+     transition:
+        transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1),
+        filter 0.3s ease,
+        box-shadow 0.3s ease;
+}
+
+.bottomNavBar > img:hover {
+    transform: translateY(-10px) scale(1.15);
+    filter: drop-shadow(0 12px 16px rgba(56, 189, 248, 0.5)) brightness(1.15);
+}
+
+.bottomNavBar > img:active {
+    transform: translateY(-4px) scale(0.95);
+    filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.4)) brightness(0.95);
+    transition: transform 0.1s ease, filter 0.1s ease;
+}
+
 .shopMainPage{
     width:100vw;
     height:100vh;
     position:fixed;
+    top:0px;
+    left:0px;
   
-    z-index: 4;
-    background-color: hsla(210, 7%, 11%, 0.867);
-}
-.existShopButton{
-    width:40vw;
-    height:7%;
-    margin-bottom:3%;
-    border:none;
-    background-color: rgba(174, 3, 3, 0.708);
-    font-weight: bold;
-    font-size: 2em;
-    font-family: honk;
-    border-radius: 20px;
- 
-    border-bottom: 1px solid rgb(67, 1, 1);
-    transform:none;
-    position: absolute;
-    right:1%;
-    top:1%;
-}
-.existShopButton:hover{
-     transform:translateX(-10px);
-    border-bottom: 10px solid rgb(39, 1, 1);
-}
-.existShopButton:active{
-    border-bottom: 1px solid rgb(39, 1, 1);
-    transform:none;
+    z-index: 0;
+    
 }
 
-.sideNavBar{
-    display:flex;
-    flex-direction: column;
-    align-items: center;
-    width:20vw;
-    height:100vh;
-    overflow-y:auto;
-    overflow-x:hidden;
-    border-right: 15px solid rgba(128, 128, 128, 0.574);
-    background-color: rgba(0, 0, 0, 0.655);
-}
-.sideNavBar >img{
-    margin-top: 5vh;
-    margin-bottom: 2vh;
-}
-.sideNavBar >img:hover{
-    transform:scale(1.2);
-}
-.sideNavBar >img:active{
-    transform:scale(1);
-}
+
+
 
 
 .coinDisplay{
+    position: absolute;
+    top:17%;
+    left:5%;
     display:flex;
     column-gap: 10px;
 }
@@ -334,47 +1035,92 @@
 
 /*for tower defence game*/
 .imageSliderUp{
-    position:absolute;
-    width:90px;
-    height:70px;
-    background-color: hsla(0, 0%, 19%, 0.774);
-    font-family: honk,Aerial;
-    transform:translateX(-50%) translateY(-50%);
-    font-size: 3em;
-    left:50vw;
-    top:15vh;
-    border-radius: 75px;
-    border:5px solid rgba(255, 255, 255, 0.427);
+   position: fixed;
+    left: 20vw;
+    top: 50vh;
+    transform: translateY(-50%);
 
+    width: 7vw;
+    height: 7vw;
+    border-radius: 50%;
+    border: none;
+    cursor: pointer;
+
+    /* match navButton theme */
+    background: linear-gradient(145deg, #1e40af, #1e3a8a);
+    box-shadow:
+        0 4px 0 #172554,
+        0 8px 20px rgba(0, 0, 0, 0.4);
+
+    /* chevron arrow via pure CSS — no more ^ character */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.4em;
+    color: white;
+
+    transition:
+        transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1),
+        box-shadow 0.3s ease,
+        background 0.3s ease;
 
 }
 .imageSliderDown{
-    position:absolute;
-    width:90px;
-    height:70px;
-    background-color: hsla(0, 0%, 19%, 0.774);
-    font-family: honk,Aerial;
-    font-size: 3em;
-    transform:translateX(-50%) translateY(-50%) rotateX(180deg);
-    left:50vw;
-    bottom:3vh;
-    border-radius: 75px;
-    border:5px solid rgba(255, 255, 255, 0.427);
+    position: fixed;
+    right: 20vw;
+    top: 50vh; /* above the bottomNavBar */
+    transform: translateY(-50%);
+
+    width: 7vw;
+    height: 7vw;
+    border-radius: 50%;
+    border: none;
+    cursor: pointer;
+
+    background: linear-gradient(145deg, #1e40af, #1e3a8a);
+    box-shadow:
+        0 4px 0 #172554,
+        0 8px 20px rgba(0, 0, 0, 0.4);
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.4em;
+    color: white;
+
+    transition:
+        transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1),
+        box-shadow 0.3s ease,
+        background 0.3s ease;
 
 }
 .imageSliderUp:hover{
-   transform: scale(1.2) translateX(-50%) translateY(-50%)
+   transform: translateX(-50%) translateY(-4px) scale(1.15);
+    background: linear-gradient(145deg, #38bdf8, #0ea5e9);
+    color: #0f172a;
+    box-shadow:
+        0 8px 0 #0369a1,
+        0 12px 25px rgba(56, 189, 248, 0.45);
    
 }
 .imageSliderUp:active{
-   transform: scale(1) translateX(-50%) translateY(-50%)
+  transform: translateX(-50%) translateY(2px) scale(0.95);
+    box-shadow: 0 2px 0 #172554;
+    transition: transform 0.1s ease, box-shadow 0.1s ease;
    
 }
 .imageSliderDown:hover{
-   transform:  scale(1.2)  translateX(-50%) translateY(-50%) rotateX(180deg)
+   transform: translateX(-50%) translateY(4px) scale(1.15);
+    background: linear-gradient(145deg, #38bdf8, #0ea5e9);
+    color: #0f172a;
+    box-shadow:
+        0 8px 0 #0369a1,
+        0 12px 25px rgba(56, 189, 248, 0.45);
 }
 .imageSliderDown:active{
-   transform: scale(1) translateX(-50%) translateY(-50%) rotateX(180deg)
+   transform: translateX(-50%) translateY(-2px) scale(0.95);
+    box-shadow: 0 2px 0 #172554;
+    transition: transform 0.1s ease, box-shadow 0.1s ease;
 }
 
 
@@ -387,10 +1133,12 @@
     font-size: 1.2em;
     align-items: center;
     width:40vw;
-    height:40vh;
-    position:absolute;
+    min-height:40vh;
+    position:fixed;
+    top:50vh;
+    left:50vw;
     transform: translateX(-50%) translateY(-50%);
-    top:40%;
+    top:50%;
     left: 50%;
 
 }
@@ -425,221 +1173,279 @@
 
 .buyButton{
     
-    width:25vw;
-    height:15vh;
-    background-color: hsla(46, 100%, 50%, 0.816);
-    border:none;
-    border-bottom: 1px solid rgba(64, 46, 1, 0.893);
-    border-radius: 30px ;
+    position: relative;
+    overflow: hidden;
+    cursor: pointer;
+    border: none;
+    
+    /* sizing */
+    padding: 14px;
+    min-width: 180px;
+    border-radius: 14px;
+    
+    /* premium gradient matching your navButton theme */
+    background: linear-gradient(145deg, #1e40af, #1e3a8a);
+    color: white;
     font-family: honk;
-    font-size: 2em;
-    top:40%;
-    right:5%;
+    font-size: 1.4em;
+    
+    
+    box-shadow:
+        0 4px 0 #172554,
+        0 8px 20px rgba(0, 0, 0, 0.4);
+    
+    transition:
+        transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1),
+        box-shadow 0.3s ease,
+        background 0.3s ease;
 }
-.buyButton:hover{
-    border-bottom: 12px solid rgba(64, 46, 1, 0.893);
-    transform: translateX(-5%);
-}
-.buyButton:active{
-    border-bottom: 1px solid rgba(64, 46, 1, 0.893);
-    transform:none;
-}
-
-
-.confirmPurchasePanel{
- 
-    position:absolute;
-    z-index: 5;
-    width:100vw;
-    height:100vh;
-    justify-content: center;
-    align-items: center;
-    flex-direction: column;
-    font-size: 2em;
-    background-color: rgba(65, 64, 64, 0.641);
-    font-family: honk;
-}
-
-.towerDeployPanel{
-    border:none;
-    border-bottom: 3px solid hsl(248, 100%, 16%);
-   
-    position:absolute;
+.buyButtonVar{
+    background: linear-gradient(145deg, #af691e, #8a3b1e);
+    box-shadow:
+        0 4px 0 #542a17,
+        0 8px 20px rgba(0, 0, 0, 0.4);
+    min-width: 300px;
+    font-size: 1.7em;
+    position: fixed;
+    bottom:20vh;
     right:5vw;
-    bottom:5vh;
-    padding:5px;
-    min-width:10vw;max-width:20vw;
-    min-height:30vh;
-    border-radius: 25px;
-    display:flex;
-    flex-wrap: wrap;
-    flex-direction: row;
-    justify-content: center;
-    column-gap: 5px;
-    row-gap: 5px;
-    background-color: rgba(0, 98, 255, 0.597);
-    font-family: honk;
-    align-items: center;
-    font-size: 3em;
-}
-.towerDeployPanel:hover{
-    border-bottom: 17px solid hsl(248, 100%, 16%);
-    transform: translateX(-5%);
 
 }
-.towerDeployPanel:active{
-    border-bottom: 3px solid hsl(248, 100%, 16%);
-    transform: none;
-
+.buyButton::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -75%;
+    width: 50%;
+    height: 100%;
+    background: linear-gradient(
+        120deg,
+        transparent,
+        rgba(255, 255, 255, 0.25),
+        transparent
+    );
+    transition: left 0.5s ease;
+}
+.buyButton:hover {
+    background: linear-gradient(145deg, #38bdf8, #0ea5e9);
+    color: #0f172a;
+    transform: translateY(-4px) scale(1.05);
+    box-shadow:
+        0 8px 0 #0369a1,
+        0 12px 25px rgba(56, 189, 248, 0.45);
+}
+.buyButtonVar:hover{
+    background: linear-gradient(145deg, #f89238, #e93a0e);
+    box-shadow:
+        0 8px 0 #a15503,
+        0 12px 25px rgba(248, 82, 56, 0.45);
+}
+.buyButton:active {
+    transform: translateY(2px) scale(0.97);
+    box-shadow:
+        0 2px 0 #172554,
+        0 4px 10px rgba(0, 0, 0, 0.3);
+    transition: transform 0.1s ease, box-shadow 0.1s ease;
+}
+.buyButtonVar:active{
+     box-shadow:
+        0 2px 0 #542b17,
+        0 4px 10px rgba(0, 0, 0, 0.3);
 }
 
-.towerDeploySelection{
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+.towerDeploySelection {
     flex-direction: column;
-    position:absolute;
+    position: fixed;
     align-items: center;
-    
-    width:100vw;
-    height:100vh;
-    background: linear-gradient(60deg,hsla(0, 2%, 24%, 0.633),hsla(0, 0%, 50%, 0.622));
+    justify-content: center;
 
+    width: 100vw;
+    height: 100vh;
+    top: 0;
+    left: 0;
 
+    background: rgba(0, 0, 0, 0.55);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    z-index: 14;
 }
-.towerDeploySelection>h1{
+
+/* the title */
+.towerDeploySelection > h1 {
     font-family: honk;
-    font-size: 3em;
+    font-size: 1.8em;
     text-align: center;
-    margin-bottom: 5vh;
-    margin-top: 15vh;
+    margin-bottom: 16px;
+    margin-top: 0;
     max-width: 70vw;
-}
-.towerDeploySelection>div{
-    display: flex;
-    width:70vw;
-    height:40vh;
-    background-color: hsla(231, 14%, 27%, 0.775);
-    border:15px solid rgba(163, 163, 163, 0.812);
-    border-radius: 20px;
-    padding:10px;
-    flex-wrap: wrap;
-    
-    overflow-y: auto;
-    
-    gap:10px;
 
-}
-.towerDeploySelection >button{
-    position:absolute;
-    bottom:5vh;
-    width:40vw;
-    height:10vh;
-    background-color: hsla(29, 100%, 58%, 0.775);
-    border:none;
-    border-bottom: 3px solid rgba(164, 107, 1, 1);
-    border-radius: 20px;
-    font-family: honk;
-    font-size: 3em;
-}
-.towerDeploySelection >button:hover{
-    border-bottom: 13px solid rgba(164, 107, 1, 1);
-    transform:translateX(-5%);
-}
-.towerDeploySelection >button:active{
-    border-bottom: 3px solid rgba(164, 107, 1, 1);
-    transform:none;
-}
-
-.towerDeploySelection>div>div{
-    display:flex;
-    height:15vh;
+    background: linear-gradient(135deg, #e0e7ff, #a5b4fc);
    
-    
+    background-clip: text;
+}
 
+/* the scrollable grid box */
+.towerDeploySelection > div {
+    display: flex;
+    width: min(680px, 88vw);
+    max-height: 45vh;
+    min-height: 200px;
+
+    background: linear-gradient(160deg, #0f172a 0%, #1e1b4b 100%);
+    border: 1px solid rgba(167, 139, 250, 0.2);
+    border-radius: 24px;
+    padding: 20px;
+    flex-wrap: wrap;
+    justify-content: center;
+    overflow-y: auto;
+    gap: 16px;
+    margin-bottom: 20px;
+
+    box-shadow:
+        0 0 0 1px rgba(255, 255, 255, 0.05),
+        0 30px 60px rgba(0, 0, 0, 0.6),
+        0 0 80px rgba(124, 58, 237, 0.15);
+
+    scrollbar-width: thin;
+    scrollbar-color: rgba(167, 139, 250, 0.4) transparent;
 }
-.towerDeploySelection>div>div>input{
-    width:30%;
-    border-radius: 20px;
-    border:5px solid gray;
-    font-family: honk,aerial;
-    font-size: 4em;
+
+/* save button */
+.towerDeploySelection > button {
+    position: relative;
+    bottom: unset;
+    width: min(300px, 70vw);
+    height: auto;
+    padding: 14px 0;
+    border: none;
+    border-radius: 14px;
+    cursor: pointer;
+
+    background: linear-gradient(145deg, #7c3aed, #6d28d9);
+    color: white;
+    font-family: honk;
+    font-size: 1.2em;
+
+    box-shadow:
+        0 4px 0 #4c1d95,
+        0 8px 20px rgba(124, 58, 237, 0.4);
+
+    transition:
+        transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1),
+        box-shadow 0.3s ease,
+        background 0.3s ease;
 }
-/*end of tower defence*/
+
+.towerDeploySelection > button:hover {
+    background: linear-gradient(145deg, #a78bfa, #8b5cf6);
+    color: #1e1b4b;
+    transform: translateY(-4px) scale(1.04);
+    box-shadow:
+        0 8px 0 #4c1d95,
+        0 16px 30px rgba(167, 139, 250, 0.5);
+}
+
+.towerDeploySelection > button:active {
+    transform: translateY(2px) scale(0.97);
+    box-shadow: 0 2px 0 #4c1d95;
+    transition: transform 0.1s ease, box-shadow 0.1s ease;
+}
+
+/* each tower card (img + input) */
+.towerDeploySelection > div > div {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    height: auto;
+    padding: 18px 16px;
+    border-radius: 16px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    min-width: 80px;
+
+    transition: background 0.2s ease, border-color 0.2s ease;
+}
+
+.towerDeploySelection > div > div:hover {
+    background: rgba(167, 139, 250, 0.1);
+    border-color: rgba(167, 139, 250, 0.3);
+}
+
+.towerDeploySelection > div > div > img {
+    width: 80px;             /* ← was 55px */
+    height: 80px; 
+    object-fit: contain;
+    filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.5));
+}
+
+/* the number input */
+.towerDeploySelection > div > div > input {
+    width: 90px;             /* ← was 64px */
+    padding: 8px 6px;        /* ← was 6px */
+    text-align: center;
+    font-family: honk, Aerial;
+    font-size: 1.3em;
+    color: white;
+
+    background: rgba(15, 23, 42, 0.8);
+    border: 1px solid rgba(167, 139, 250, 0.3);
+    border-radius: 10px;
+    outline: none;
+
+    box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.4);
+
+    transition:
+        border-color 0.3s ease,
+        box-shadow 0.3s ease,
+        background 0.3s ease;
+
+    
+}
+
+.towerDeploySelection > div > div > input::-webkit-outer-spin-button,
+.towerDeploySelection > div > div > input::-webkit-inner-spin-button {
+    -webkit-appearance: auto;
+    margin: 0;
+}
+
+.towerDeploySelection > div > div > input:focus {
+    border-color: rgba(167, 139, 250, 0.8);
+    background: rgba(30, 27, 75, 0.9);
+    box-shadow:
+        inset 0 2px 6px rgba(0, 0, 0, 0.4),
+        0 0 0 3px rgba(124, 58, 237, 0.25);
+}
+
+.towerDeploySelection > div > div > input:hover:not(:focus) {
+    border-color: rgba(167, 139, 250, 0.5);
+}
 
 
 
 /*general popup style*/
-.generalPopup{
-    position:fixed;
-    background-color: hsla(0, 1%, 38%, 0.793);
-    width:100vw;
-    height:100vh;
-    left:0px;
-    top:0px;
 
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    font-family: honk,Aerial;
-    text-align: center;
-    font-size: 3em;
-    z-index: 5;
-    
 
-}
-.generalYesPopupButton{
-    width:50vw;
-    height:7%;
-    margin-bottom:3%;
-    border:none;
-    background-color: rgba(9, 255, 0, 0.741);
-    
-    border-radius: 20px;
-    font-family: Aerial;
-    font-weight: bold;
-    font-size: 0.7em;
-    color:white;
-    border-bottom: 1px solid rgb(1, 67, 1);
-    transform:none;
 
-}
-.generalYesPopupButton:hover{
-    transform:translateX(-10px);
-    border-bottom: 10px solid rgb(1, 67, 1);
-}
-.generalYesPopupButton:active{
-    
-    border-bottom: 1px solid rgb(1, 67, 1);
-    transform:none;
-}
-.generalPopupText{
-    animation: enterAnimation;
-    animation-duration: 1s;
-
-}
-.generalNoPopupButton{
-    width:50vw;
-    height:7%;
-    margin-bottom:3%;
-    border:none;
-    background-color: rgba(255, 0, 0, 0.741);
-    font-weight: bold;
-    font-size: 0.7em;
-    color:white;
-    border-radius: 20px;
-    font-family: Aerial;
-    border-bottom: 1px solid rgb(67, 1, 1);
-    transform:none;
-
-}
-.generalNoPopupButton:hover{
-    transform:translateX(-10px);
-    border-bottom: 10px solid rgb(67, 1, 1);
-
-}
-.generalNoPopupButton:active{
-    
-    border-bottom: 1px solid rgb(67, 1, 1);
-    transform:none;
-}
 
 
 
@@ -680,88 +1486,8 @@
 
 /*the logout buttons and screens*/
 
-.logoutScreen{
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    position: fixed;
-    width:100vw;
-    height:100vh;
-    background-color: rgba(244, 87, 87, 0.595);
-    font-family: honk,Aerial;
-    font-size: 2em;
-    z-index: 15;
-}
-.logoutScreen>h1{
-    text-align: center;
-}
-.logoutButton{
-    position: fixed;
-    display: flex;
-    align-items: center;
-    justify-content:center ;
-    width:120px;
-    height:120px;
-    bottom:0px;
-    right:0px;
-    background-color: rgba(227, 29, 29, 0.778);
-    border-radius: 60px;
-    border: 15px solid rgba(255, 111, 0, 0.74);
-    font-family: honk,Aerial;
-    font-size: 6em;
 
 
-}
-.logoutButton:hover{
-    transform: scaleX(1.5) scaleY(1.5);
-}
-.logoutButton:active{
-    transform: none;
-}
 
 
-.cancelLogout{
-    
-    width:25vw;
-    height:auto;
-    background-color: hsla(26, 100%, 50%, 0.816);
-    border:none;
-    border-bottom: 1px solid rgba(64, 23, 1, 0.893);
-    border-radius: 30px ;
-    font-family: honk;
-    font-size: 2em;
-    top:40%;
-    right:5%;
-    margin-bottom: 5vh;
-}
-.cancelLogout:hover{
-    border-bottom: 12px solid rgba(64, 23, 1, 0.893);
-    transform: translateX(-5%);
-}
-.cancelLogout:active{
-    border-bottom: 1px solid rgba(64, 23, 1, 0.893);
-    transform:none;
-}
 
-
-.confirmLogout{
-    
-    width:25vw;
-    height:auto;
-    background-color: hsla(91, 100%, 50%, 0.816);
-    border:none;
-    border-bottom: 1px solid rgba(14, 64, 1, 0.893);
-    border-radius: 30px ;
-    font-family: honk;
-    font-size: 2em;
-    top:40%;
-    right:5%;
-}
-.confirmLogout:hover{
-    border-bottom: 12px solid rgba(14, 64, 1, 0.893);
-    transform: translateX(-5%);
-}
-.confirmLogout:active{
-    border-bottom: 1px solid rgba(14, 64, 1, 0.893);
-    transform:none;
-}

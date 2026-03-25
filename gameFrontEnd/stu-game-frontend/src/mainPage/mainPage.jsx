@@ -4,21 +4,43 @@ import shopIcon from '../images/gameShopIcon.png';
 import towerIcon from '../images/towerGameImg/towerLv1.png';
 import loadingGear from '../images/loadingGear.png';
 
+import {ShoppingBag, Search, Info, User, Settings, Home, LogOut, Share2} from 'lucide-react';
+
+
+//metadata import
+import { gameCardArr, generalInfo } from "./gameData.js";
+
+//import shops 
+import TowerShop from './gameShops/towerShop.jsx';
+import BallShop from "./gameShops/ballShop.jsx";
+import PizzaShop from "./gameShops/pizzaShop.jsx";
+
 
 //image import for towerDefence game shop
-import lv1Tower from '../images/towerGameImg/towerLv1.png';
-import lv2Tower from '../images/towerGameImg/towerLv2.png';
-import lv3Tower from '../images/towerGameImg/towerLv3.png';
-import lv4Tower from '../images/towerGameImg/towerLv4.png';
-import lv5Tower from '../images/towerGameImg/towerLv5.png';
-import lv6Tower from '../images/towerGameImg/towerLv6.png';
-import lv7Tower from '../images/towerGameImg/towerLv7.png';
-import lv8Tower from '../images/towerGameImg/towerLv8.png';
-import lv9Tower from '../images/towerGameImg/towerLv9.png';
-import lv10Tower from '../images/towerGameImg/towerLv10.png';
-import lv11Tower from '../images/towerGameImg/towerLv11.png';
-import lv12Tower from '../images/towerGameImg/towerLv12.png';
 
+import towerGameIcon from '../images/towerGameImg/towerLv1.png';
+import ballGameIcon from '../images/ballClutchGameImg/ballNo1.png';
+import pizza1 from '../images/pizzaSlicerGameImage/pizza1.png';
+
+
+/*-------------------------
+metadata section begin
+---------------------------*/
+
+
+//gamecard metadata
+/*const gameCardArr=[
+        {gameNameIdentifier: "Tower Defense",description:"endless enemy, how long can your tower survive? ☠️",icon:towerGameIcon},
+        {gameNameIdentifier: "Ball Clutch",description:"keep the ball on the platform ❗", icon:ballGameIcon},
+        {gameNameIdentifier: "Pizza Slicer", description:"just cut it 🍕",icon:pizza1}
+     ];*/
+     
+
+
+
+/*-------------------------
+metadata section end
+---------------------------*/
 
 //----------------------------
 //edit here to add more tower
@@ -27,22 +49,15 @@ import lv12Tower from '../images/towerGameImg/towerLv12.png';
 
 //image imports for ballclutch game shop
 //edit here to add more balls
-import ballNo1 from '../images/ballClutchGameImg/ballNo1.png';
-import ballNo2 from '../images/ballClutchGameImg/ballNo2.png';
-import ballNo3 from '../images/ballClutchGameImg/ballNo3.png';
-import ballNo4 from '../images/ballClutchGameImg/ballNo4.png';
-import ballNo5 from '../images/ballClutchGameImg/ballNo5.png';
-import ballNo6 from '../images/ballClutchGameImg/ballNo6.png';
+
+
 //
 
 
 
 //image imports fo pizza slicing game shop
-import skLv1 from '../images/pizzaSlicerGameImage/playerSk1.png';
-import skLv2 from '../images/pizzaSlicerGameImage/playerSk2.png';
-import skLv3 from '../images/pizzaSlicerGameImage/playerSk3.png';
-import skLv4 from '../images/pizzaSlicerGameImage/playerSk4.png';
-import pizza1 from '../images/pizzaSlicerGameImage/pizza1.png';
+
+
 //end of pizza slicing image
 
 
@@ -82,151 +97,33 @@ function MainPage({switchPage,styleDisplay}) {
 
     },[displayLoadingScreen]);
     
-    /*----------------------------------------------------------------
-   tower shop variable block start
-   ------------------------------------------------------------------- */ 
-    const[towerIndex,setTowerIndex]=useState(0);
-    const towerImgArr = useRef([<img src={lv1Tower} className={styles.towerShowCase}/>,
-                                <img src={lv2Tower} className={styles.towerShowCase}/>,
-                                <img src={lv3Tower} className={styles.towerShowCase}/>,
-                                <img src={lv4Tower} className={styles.towerShowCase}/>,
-                                <img src={lv5Tower} className={styles.towerShowCase}/>,
-                                <img src={lv6Tower} className={styles.towerShowCase}/>,
-                                <img src={lv7Tower} className={styles.towerShowCase}/>,
-                                <img src={lv8Tower} className={styles.towerShowCase}/>,
-                                <img src={lv9Tower} className={styles.towerShowCase}/>,
-                                <img src={lv10Tower} className={styles.towerShowCase}/>,
-                                <img src = {lv11Tower} className={styles.towerShowCase}></img>,
-                                <img src = {lv12Tower} className={styles.towerShowCase}></img>
+
     
-    ]);
-    //................
-    //edit here to add more tower
-    //.......................
-
-
-
-    const towerDmgArr = useRef([]);
-    const towerCostArr = useRef([]);
-    const [toweOwnedArr,setTowerOwnedArr]=useState([]);
-
-    const towerDeployArr=useRef([
-        lv1Tower,lv2Tower,lv3Tower,lv4Tower,
-        lv5Tower,lv6Tower,lv7Tower,lv8Tower,
-        lv9Tower,lv10Tower,lv11Tower,lv12Tower
-    ]);
-
-
-
-    //tower defence
-    const[openPurchasePanel,setOpenPurchasePanel]=
-    useState(false);
-    const[notEnoughMoneyWarning,setNotEnoughMoneyWarning]=
-    useState(false);
-
-    const[displayTowerSelection,setDisplayTowerSelection]
-    =useState(false);
-    //for tower deploy
-    const userTowerCollection=useRef([]);
-
-    const userTowerDeploy=useRef([]);
-    const[val1,setVal1]=useState(0);
-    const[val2,setVal2]=useState(0);
-    const[val3,setVal3]=useState(0);
-    const[val4,setVal4]=useState(0);
-    const[val5,setVal5]=useState(0);
-    const[val6,setVal6]=useState(0);
-    const[val7,setVal7]=useState(0);
-    const[val8,setVal8]=useState(0);
-    const[val9,setVal9]=useState(0);
-    const[val10,setVal10]=useState(0);
-    const[val11,setVal11]=useState(0);
-    const[val12,setVal12]=useState(0);
-    //....................
-    //edit here to add more tower
-    //.......................
-
-    const[showTooMuchDeploy,setShowTooMuchDeploy]
-    =useState(false);
     
 
-
-
-    //..........................
-    //edit here to add more tower
-    //..........................
-    
-   /*----------------------------------------------------------------
-   tower  variable block end
-   ------------------------------------------------------------------- */ 
     
    
-    /*----------------------------------------------------------------
-   ballGame  variable block start
-   ------------------------------------------------------------------- */ 
-    //edit here to add more balls
-    const ballImgArr = [ballNo1,ballNo2,ballNo3,ballNo4,ballNo5,ballNo6];
-    const [ballIndex,setBallIndex] = useState(0);
-    //0 means the ball is not owned, 1 means owned but not selected to game
-    //2 means owned, and selected for game
-    //edit here to add more balls
-    const [ballOwnedStatusArr,setBallOwnedStatusArr] = useState([0,0,0,0,0,0]);
-    const[ballGameSettingArr,setBallGameSettingArr] = useState([{},{},{},{},{},{}]);
-
-    const [ballCluctch_showPurchaseOrSelect,
-        setBallClutch_showPurchaseOrSelect
-    ] = useState(false);
-
-    const[ballClutch_warningMessage,
-        setBallClutch_warningMessage
-    ]=useState('');
-    const[displayBallClutch_warningMessage,
-        setDisplayBallClutch_warningMessage
-    ]=useState(false);
-
-    useEffect(()=>{
-        if(ballCluctch_showPurchaseOrSelect){
-            setDisplayBallClutch_warningMessage(false)
-
-        }
-    },[ballCluctch_showPurchaseOrSelect]);
 
 
-    /*----------------------------------------------------------------
-   BallGame variable block end
-   ------------------------------------------------------------------- */ 
+     //Experiment with the new gamecard display mechanics
+
+     //important array
+     //metadata of all game's name, description, and loading information
+     const [displayedGameCardArr,setDisplayedGameCardArr] = useState([...gameCardArr]);
+     const [cardArrStartingIndex,setCardArrStartingIndex] = useState(0);
 
 
+    //display subpages instead of making more state variable
+    /*
+    index 0: main game card page
+    index 1: shop
+    index 2: info page
+    index 3: contact use page / about author
 
-   /*----------------------------------------------------------------
-   PizzaGame shop variable block start
-   ------------------------------------------------------------------- */ 
+  
     
-
-    const skImgArr = [skLv1,skLv2,skLv3,skLv4];
-    const [skIndex,setSkIndex] = useState(0);
-
-    const [skOwnedStatusArr,setSkOwnedStatusArr] = useState([0,0,0,0]);
-    const [skGameSettingArr,setSkGameSettingArr] = useState([{},{},{},{}]);
-
-    const [pizzaSlicer_showPurchaseOrSelect,setPizzaSlicer_showPurchaseOrSelect] = useState(false);
-    const [pizzaSlicer_warningMessage,setPizzaSlicer_warningMessage] = useState('');
-    const [displayPizzaSlicer_warningMessage,setDisplayPizzaSlicer_warningMessage] = useState(false);
-    useEffect(()=>{
-        if(pizzaSlicer_showPurchaseOrSelect){
-            setDisplayPizzaSlicer_warningMessage(false)
-        }
-    },[pizzaSlicer_showPurchaseOrSelect]);
-
-
-
-    /*----------------------------------------------------------------
-   pizzaGame shop variable block end
-   ------------------------------------------------------------------- */ 
-
-     //edit here to add more game
-
-
+    */
+    const [displaySubPage,setDisplaySubPage] = useState([true,false,false,false]);
 
 
 
@@ -274,122 +171,24 @@ function MainPage({switchPage,styleDisplay}) {
             }
             
         }
-        async function loadTowerGameShop(){
-            if(styleDisplay.display==='flex'){
-                try{
 
 
-
-                    const response = await fetch(`${import.meta.env.VITE_API_URL}/towerShop`, { credentials: 'include' });
-                    if(response.ok){
-                    const data = await response.json();
-                    towerDmgArr.current=[data.tower1.damage,
-                                        data.tower2.damage,
-                                        data.tower3.damage,
-                                        data.tower4.damage,
-                                        data.tower5.damage,
-                                        data.tower6.damage,
-                                        data.tower7.damage,
-                                        data.tower8.damage,
-                                        data.tower9.damage,
-                                        data.tower10.damage,
-                                        data.tower11.damage,
-                                        data.tower12.damage,
-
-                                            
-                    ];
-                    //....................
-                    //edit here to add more tower
-                    //......................
-                    towerCostArr.current=[
-                                        data.tower1.cost,
-                                        data.tower2.cost,
-                                        data.tower3.cost,
-                                        data.tower4.cost,
-                                        data.tower5.cost,
-                                        data.tower6.cost,
-                                        data.tower7.cost,
-                                        data.tower8.cost,
-                                        data.tower9.cost,
-                                        data.tower10.cost,
-                                        data.tower11.cost,
-                                        data.tower12.cost,
-
-                    ];
-                    //....................
-                    //edit here to add more tower
-                    //......................
-                    setTowerOwnedArr(t=>[data.tower1.owned,
-                                        data.tower2.owned,
-                                        data.tower3.owned,
-                                        data.tower4.owned,
-                                        data.tower5.owned,
-                                        data.tower6.owned,
-                                        data.tower7.owned,
-                                        data.tower8.owned,
-                                        data.tower9.owned,
-                                        data.tower10.owned,
-                                        data.tower11.owned,
-                                        data.tower12.owned,
-
-                    ]);
-                    //....................
-                    //edit here to add more tower
-                    //......................
-
-                    }else{
-                        console.log('fail to fetch');
-
-                    }
-
-                }catch(error){
-                    console.log(error)
-                }
-
-
-
-            }
-
-            
-        }
+        
        
         fetchWelcomeMessage();
 
-        loadTowerGameShop();
 
-        //loadBallGameShop();
 
     }, [styleDisplay]);
 
 
 
     
-    function createGameCard(imageIcon,gameTitle,backgroundC,startGameFunction){
-        return(
-            <div className={styles.gameCard} style={{backgroundColor:backgroundC}}
-            onClick={()=>{
-                startGameFunction(gameTitle);
-            }}>
-                <img src={imageIcon}
-                alt={`${gameTitle} Icon`}
-                className={styles.gameCardIcon}></img>
-                <h2 className={styles.gameCardTitle}>{gameTitle}</h2>
-            </div>
-
-        );
-
-
-    }
     
     
-    //...................
-    //edit here to add more game
-    //....................
-    const towerGameCard = createGameCard(towerIcon,"Tower Defense","hsla(240, 94%, 55%, 0.68)",openEnterPanel);
 
-    const ballClutchGameCard = createGameCard(ballNo1,"Ball Clutch","hsla(15, 100%, 50%, 0.87)",openEnterPanel);
-
-    const pizzaSlicingGameCard = createGameCard(pizza1, "Pizza Slicer","hsla(104, 100%, 50%, 0.87)",openEnterPanel);
+    
+   
 
 
 
@@ -398,15 +197,11 @@ function MainPage({switchPage,styleDisplay}) {
     const[readyToEnter,setReadyToEnter]=useState(false);
     const[gameName,setGameName] = useState("");
 
-    function openEnterPanel(GN){
-        setReadyToEnter(true);
-        setGameName(GN);
-
-    }
+   
 
 
     //shop variables
-    const[openShop,setOpenShop] = useState(false);
+    
     //load the content to displayed
     
     const[coinAmount,setCoinAmount]=useState(0);
@@ -452,131 +247,22 @@ function MainPage({switchPage,styleDisplay}) {
 
     const[openSpecificGameShop,setOpenSpecificGameShop]
     =useState([false,false,false]);
-
-    async function loadBallGameShop(){
-            if(ballOwnedStatusArr[0]===0){
-            try{
-                //loading screen
-                setDisplayLoadingScreen(true);
-                //loading screen
-                const response = await fetch(
-                    `${import.meta.env.VITE_API_URL}/ballGame/getUserBallStatus`, { credentials: 'include' }
-                );
-                if(response.ok){
-                    const {data} = await response.json();
-                    if(isDev){console.log(data);}
-                    setBallOwnedStatusArr([...data]);
-
-                }
-            }catch(error){
-                if(isDev){console.log(error)}
-            }
-            }
-            //also fetch some setting from the assets
-            if(Object.keys(ballGameSettingArr[0]).length===0){
-            try{
-                const response = await fetch(
-                    `${import.meta.env.VITE_API_URL}/ballGame/getBallGameSetting`, { credentials: 'include' }
-
-                );
-                if(response.ok){
-                    const {data} = await response.json();
-                    if(isDev){console.log(data)}
-                    setBallGameSettingArr([...data]);
-                    
-                }
-
-            }catch(error){
-                if(isDev){console.log(error)}
-            }finally{
-                //get rid of loading
-                if(isDev){
-                    await new Promise((resolve,reject)=>{
-                        setTimeout(()=>{resolve();},testLoadingDelay);
-                    });
-                }
-                setDisplayLoadingScreen(false);
-                //get rid of loading
-
-            }
-        }
-
-
-        
-    }
-
-    async function loadPizzaGameShop(){
-        if(skOwnedStatusArr[0]===0){
-            //fetch
-            try{
-                //loading screen
-                setDisplayLoadingScreen(true);
-                //loading screen
-
-            const response = await fetch(`${import.meta.env.VITE_API_URL}/pizzaGame/getUserSkStatus`,
-                { credentials: 'include' }
-            );
-            if(response.ok){
-                const {data} = await response.json();
-                setSkOwnedStatusArr([...data]);
-                if(isDev){console.log(data);}
-            }
-            }catch(error){
-                if(isDev){console.log(error);}
-            }
-        }
-        if(Object.keys(skGameSettingArr[0]).length===0){
-            //fetch
-            try{
-                //loading screen
-                setDisplayLoadingScreen(true);
-                //loading screen
-
-                const response = await fetch(`${import.meta.env.VITE_API_URL}/pizzaGame/getPizzaGameSetting`,{credentials:'include'});
-                if(response.ok){
-                    const {data} = await response.json();
-                    setSkGameSettingArr([...data]);
-                    if(isDev){console.log(data)}
-                }
-            }catch(error){
-                if(isDev){console.log(error)}
-            }finally{
-                //get rid of loading
-                if(isDev){
-                    await new Promise((resolve,reject)=>{
-                        setTimeout(()=>{resolve();},testLoadingDelay);
-                    });
-                }
-                setDisplayLoadingScreen(false);
-                //get rid of loading
-            }
-        }
-
-    }
     //lazy loading shops
-    useEffect(()=>{
-        switch(true){
-            case openSpecificGameShop[0]:
-                //loadTowerGameShop();
-                break;
-            case openSpecificGameShop[1]:
-                loadBallGameShop();
-                break;
-            case openSpecificGameShop[2]:
-                loadPizzaGameShop();
-                break;
-            default:
-                break;
-        }
-    },[openSpecificGameShop]);
 
+    const [isShopFirstLoad,setIsShopFirstLoad] = useState([true,true,true])
+    
     
     
     
 
-    /*-----------------------------------------------------------------------
-    specific game shop section start
-    ---------------------------------------------------------------------- */
+   //the serch bar
+
+   const [searchQuery, setSearchQuery] = useState("");
+
+   //the content display at info page
+   const [gameDescription,setGameDescription] = useState(gameCardArr[Math.floor(Math.random()*gameCardArr.length)].howToPlay);
+
+   const [contectUsText,_] = useState(generalInfo.description)
 
 
 
@@ -593,7 +279,7 @@ function MainPage({switchPage,styleDisplay}) {
 
 
     return(
-        <div style={{...styleDisplay}} className={styles.background}>
+        <div style={{...styleDisplay}} className={styles.container}>
             <h1 className={styles.welcomeTag}
             style={{display:welcomeMessageLoaded?'block':'none'}}>{welcomeMessage}</h1>
 
@@ -601,37 +287,141 @@ function MainPage({switchPage,styleDisplay}) {
             className={styles.loadingScreen}>
                 <img src = {loadingGear}></img>
                 <h1>loading {loadingDots}</h1>
-
             </div>
 
 
-            <img src={shopIcon}
-            alt="Shop Icon"
-            className={styles.shop}
+            <div className={styles.topNavBar}>
+                {!displaySubPage[0]&&<button className={styles.navButton}
+                onClick={()=>{setDisplaySubPage([true,false,false,false]);}}>
+                <Home size={30}></Home>
+                </button>}
+                <button 
+                className={styles.navButton}
+                onClick={()=>{
+                    setDisplaySubPage([false,true,false,false]);
+                    setUpdateCoin(u=>u+1);
+            }}><ShoppingBag size={30}></ShoppingBag></button>
+
+                <button className={styles.navButton}><Info size={30} onClick={()=>{setDisplaySubPage([false,false,true,false])}}></Info></button>
+
+                <button className={styles.navButton}><Share2 size={30} onClick={()=>{setDisplaySubPage([false,false,false,true])}}></Share2></button>
+
+                {displaySubPage[0]&&<div className={styles.searchContainer}>
+                    <input 
+                        type="text" 
+                        className={styles.searchInput} 
+                        placeholder="Search games..." 
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                    />
+                    <button className={styles.searchInsideButton} onClick={() => {
+                        //reset to first page regardless
+                        setCardArrStartingIndex(0);
+                        setDisplayedGameCardArr([...gameCardArr.filter(element=>element.gameNameIdentifier
+                                                                        .replaceAll(" ","") 
+                                                                        .toLowerCase()
+                                                                        .includes(searchQuery.replaceAll(" ","").toLowerCase()))])
+                        }}>
+                        <Search size={18} />
+                    </button>
+                </div>}
+
+                <button className={styles.navButtonRed}
             onClick={()=>{
-                setOpenShop(true);
-                setUpdateCoin(u=>u+1);
-            }}></img>
+                setDisplayLogoutScreen(d=>true)
+            }}><LogOut size={30}></LogOut></button>
+            </div>
+
+
+
+
+
+            {/*game card display */}
+            {displaySubPage[0]&&displayedGameCardArr.map((g,gI)=>{
+                if(gI>=cardArrStartingIndex&&gI<=cardArrStartingIndex+2){
+                    return (<div className={styles.card} key={`${g.gameNameIdentifier}card`}>
+                        <div className={styles.content}>
+                            <img src={g.icon}></img>
+                            <h1 className={styles.header}>{g.gameNameIdentifier}</h1>
+                            <p className={styles.para}>{g.description}</p>
+                            <button className={styles.btn}
+                            onClick={()=>{
+                                setGameName(g.gameNameIdentifier);
+                                setReadyToEnter(true);
+                            }}>try {g.gameNameIdentifier}</button>
+                            <button className={styles.btn}
+                           onClick={()=>{setGameDescription(g.howToPlay);
+                            setDisplaySubPage([false,false,true,false])
+
+                           }}>How to Play 🤔 </button>
+
+                        </div>
+                    </div>)
+                }
+                return "";
+            })}
+            
+
+            {/* the tutorial panel */}
+            {displaySubPage[2]&&<div className={styles.tutorialPanel}>
+                <div className={styles.tutorialInner}>
+                {gameDescription.map((g,index)=>{
+                    switch(g.type){
+                        case "h1":
+                            return (<h1 key={`gametut${index}`}>{g.content}</h1>);
+                            
+                        case "h2":
+                            return (<h2 key={`gametut${index}`}>{g.content}</h2>);
+                        case "p":
+                            return (<p key ={`gametut${index}`}>{g.content}</p>);
+                        default:
+                            return null;
+                    }
+                })}
+                
+                </div>
+            </div>}
+
+
+            {/*The contact us panel */}
+
+            {displaySubPage[3]&&<div className={styles.tutorialPanel}>
+                <div className={styles.tutorialInner}>
+                    {contectUsText.map((c,index)=>{
+                    switch(c.type){
+                        case "h1":
+                            return (<h1 key={`contectUs${index}`}>{c.content}</h1>);
+                            
+                        case "h2":
+                            return (<h2 key={`contectUs${index}`}>{c.content}</h2>);
+                        case "p":
+                            return (<p key ={`contectUs${index}`}>{c.content}</p>);
+                        default:
+                            return null;
+                    }
+                })}
+
+
+                </div> 
+            </div>}
 
             {/*---------------------------------------
             the shop ui start
             ------------------------------------------ */}
 
             <div className = {styles.shopMainPage}
-            style={{display:openShop?'flex':'none',
+            style={{display:displaySubPage[1]?'flex':'none',
                 
             }}>
-                <button className={styles.existShopButton}
-                onClick={()=>{
-                    setOpenShop(false);
-                    
-                }}>close</button>
+                
 
-                <div className={styles.sideNavBar}>
+
+
+                <div className={styles.bottomNavBar}>
                     
 
-                    <img src={lv1Tower}
-                    style={{width:'17vw'}}
+                    <img src={towerGameIcon}
+                   
                     onClick={()=>{
                         setOpenSpecificGameShop(o=>{
                             let temp=o.map(_=>false);
@@ -644,8 +434,8 @@ function MainPage({switchPage,styleDisplay}) {
 
                     
 
-                    <img src={ballNo1}
-                    style={{width:'17vw'}}
+                    <img src={ballGameIcon}
+                   
                     onClick={()=>{
                         setOpenSpecificGameShop(o=>{
                             let temp=o.map(_=>false);
@@ -656,7 +446,7 @@ function MainPage({switchPage,styleDisplay}) {
                     }}></img>
 
                     <img src={pizza1}
-                    style={{width:'17vw'}}
+                    
                     onClick={()=>{
                         setOpenSpecificGameShop(o=>{
                             let temp=o.map(_=>false);
@@ -693,454 +483,16 @@ function MainPage({switchPage,styleDisplay}) {
                 ---------------------------------- */}
 
 
-                {/*-----------------------------
-                start of tower defence shop ui
-                ----------------------------------*/}
-                <div style={{
-                    display:openSpecificGameShop[0]?'block':'none'
-                }}>
-                    <button className={styles.imageSliderUp}
-                    onClick={()=>{
-                        setTowerIndex(t=>{
-                            if(t>=towerImgArr.current.length-1){
-                                return 0;
-                            }
-                            else{
-                                return t+1;
-                            }
-                        });
-                    }}>
-                        ^</button>
-
-                    
-                    <div className={styles.towerDisplayPanel}>
-                        {towerImgArr.current[towerIndex]}
-                        <h1>Tower Lv {towerIndex+1}</h1>
-                        <h1>Damage:{towerDmgArr.current[towerIndex]}</h1>
-                        <h1>Owned:{toweOwnedArr[towerIndex]}</h1>
-                       <button className={styles.buyButton}
-                       onClick={()=>{
-                        setOpenPurchasePanel(true);
-                        setNotEnoughMoneyWarning(n=>false);
-                       }}>Buy? {towerCostArr.current[towerIndex]} $</button>
-
-
-
-
-                    </div>
-
-                    <button className={styles.imageSliderDown}
-                    onClick={()=>{
-                        setTowerIndex(t=>{
-                            if(t===0){
-                                return towerImgArr.current.length-1;
-                            }else{
-                                return t-1;
-                            }
-                        });
-                    }}>
-                        ^
-                    </button>
-
-
-
-
-                    <div className={styles.towerDeployPanel}
-                    onClick={async ()=>{
-                        setDisplayTowerSelection(t=>true);
-                        
-                            try{
-                                //...................
-                                //edit here to add more tower
-                                //.................
-                                //loading screen
-                                setDisplayLoadingScreen(true);
-                                //loading screen
-
-                                const response = await fetch(`${import.meta.env.VITE_API_URL}/getUserTowerCollection`,{credentials: 'include'});
-                                if(response.ok){
-                                    const {towerCollection,towerLayout} = await response.json();
-                                    userTowerCollection.current = [...towerCollection];
-                                    userTowerDeploy.current = [...towerLayout];
-                                    console.log(userTowerCollection.current[0]);
-                                    console.log(userTowerDeploy.current);
-                                    
-
-
-                                }else{
-                                    console.log("something wrong");
-                                }
-
-
-                            }catch(error){
-                                console.log(error);
-                            }finally{
-                                //get rid of loading
-                                if(isDev){
-                                    await new Promise((resolve,reject)=>{
-                                        setTimeout(()=>{resolve();},testLoadingDelay);
-                                    });
-                                }
-                                setDisplayLoadingScreen(false);
-                                //get rid of loading
-                                
-                            }
-
-                        
-                    }}>
-                        
-                        Deploy Tower 
-                    </div>
-
-                </div>
-                
-                {/*tower deploy selection */}
-                <div className= {styles.towerDeploySelection}
-                        style={{display:displayTowerSelection?'flex':'none'}}>
-                            <h1>Choose a max of 3 towers to deploy in Battle</h1>
-                            <div>
-                                <div>
-                                    <img src ={towerDeployArr.current[0]}></img>
-                                    <input type="number" max={userTowerCollection.current[0]} min={0} value={val1}
-                                    onChange={(e)=>{
-                                        if(parseInt(e.target.value,10)>userTowerCollection.current[0]){
-                                            setVal1(userTowerCollection.current[0]);
-                                            
-                                        }else if(parseInt(e.target.value,10)<0){
-                                            setVal1(0);
-                                            
-                                        }else{
-                                            setVal1(parseInt(e.target.value,10));
-                                        }
-                                    }}></input>
-                                    
-                                </div>
-                                <div>
-                                    <img src ={towerDeployArr.current[1]}></img>
-                                    <input type="number" max={userTowerCollection.current[1]} min={0} value={val2}
-                                    onChange={(e)=>{
-                                        if(parseInt(e.target.value,10)>userTowerCollection.current[1]){
-                                            setVal2(userTowerCollection.current[1]);
-                                            
-                                        }else if(parseInt(e.target.value,10)<0){
-                                            setVal2(0);
-                                            
-                                        }else{
-                                            setVal2(parseInt(e.target.value,10));
-                                        }
-                                    }}></input>
-                                    
-                                </div>
-                                <div>
-                                    <img src ={towerDeployArr.current[2]}></img>
-                                    <input type="number" max={userTowerCollection.current[2]} min={0} value={val3}
-                                    onChange={(e)=>{
-                                        if(parseInt(e.target.value,10)>userTowerCollection.current[2]){
-                                            setVal3(userTowerCollection.current[2]);
-                                            
-                                        }else if(parseInt(e.target.value,10)<0){
-                                            setVal3(0);
-                                            
-                                        }else{
-                                            setVal3(parseInt(e.target.value,10));
-                                        }
-                                    }}></input>
-                                    
-                                </div>
-                                <div>
-                                    <img src ={towerDeployArr.current[3]}></img>
-                                    <input type="number" max={userTowerCollection.current[3]} min={0} value={val4}
-                                    onChange={(e)=>{
-                                        if(parseInt(e.target.value,10)>userTowerCollection.current[3]){
-                                            setVal4(userTowerCollection.current[3]);
-                                            
-                                        }else if(parseInt(e.target.value,10)<0){
-                                            setVal4(0);
-                                            
-                                        }else{
-                                            setVal4(parseInt(e.target.value,10));
-                                        }
-                                    }}></input>
-                                    
-                                </div>
-                                <div>
-                                    <img src ={towerDeployArr.current[4]}></img>
-                                    <input type="number" max={userTowerCollection.current[4]} min={0} value={val5}
-                                    onChange={(e)=>{
-                                        if(parseInt(e.target.value,10)>userTowerCollection.current[4]){
-                                            setVal5(userTowerCollection.current[4]);
-                                            
-                                        }else if(parseInt(e.target.value,10)<0){
-                                            setVal5(0);
-                                            
-                                        }else{
-                                            setVal5(parseInt(e.target.value,10));
-                                        }
-                                    }}></input>
-                                    
-                                </div>
-                                <div>
-                                    <img src ={towerDeployArr.current[5]}></img>
-                                    <input type="number" max={userTowerCollection.current[5]} min={0} value={val6}
-                                    onChange={(e)=>{
-                                        if(parseInt(e.target.value,10)>userTowerCollection.current[5]){
-                                            setVal6(userTowerCollection.current[5]);
-                                            
-                                        }else if(parseInt(e.target.value,10)<0){
-                                            setVal6(0);
-                                            
-                                        }else{
-                                            setVal6(parseInt(e.target.value,10));
-                                        }
-                                    }}></input>
-                                    
-                                </div>
-                                <div>
-                                    <img src ={towerDeployArr.current[6]}></img>
-                                    <input type="number" max={userTowerCollection.current[6]} min={0} value={val7}
-                                    onChange={(e)=>{
-                                        if(parseInt(e.target.value,10)>userTowerCollection.current[6]){
-                                            setVal7(userTowerCollection.current[6]);
-                                            
-                                        }else if(parseInt(e.target.value,10)<0){
-                                            setVal7(0);
-                                            
-                                        }else{
-                                            setVal7(parseInt(e.target.value,10));
-                                        }
-                                    }}></input>
-                                    
-                                </div>
-                                <div>
-                                    <img src ={towerDeployArr.current[7]}></img>
-                                    <input type="number" max={userTowerCollection.current[7]} min={0} value={val8}
-                                    onChange={(e)=>{
-                                        if(parseInt(e.target.value,10)>userTowerCollection.current[7]){
-                                            setVal8(userTowerCollection.current[7]);
-                                            
-                                        }else if(parseInt(e.target.value,10)<0){
-                                            setVal8(0);
-                                            
-                                        }else{
-                                            setVal8(parseInt(e.target.value,10));
-                                        }
-                                    }}></input>
-                                    
-                                </div>
-                                <div>
-                                    <img src ={towerDeployArr.current[8]}></img>
-                                    <input type="number" max={userTowerCollection.current[8]} min={0} value={val9}
-                                    onChange={(e)=>{
-                                        if(parseInt(e.target.value,10)>userTowerCollection.current[8]){
-                                            setVal9(userTowerCollection.current[8]);
-                                            
-                                        }else if(parseInt(e.target.value,10)<0){
-                                            setVal9(0);
-                                            
-                                        }else{
-                                            setVal9(parseInt(e.target.value,10));
-                                        }
-                                    }}></input>
-                                    
-                                </div>
-                                <div>
-                                    <img src ={towerDeployArr.current[9]}></img>
-                                    <input type="number" max={userTowerCollection.current[9]} min={0} value={val10}
-                                    onChange={(e)=>{
-                                        if(parseInt(e.target.value,10)>userTowerCollection.current[9]){
-                                            setVal10(userTowerCollection.current[9]);
-                                            
-                                        }else if(parseInt(e.target.value,10)<0){
-                                            setVal10(0);
-                                            
-                                        }else{
-                                            setVal10(parseInt(e.target.value,10));
-                                        }
-                                    }}></input>
-                                    
-                                </div>
-
-                                <div>
-                                    <img src ={towerDeployArr.current[10]}></img>
-                                    <input type="number" max={userTowerCollection.current[10]} min={0} value={val11}
-                                    onChange={(e)=>{
-                                        if(parseInt(e.target.value,10)>userTowerCollection.current[10]){
-                                            setVal11(userTowerCollection.current[10]);
-                                            
-                                        }else if(parseInt(e.target.value,10)<0){
-                                            setVal11(0);
-                                            
-                                        }else{
-                                            setVal11(parseInt(e.target.value,10));
-                                        }
-                                    }}></input>
-                                    
-                                </div>
-
-                                <div>
-                                    <img src ={towerDeployArr.current[11]}></img>
-                                    <input type="number" max={userTowerCollection.current[11]} min={0} value={val12}
-                                    onChange={(e)=>{
-                                        if(parseInt(e.target.value,10)>userTowerCollection.current[11]){
-                                            setVal12(userTowerCollection.current[11]);
-                                            
-                                        }else if(parseInt(e.target.value,10)<0){
-                                            setVal12(0);
-                                            
-                                        }else{
-                                            setVal12(parseInt(e.target.value,10));
-                                        }
-                                    }}></input>
-                                    
-                                </div>
-                                
-
-                                
-                            </div>
-                            <button onClick={async ()=>{
-                                //.....................
-                                //edit here to add more tower
-                                //.....................
-                                setShowTooMuchDeploy(false);
-                                if((val1+val2+val3+val4+val5+val6+val7+val8+val9+val10+val11+val12)>userTowerDeploy.current.length){
-                                    console.log((val1+val2+val3+val4+val5+val6+val7+val8+val9+val10+val11+val12));
-                                setTimeout(()=>{setShowTooMuchDeploy(true)},10)
-                                }else{
-                                    const tempArr=[val1,val2,val3,val4,val5,val6,val7,val8,val9,val10,val11,val12];
-                                    let tempDeployArr=[];
-                                    for(let i =0;i<tempArr.length;++i){
-                                        for(let j=0;j<tempArr[i];++j){
-                                            tempDeployArr.push(i+1);
-
-                                        }
-                                        
-                                    }
-                                    if(tempDeployArr.length<userTowerDeploy.current.length){
-
-                                        //fill zeros
-                                        const tempLength = tempDeployArr.length;
-                                        for(let i=0;i<userTowerDeploy.current.length-tempLength;++i){
-                                            tempDeployArr.push(0);
-                                        }
-                                        
-                                    }
-                                    console.log(tempDeployArr)
-                                    try{
-
-                                        setDisplayLoadingScreen(true)
-
-                                    const response = await fetch(`${import.meta.env.VITE_API_URL}/editTowerDeploy`,{
-                                        method:'POST',
-                                        credentials: 'include',
-                                        headers: {'Content-Type': 'application/json'},
-                                        body: JSON.stringify({
-                                            updatedDeploy:[...tempDeployArr]
-                                        })
-                                    });
-                                    if(response.ok){
-                                        setDisplayTowerSelection(false);
-                                        console.log('success');
-                                        
-                                    }
-                                    }catch(error){
-                                        console.log(error);
-                                    }finally{
-                                        //get rid of loading
-                                        if(isDev){
-                                            await new Promise((resolve,reject)=>{
-                                                setTimeout(()=>{resolve();},testLoadingDelay);
-                                            });
-                                        }
-                                        setDisplayLoadingScreen(false);
-                                        //get rid of loading
-                                    }
-
-
-                                    
-                                }
-
-                            }}>save</button>
-
-                            <h1 className={styles.welcomeTag}
-                            style={{backgroundColor:'red',
-                                display:showTooMuchDeploy?'block':'none'
-                            }}>Maximum 3 allowed 🤬</h1>
-
-
-                </div>
-
-
-
-
-                <div style={{display:openPurchasePanel?'flex':'none'}}
-                    className={styles.confirmPurchasePanel}>
-                        <h1>buy lv {towerIndex+1} tower ? </h1>
-                        <button className={styles.enterGameButton}
-                        onClick={async ()=>{
-                            setNotEnoughMoneyWarning(n=>false);
-                            if(coinAmount<towerCostArr.current[towerIndex]){
-                                //not enough money
-                                
-                                setTimeout(() => {
-                                setNotEnoughMoneyWarning(true);}, 10);
-                            }else{
-                                try{
-                                    //....................
-                                    //edit here to add more tower
-                                    //.....................
-
-                                    setDisplayLoadingScreen(true);
-
-                                    const response = await fetch(`${import.meta.env.VITE_API_URL}/addTower`,{
-                                        method:'POST',
-                                        credentials: 'include',
-                                        headers: {'Content-Type': 'application/json'},
-                                        body: JSON.stringify({
-                                            purchasedTowerLevel:towerIndex+1
-                                        })
-
-                                    })
-                                    if(response.ok){
-                                        //operation success
-                                        //render changes
-                                        setUpdateCoin(u=>u+1);
-                                        setTowerOwnedArr(t=>{
-                                            let temp = [...t];
-                                            temp[towerIndex]++;
-                                            return temp;
-                                        });
-                                        setOpenPurchasePanel(false);
-
-                                    }else{
-                                        console.log("unknown error")
-                                    }
-
-
-                                }catch(error){
-                                    console.log(error);
-                                }finally{
-                                    //get rid of loading
-                                    if(isDev){
-                                        await new Promise((resolve,reject)=>{
-                                            setTimeout(()=>{resolve();},testLoadingDelay);
-                                        });
-                                    }
-                                    setDisplayLoadingScreen(false);
-                                    //get rid of loading
-                                }
-                            }
-                        }}>yes ✅ -{towerCostArr.current[towerIndex]}$</button>
-                        <button className={styles.notEnterGameButton}
-                        onClick={()=>{
-                            setOpenPurchasePanel(false);
-                        }}>no ❌</button>
-
-                        <h1 className={styles.welcomeTag}
-                        style={{backgroundColor:'hsla(0, 100%, 50%, 0.70)',
-                            display:notEnoughMoneyWarning?'block':'none'
-                        }}>not Enough Speed Coins 😭</h1>
-                </div>
-
+                    {/*-----------------------------
+                    start of tower defence shop ui
+                    ----------------------------------*/}
+                    {(openSpecificGameShop[0]||!isShopFirstLoad[0])&&<TowerShop
+                    toggle={{display:openSpecificGameShop[0]?"block":"none"}}
+                    styles={styles}
+                    setDisplayLoadingScreen={(TF)=>{setDisplayLoadingScreen(TF)}}
+                    setUpdateCoin={(increment)=>{setUpdateCoin(u=>u+increment)}}
+                    coinAmount={coinAmount}
+                    setIsShopFirstLoad={(TF)=>{setIsShopFirstLoad(s=>{const temp=[...s];temp[0]=TF;return temp})}}></TowerShop>}
 
 
                     {/*------------------------------------------
@@ -1151,377 +503,37 @@ function MainPage({switchPage,styleDisplay}) {
 
 
 
-                    {/* start of Ball Clutch shop */}
+                    {/*-----------------------------------
+                     start of Ball Clutch shop 
+                     ---------------------------------------*/}
 
-                    <div style={{display:openSpecificGameShop[1]?'block':'none'}}>
+                    {(openSpecificGameShop[1]||!isShopFirstLoad[1])&&<BallShop
+                    toggle={{display:openSpecificGameShop[1]?"block":"none"}}
+                    styles={styles}
+                    setDisplayLoadingScreen={(TF)=>{setDisplayLoadingScreen(TF)}}
+                    setUpdateCoin={(increment)=>{setUpdateCoin(u=>u+increment)}}
+                    setIsShopFirstLoad={(TF)=>{setIsShopFirstLoad(s=>{const temp=[...s];temp[1]=TF;return temp})}}></BallShop>}
 
-                        <button className={styles.imageSliderUp}
-                        onClick={()=>{
-                            setBallIndex(b=>{
-                                if(b>=ballImgArr.length-1){
-                                    return 0;
-                                }
-                                return b+1;
-                            });
-                        }}>^</button>
-
-                        {/*reuse some style from already existed style */}
-
-                        <div className={styles.towerDisplayPanel}>
-                            <img src={ballImgArr[ballIndex]}
-                            className={styles.towerShowCase}
-                            style={{width:'200px',height:'200px'}}></img>
-                            <h1>Ball No {ballIndex+1}</h1>
-
-                            <h1>{ballOwnedStatusArr[ballIndex]===0?"not Owned":
-                                ballOwnedStatusArr[ballIndex]===1?"owned, not selected":
-                                ballOwnedStatusArr[ballIndex]===2?"owned, selected":""}
-                            </h1>
-
-                            {ballOwnedStatusArr[ballIndex]===0?
-                            <button className={styles.buyButton}
-                            onClick={()=>{
-                                setBallClutch_showPurchaseOrSelect(true);
-
-                            }}>buy: {ballGameSettingArr[ballIndex].cost} $</button>:
-                            ballOwnedStatusArr[ballIndex]===1?
-                            <button className={styles.buyButton}
-                            onClick = {()=>{
-                                setBallClutch_showPurchaseOrSelect(true);
-                            }}>Select this Ball ?</button>:
-                            ""}
-                            
-                        </div>
+                    {/*---------------------------
+                    end of ball game shop
+                    ----------------------------- */}
 
 
-
-                        <button className={styles.imageSliderDown}
-                         onClick={()=>{
-                            setBallIndex(b=>{
-                                if(b<=0){
-                                    return ballImgArr.length-1;
-                                }
-                                return b-1;
-                            });
-                        }}>^</button>
-
-
-                        <div className={styles.generalPopup}
-                        style = {{display:ballCluctch_showPurchaseOrSelect?'flex':'none'}}>
-
-                            <h1>{ballOwnedStatusArr[ballIndex]===0?`buy ball No ${ballIndex+1}`:
-                                ballOwnedStatusArr[ballIndex]===1?"select this ball?":""}</h1>
-                            {ballOwnedStatusArr[ballIndex]===0?
-                            <button className={styles.generalYesPopupButton}
-                            onClick={async ()=>{
-                                try{
-                                    setDisplayLoadingScreen(true);
-                                    const response = await fetch(`${import.meta.env.VITE_API_URL}/ballGame/changeBallStatusArr`,
-                                        {method:'POST',
-                                        credentials: 'include',
-                                        headers: {'Content-Type': 'application/json'},
-                                        body: JSON.stringify({
-                                            mode:'purchaseNewBall',
-                                            purchasedBallNumber:ballIndex+1,
-                                            selectedBallNumber:1
-                                        })
-                                        }
-                                    );
-                                    if(response.ok){
-                                        const {data} = await response.json();
-                                        if(isDev){console.log(data)}
-                                        setBallOwnedStatusArr(b=>[...data]);
-                                        setUpdateCoin(u=>u+1);
-                                        setBallClutch_showPurchaseOrSelect(b=>false);
-
-                                    }else{
-                                        const{message} = await response.json();
-                                        if(isDev){console.log(message)}
-                                        setBallClutch_warningMessage(message);
-                                        setDisplayBallClutch_warningMessage(false);
-                                        setTimeout(()=>{setDisplayBallClutch_warningMessage(true)},10);
-
-                                       
-
-
-                                    }
-                                    
-                                }catch(error){
-                                    if(isDev){console.log(error)}
-                                }finally{
-                                    //get rid of loading
-                                    if(isDev){
-                                        await new Promise((resolve,reject)=>{
-                                            setTimeout(()=>{resolve();},testLoadingDelay);
-                                        });
-                                    }
-                                    setDisplayLoadingScreen(false);
-                                    //get rid of loading
-                                }
-
-                            }}>yes -{ballGameSettingArr[ballIndex]?.cost} $</button>:
-                            ballOwnedStatusArr[ballIndex]===1?
-                            <button className={styles.generalYesPopupButton}
-                            onClick={async ()=>{
-                                try{
-                                    setDisplayLoadingScreen(true);
-                                    const response = await fetch(`${import.meta.env.VITE_API_URL}/ballGame/changeBallStatusArr`,
-                                        {method:'POST',
-                                        credentials: 'include',
-                                        headers: {'Content-Type': 'application/json'},
-                                        body: JSON.stringify({
-                                            mode:'selectBall',
-                                            purchasedBallNumber:1,
-                                            selectedBallNumber:ballIndex+1
-                                        })
-                                        }
-                                    );
-                                    if(response.ok){
-                                        const {data} = await response.json();
-                                        if(isDev){console.log(data)}
-                                        setBallOwnedStatusArr(b=>[...data]);
-                                        setBallClutch_showPurchaseOrSelect(b=>false);
-
-                                    }else{
-                                        const{message} = await response.json();
-                                        if(isDev){console.log(message)}
-                                        setBallClutch_warningMessage(message);
-                                        setDisplayBallClutch_warningMessage(false);
-                                        setTimeout(()=>{setDisplayBallClutch_warningMessage(true)},10);
-
-                                    }
-
-
-
-                                }catch(error){
-                                    if(isDev){console.log(error)}
-
-                                }finally{
-                                    //get rid of loading
-                                    if(isDev){
-                                        await new Promise((resolve,reject)=>{
-                                            setTimeout(()=>{resolve();},testLoadingDelay);
-                                        });
-                                    }
-                                    setDisplayLoadingScreen(false);
-                                    //get rid of loading
-                                }
-
-
-                            }}>yes 😍</button>:""}
-
-                            <button className={styles.generalNoPopupButton}
-                            onClick={()=>{
-                                setBallClutch_showPurchaseOrSelect(b=>false);
-                            }}>
-                                nope ❌
-                            </button>
-
-
-                            {!displayBallClutch_warningMessage?''
-                        :<h1 className={styles.welcomeTag}
-                        style={{backgroundColor:'red',display:'flex',justifyContent:'center'}}>
-                            {ballClutch_warningMessage}</h1>}
-
-
-
-                        </div>
-
+                    {/* ----------------------------
+                    start of pizza slicing shop
+                    ------------------------------------- */}
                     
-                    </div>
+                    {(openSpecificGameShop[2]||!isShopFirstLoad[2])&&<PizzaShop
+                    toggle={{display:openSpecificGameShop[2]?"block":"none"}}
+                    styles={styles}
+                    setDisplayLoadingScreen={(TF)=>{setDisplayLoadingScreen(TF)}}
+                    setUpdateCoin={(increment)=>{setUpdateCoin(u=>u+increment)}}
+                    setIsShopFirstLoad={(TF)=>{setIsShopFirstLoad(s=>{const temp=[...s];temp[2]=TF;return temp})}}></PizzaShop>}
 
-
-
-                    {/* start of pizza slicing shop */}
-
-                     <div style={{display:openSpecificGameShop[2]?'block':'none'}}>
-
-                        <button className={styles.imageSliderUp}
-                        onClick={()=>{
-                            setSkIndex(s=>{
-                                if(s>=skImgArr.length-1){
-                                    return 0;
-                                }
-                                return s+1;
-                            });
-                        }}>^</button>
-
-
-
-                        <div className={styles.towerDisplayPanel}>
-                            <img src={skImgArr[skIndex]}
-                            className={styles.towerShowCase}
-                            style={{width:'160px',height:'160px'}}>
-                            </img>
-                            <h1>shuriken level {skIndex+1}</h1>
-
-                            <h1>damage: {skGameSettingArr[skIndex].damage}</h1>
-
-                            <h1>{skOwnedStatusArr[skIndex]===0?"not Owned":
-                                skOwnedStatusArr[skIndex]===1?"owned, not selected":
-                                skOwnedStatusArr[skIndex]===2?"owned, selected":""}
-                            </h1>
-
-                            {skOwnedStatusArr[skIndex]===0?
-                            <button className={styles.buyButton}
-                            onClick={()=>{
-                                setPizzaSlicer_showPurchaseOrSelect(true);
-                            }}>buy: {skGameSettingArr[skIndex].cost} $</button>:
-                            skOwnedStatusArr[skIndex]===1?
-                            <button className={styles.buyButton}
-                            onClick = {()=>{
-                                setPizzaSlicer_showPurchaseOrSelect(true);
-                            }}>Select this shuriken ?</button>:
-                            ""}
-                        </div>
-
-                        <div className={styles.generalPopup}
-                        style = {{display:pizzaSlicer_showPurchaseOrSelect?'flex':'none'}} >
-                            <h1>{skOwnedStatusArr[skIndex]===0?`buy shuriken level ${skIndex+1}`:
-                                skOwnedStatusArr[skIndex]===1?"select this shuriken?":""}</h1>
-                            
-                            {skOwnedStatusArr[skIndex]===0?<button
-                            className={styles.generalYesPopupButton}
-                            onClick = {async()=>{
-                                try{
-                                    setDisplayLoadingScreen(true);
-                                    const response = await fetch(`${import.meta.env.VITE_API_URL}/pizzaGame/changeSkStatusArr`,
-                                        {method:'POST',
-                                        credentials: 'include',
-                                        headers: {'Content-Type': 'application/json'},
-                                        body: JSON.stringify({
-                                            mode:'purchaseNewSk',
-                                            purchasedSkNumber:skIndex+1,
-                                            selectedSkNumber:1
-                                        })
-                                        }
-                                    );
-                                    if(response.ok){
-                                        const {data} = await response.json();
-                                        setSkOwnedStatusArr([...data]);
-                                        if(isDev){console.log(data);}
-                                        setUpdateCoin(u=>u+1);
-                                        setPizzaSlicer_showPurchaseOrSelect(false);
-
-                                    }else{
-                                        const {message} = await response.json();
-                                        setPizzaSlicer_warningMessage(message);
-                                        setDisplayPizzaSlicer_warningMessage(false);
-                                        setTimeout(()=>{
-                                            setDisplayPizzaSlicer_warningMessage(true);
-                                        },50);
-
-
-                                    }
-
-                                }catch(error){
-                                    if(isDev){console.log(error)}
-                                }finally{
-                                    //get rid of loading
-                                    if(isDev){
-                                        await new Promise((resolve,reject)=>{
-                                            setTimeout(()=>{resolve();},testLoadingDelay);
-                                        });
-                                    }
-                                    setDisplayLoadingScreen(false);
-                                    //get rid of loading
-                                }
-
-                            }}> yes -{skGameSettingArr[skIndex].cost}$
-                            </button>:
-                            skOwnedStatusArr[skIndex]===1?<button
-                            className={styles.generalYesPopupButton}
-                            onClick = {async()=>{
-                                try{
-                                    setDisplayLoadingScreen(true);
-                                    const response = await fetch(`${import.meta.env.VITE_API_URL}/pizzaGame/changeSkStatusArr`,
-                                        {method:'POST',
-                                        credentials: 'include',
-                                        headers: {'Content-Type': 'application/json'},
-                                        body: JSON.stringify({
-                                            mode:'selectSk',
-                                            purchasedSkNumber:1,
-                                            selectedSkNumber:skIndex+1
-                                        })
-                                        }
-                                    );
-                                    if(response.ok){
-                                        const {data}  =await response.json();
-                                        setSkOwnedStatusArr([...data]);
-                                        if(isDev){console.log(data);}
-                                        setPizzaSlicer_showPurchaseOrSelect(false);
-
-                                    }else{
-                                        const {message} = await response.json();
-                                        setPizzaSlicer_warningMessage(message);
-                                        setDisplayPizzaSlicer_warningMessage(false);
-                                        setTimeout(()=>{
-                                            setDisplayPizzaSlicer_warningMessage(true);
-                                        },50);
-
-                                    }
-
-                                }catch(error){
-                                    if(isDev){console.log(error);}
-                                }finally{
-                                    //get rid of loading
-                                    if(isDev){
-                                        await new Promise((resolve,reject)=>{
-                                            setTimeout(()=>{resolve();},testLoadingDelay);
-                                        });
-                                    }
-                                    setDisplayLoadingScreen(false);
-                                    //get rid of loading
-
-                                }
-
-                            }}> yes 😍
-                            </button>:""}
-
-                            <button className={styles.generalNoPopupButton}
-                            onClick={()=>{
-                                setPizzaSlicer_showPurchaseOrSelect(p=>false);
-                            }}>
-                                nope ❌
-                            </button>
-
-                            {!displayPizzaSlicer_warningMessage?''
-                        :<h1 className={styles.welcomeTag}
-                        style={{backgroundColor:'red',display:'flex',justifyContent:'center'}}>
-                            {pizzaSlicer_warningMessage}</h1>}
-
-                        
-
-                        </div>
-
-                        
-
-
-
-
-
-
-
-
-
-                        <button className = {styles.imageSliderDown}
-                        onClick={()=>{
-                            setSkIndex(s=>{
-                                if(s<=0){
-                                    return skImgArr.length-1;
-                                }
-                                return s-1;
-                            });
-                        }}> ^</button>
-
-
-                        
-                        
-                    
-                    
-                    
-                    
-                    </div>           
+                    {/* ----------------------------
+                    end of pizza slicing shop
+                    ------------------------------------- */}
+   
 
 
             </div>
@@ -1534,23 +546,20 @@ function MainPage({switchPage,styleDisplay}) {
             
             
             
-            {/*more game card here*/ }
-            {towerGameCard}
 
-            {ballClutchGameCard}
-
-            {pizzaSlicingGameCard}
+           
 
 
 
             {/*----------------------------------------------
             enter game panel start
             ------------------------------------------------- */}
-            <div className={styles.enterGameConfirmPanel}
+            <div className={styles.panelBackdrop}
             style={{display:readyToEnter?'flex':'none'}}>
+                <div className={styles.panelBoard}>
                 <h1 className={styles.enterConfirm}
                 style={{display:readyToEnter?'flex':'none'}}>play {gameName}</h1>
-                <button className={styles.enterGameButton}
+                <button className={styles.panelConfirmButton}
                 onClick={async ()=>{
                     switch (gameName){
                         case 'Tower Defense':
@@ -1571,10 +580,13 @@ function MainPage({switchPage,styleDisplay}) {
 
 
 
-                <button className={styles.notEnterGameButton}
+                <button className={styles.panelCancelButton}
                 onClick={()=>{
                     setReadyToEnter(false);
                 }}>nope 😴</button>
+
+
+                </div>
 
             </div>
             
@@ -1592,14 +604,16 @@ function MainPage({switchPage,styleDisplay}) {
 
 
 
-            <div className={styles.logoutScreen}
+            <div className={`${styles.panelBackdrop} ${styles.panelBackdropRed}`}
             style={{display:displayLogoutScreen?'flex':'none'}}>
+
+                <div className={`${styles.panelBoard} ${styles.panelBoardRed}`}>
                 <h1>Log Out? You are always welcomed back💗</h1>
-                <button className={styles.cancelLogout}
+                <button className={`${styles.panelConfirmButton} ${styles.panelConfirmButtonGreen}`}
                 onClick={()=>{
                     setDisplayLogoutScreen(d=>false)
                 }}>No ❌</button>
-                <button className={styles.confirmLogout}
+                <button className={styles.panelCancelButton}
                 onClick={async ()=>{
                     //the logout logic
                     try{
@@ -1630,12 +644,11 @@ function MainPage({switchPage,styleDisplay}) {
                     }
 
                 }}>Yes ✅</button>
+
+                </div>
             </div>
 
-            <button className={styles.logoutButton}
-            onClick={()=>{
-                setDisplayLogoutScreen(d=>true)
-            }}>X</button>
+            
 
             {/*----------------------------------------------
             logout panel end

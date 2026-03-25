@@ -1,0 +1,666 @@
+//image import for towerDefence game shop
+import lv1Tower from '../../images/towerGameImg/towerLv1.png';
+import lv2Tower from '../../images/towerGameImg/towerLv2.png';
+import lv3Tower from '../../images/towerGameImg/towerLv3.png';
+import lv4Tower from '../../images/towerGameImg/towerLv4.png';
+import lv5Tower from '../../images/towerGameImg/towerLv5.png';
+import lv6Tower from '../../images/towerGameImg/towerLv6.png';
+import lv7Tower from '../../images/towerGameImg/towerLv7.png';
+import lv8Tower from '../../images/towerGameImg/towerLv8.png';
+import lv9Tower from '../../images/towerGameImg/towerLv9.png';
+import lv10Tower from '../../images/towerGameImg/towerLv10.png';
+import lv11Tower from '../../images/towerGameImg/towerLv11.png';
+import lv12Tower from '../../images/towerGameImg/towerLv12.png';
+import { useEffect, useState,useRef } from "react";
+
+import { ChevronLeft, ChevronRight } from 'lucide-react';
+
+const isDev = import.meta.env.VITE_MODE==='DEV';
+const testLoadingDelay = 2000;
+                                        
+function TowerShop({styles, setDisplayLoadingScreen,setUpdateCoin,coinAmount,setIsShopFirstLoad,toggle}){
+     /*----------------------------------------------------------------
+       tower shop variable block start
+       ------------------------------------------------------------------- */ 
+        const[towerIndex,setTowerIndex]=useState(0);
+        const towerImgArr = useRef([<img src={lv1Tower} className={styles.towerShowCase}/>,
+                                    <img src={lv2Tower} className={styles.towerShowCase}/>,
+                                    <img src={lv3Tower} className={styles.towerShowCase}/>,
+                                    <img src={lv4Tower} className={styles.towerShowCase}/>,
+                                    <img src={lv5Tower} className={styles.towerShowCase}/>,
+                                    <img src={lv6Tower} className={styles.towerShowCase}/>,
+                                    <img src={lv7Tower} className={styles.towerShowCase}/>,
+                                    <img src={lv8Tower} className={styles.towerShowCase}/>,
+                                    <img src={lv9Tower} className={styles.towerShowCase}/>,
+                                    <img src={lv10Tower} className={styles.towerShowCase}/>,
+                                    <img src = {lv11Tower} className={styles.towerShowCase}></img>,
+                                    <img src = {lv12Tower} className={styles.towerShowCase}></img>
+        
+        ]);
+        //................
+        //edit here to add more tower
+        //.......................
+    
+    
+    
+        const towerDmgArr = useRef([]);
+        const towerCostArr = useRef([]);
+        const [toweOwnedArr,setTowerOwnedArr]=useState([]);
+    
+        const towerDeployArr=useRef([
+            lv1Tower,lv2Tower,lv3Tower,lv4Tower,
+            lv5Tower,lv6Tower,lv7Tower,lv8Tower,
+            lv9Tower,lv10Tower,lv11Tower,lv12Tower
+        ]);
+    
+    
+    
+        //tower defence
+        const[openPurchasePanel,setOpenPurchasePanel]=
+        useState(false);
+        const[notEnoughMoneyWarning,setNotEnoughMoneyWarning]=
+        useState(false);
+    
+        const[displayTowerSelection,setDisplayTowerSelection]
+        =useState(false);
+        //for tower deploy
+        const userTowerCollection=useRef([]);
+    
+        const userTowerDeploy=useRef([]);
+        const[val1,setVal1]=useState(0);
+        const[val2,setVal2]=useState(0);
+        const[val3,setVal3]=useState(0);
+        const[val4,setVal4]=useState(0);
+        const[val5,setVal5]=useState(0);
+        const[val6,setVal6]=useState(0);
+        const[val7,setVal7]=useState(0);
+        const[val8,setVal8]=useState(0);
+        const[val9,setVal9]=useState(0);
+        const[val10,setVal10]=useState(0);
+        const[val11,setVal11]=useState(0);
+        const[val12,setVal12]=useState(0);
+        //....................
+        //edit here to add more tower
+        //.......................
+    
+        const[showTooMuchDeploy,setShowTooMuchDeploy]
+        =useState(false);
+        
+    
+    
+    
+        //..........................
+        //edit here to add more tower
+        //..........................
+        
+       /*----------------------------------------------------------------
+       tower  variable block end
+       ------------------------------------------------------------------- */ 
+
+
+       useEffect(()=>{
+        setIsShopFirstLoad(false);
+        //init game shops
+        async function loadTowerGameShop(){
+                try{
+                    setDisplayLoadingScreen(true);
+                    const response = await fetch(`${import.meta.env.VITE_API_URL}/towerShop`, { credentials: 'include' });
+                    if(response.ok){
+                    const data = await response.json();
+                    towerDmgArr.current=[data.tower1.damage,
+                                        data.tower2.damage,
+                                        data.tower3.damage,
+                                        data.tower4.damage,
+                                        data.tower5.damage,
+                                        data.tower6.damage,
+                                        data.tower7.damage,
+                                        data.tower8.damage,
+                                        data.tower9.damage,
+                                        data.tower10.damage,
+                                        data.tower11.damage,
+                                        data.tower12.damage,
+
+                                            
+                    ];
+                    if(isDev){
+                        console.log(towerDmgArr.current);
+                    }
+                    //....................
+                    //edit here to add more tower
+                    //......................
+                    towerCostArr.current=[
+                                        data.tower1.cost,
+                                        data.tower2.cost,
+                                        data.tower3.cost,
+                                        data.tower4.cost,
+                                        data.tower5.cost,
+                                        data.tower6.cost,
+                                        data.tower7.cost,
+                                        data.tower8.cost,
+                                        data.tower9.cost,
+                                        data.tower10.cost,
+                                        data.tower11.cost,
+                                        data.tower12.cost,
+
+                    ];
+                    //....................
+                    //edit here to add more tower
+                    //......................
+                     if(isDev){
+                        console.log(towerCostArr.current);
+                    }
+                    setTowerOwnedArr(t=>[data.tower1.owned,
+                                        data.tower2.owned,
+                                        data.tower3.owned,
+                                        data.tower4.owned,
+                                        data.tower5.owned,
+                                        data.tower6.owned,
+                                        data.tower7.owned,
+                                        data.tower8.owned,
+                                        data.tower9.owned,
+                                        data.tower10.owned,
+                                        data.tower11.owned,
+                                        data.tower12.owned,
+
+                    ]);
+                    //....................
+                    //edit here to add more tower
+                    //......................
+
+                    }else{
+                        console.log('fail to fetch');
+
+                    }
+
+                }catch(error){
+                    console.log(error)
+                }finally{
+
+                     //get rid of loading
+                        if(isDev){
+                            await new Promise((resolve,reject)=>{
+                                setTimeout(()=>{resolve();},testLoadingDelay);
+                            });
+                        }
+                        setDisplayLoadingScreen(false);
+                        //get rid of loading
+                }
+
+
+
+            
+
+            
+        }
+        loadTowerGameShop();
+
+       },[]);
+
+
+
+
+
+
+
+       return(<>
+                <div style={toggle}>
+                           <button className={styles.imageSliderUp}
+                           onClick={()=>{
+                               setTowerIndex(t=>{
+                                   if(t>=towerImgArr.current.length-1){
+                                       return 0;
+                                   }
+                                   else{
+                                       return t+1;
+                                   }
+                               });
+                           }}>
+                               <ChevronLeft size={50}></ChevronLeft></button>
+       
+                           
+                           <div className={styles.towerDisplayPanel}>
+                               {towerImgArr.current[towerIndex]}
+                               <h1>Tower Lv {towerIndex+1}</h1>
+                               <h1>Damage:{towerDmgArr.current[towerIndex]}</h1>
+                               <h1>Owned:{toweOwnedArr[towerIndex]}</h1>
+                              <button className={styles.buyButton}
+                              onClick={()=>{
+                               setOpenPurchasePanel(true);
+                               setNotEnoughMoneyWarning(n=>false);
+                              }}>Buy? {towerCostArr.current[towerIndex]} $</button>
+       
+       
+       
+       
+                           </div>
+       
+                           <button className={styles.imageSliderDown}
+                           onClick={()=>{
+                               setTowerIndex(t=>{
+                                   if(t===0){
+                                       return towerImgArr.current.length-1;
+                                   }else{
+                                       return t-1;
+                                   }
+                               });
+                           }}>
+                               <ChevronRight size={50}></ChevronRight>
+                           </button>
+       
+       
+       
+       
+                           <div className={`${styles.buyButton} ${styles.buyButtonVar}`}
+                           onClick={async ()=>{
+                               setDisplayTowerSelection(t=>true);
+                               
+                                   try{
+                                       //...................
+                                       //edit here to add more tower
+                                       //.................
+                                       //loading screen
+                                       setDisplayLoadingScreen(true);
+                                       //loading screen
+       
+                                       const response = await fetch(`${import.meta.env.VITE_API_URL}/getUserTowerCollection`,{credentials: 'include'});
+                                       if(response.ok){
+                                           const {towerCollection,towerLayout} = await response.json();
+                                           userTowerCollection.current = [...towerCollection];
+                                           userTowerDeploy.current = [...towerLayout];
+                                           console.log(userTowerCollection.current[0]);
+                                           console.log(userTowerDeploy.current);
+                                           
+       
+       
+                                       }else{
+                                           console.log("something wrong");
+                                       }
+       
+       
+                                   }catch(error){
+                                       console.log(error);
+                                   }finally{
+                                       //get rid of loading
+                                       if(isDev){
+                                           await new Promise((resolve,reject)=>{
+                                               setTimeout(()=>{resolve();},testLoadingDelay);
+                                           });
+                                       }
+                                       setDisplayLoadingScreen(false);
+                                       //get rid of loading
+                                       
+                                   }
+       
+                               
+                           }}>
+                               
+                               Deploy Tower 
+                           </div>
+       
+                       </div>
+
+
+                       
+                       {/*tower deploy selection */}
+                       <div className= {styles.towerDeploySelection}
+                               style={{display:displayTowerSelection?'flex':'none'}}>
+                                   <h1>Choose a max of 3 towers to deploy in Battle</h1>
+                                   <div>
+                                       <div>
+                                           <img src ={towerDeployArr.current[0]}></img>
+                                           <input type="number" max={userTowerCollection.current[0]} min={0} value={val1}
+                                           onChange={(e)=>{
+                                               if(parseInt(e.target.value,10)>userTowerCollection.current[0]){
+                                                   setVal1(userTowerCollection.current[0]);
+                                                   
+                                               }else if(parseInt(e.target.value,10)<0){
+                                                   setVal1(0);
+                                                   
+                                               }else{
+                                                   setVal1(parseInt(e.target.value,10));
+                                               }
+                                           }}></input>
+                                           
+                                       </div>
+                                       <div>
+                                           <img src ={towerDeployArr.current[1]}></img>
+                                           <input type="number" max={userTowerCollection.current[1]} min={0} value={val2}
+                                           onChange={(e)=>{
+                                               if(parseInt(e.target.value,10)>userTowerCollection.current[1]){
+                                                   setVal2(userTowerCollection.current[1]);
+                                                   
+                                               }else if(parseInt(e.target.value,10)<0){
+                                                   setVal2(0);
+                                                   
+                                               }else{
+                                                   setVal2(parseInt(e.target.value,10));
+                                               }
+                                           }}></input>
+                                           
+                                       </div>
+                                       <div>
+                                           <img src ={towerDeployArr.current[2]}></img>
+                                           <input type="number" max={userTowerCollection.current[2]} min={0} value={val3}
+                                           onChange={(e)=>{
+                                               if(parseInt(e.target.value,10)>userTowerCollection.current[2]){
+                                                   setVal3(userTowerCollection.current[2]);
+                                                   
+                                               }else if(parseInt(e.target.value,10)<0){
+                                                   setVal3(0);
+                                                   
+                                               }else{
+                                                   setVal3(parseInt(e.target.value,10));
+                                               }
+                                           }}></input>
+                                           
+                                       </div>
+                                       <div>
+                                           <img src ={towerDeployArr.current[3]}></img>
+                                           <input type="number" max={userTowerCollection.current[3]} min={0} value={val4}
+                                           onChange={(e)=>{
+                                               if(parseInt(e.target.value,10)>userTowerCollection.current[3]){
+                                                   setVal4(userTowerCollection.current[3]);
+                                                   
+                                               }else if(parseInt(e.target.value,10)<0){
+                                                   setVal4(0);
+                                                   
+                                               }else{
+                                                   setVal4(parseInt(e.target.value,10));
+                                               }
+                                           }}></input>
+                                           
+                                       </div>
+                                       <div>
+                                           <img src ={towerDeployArr.current[4]}></img>
+                                           <input type="number" max={userTowerCollection.current[4]} min={0} value={val5}
+                                           onChange={(e)=>{
+                                               if(parseInt(e.target.value,10)>userTowerCollection.current[4]){
+                                                   setVal5(userTowerCollection.current[4]);
+                                                   
+                                               }else if(parseInt(e.target.value,10)<0){
+                                                   setVal5(0);
+                                                   
+                                               }else{
+                                                   setVal5(parseInt(e.target.value,10));
+                                               }
+                                           }}></input>
+                                           
+                                       </div>
+                                       <div>
+                                           <img src ={towerDeployArr.current[5]}></img>
+                                           <input type="number" max={userTowerCollection.current[5]} min={0} value={val6}
+                                           onChange={(e)=>{
+                                               if(parseInt(e.target.value,10)>userTowerCollection.current[5]){
+                                                   setVal6(userTowerCollection.current[5]);
+                                                   
+                                               }else if(parseInt(e.target.value,10)<0){
+                                                   setVal6(0);
+                                                   
+                                               }else{
+                                                   setVal6(parseInt(e.target.value,10));
+                                               }
+                                           }}></input>
+                                           
+                                       </div>
+                                       <div>
+                                           <img src ={towerDeployArr.current[6]}></img>
+                                           <input type="number" max={userTowerCollection.current[6]} min={0} value={val7}
+                                           onChange={(e)=>{
+                                               if(parseInt(e.target.value,10)>userTowerCollection.current[6]){
+                                                   setVal7(userTowerCollection.current[6]);
+                                                   
+                                               }else if(parseInt(e.target.value,10)<0){
+                                                   setVal7(0);
+                                                   
+                                               }else{
+                                                   setVal7(parseInt(e.target.value,10));
+                                               }
+                                           }}></input>
+                                           
+                                       </div>
+                                       <div>
+                                           <img src ={towerDeployArr.current[7]}></img>
+                                           <input type="number" max={userTowerCollection.current[7]} min={0} value={val8}
+                                           onChange={(e)=>{
+                                               if(parseInt(e.target.value,10)>userTowerCollection.current[7]){
+                                                   setVal8(userTowerCollection.current[7]);
+                                                   
+                                               }else if(parseInt(e.target.value,10)<0){
+                                                   setVal8(0);
+                                                   
+                                               }else{
+                                                   setVal8(parseInt(e.target.value,10));
+                                               }
+                                           }}></input>
+                                           
+                                       </div>
+                                       <div>
+                                           <img src ={towerDeployArr.current[8]}></img>
+                                           <input type="number" max={userTowerCollection.current[8]} min={0} value={val9}
+                                           onChange={(e)=>{
+                                               if(parseInt(e.target.value,10)>userTowerCollection.current[8]){
+                                                   setVal9(userTowerCollection.current[8]);
+                                                   
+                                               }else if(parseInt(e.target.value,10)<0){
+                                                   setVal9(0);
+                                                   
+                                               }else{
+                                                   setVal9(parseInt(e.target.value,10));
+                                               }
+                                           }}></input>
+                                           
+                                       </div>
+                                       <div>
+                                           <img src ={towerDeployArr.current[9]}></img>
+                                           <input type="number" max={userTowerCollection.current[9]} min={0} value={val10}
+                                           onChange={(e)=>{
+                                               if(parseInt(e.target.value,10)>userTowerCollection.current[9]){
+                                                   setVal10(userTowerCollection.current[9]);
+                                                   
+                                               }else if(parseInt(e.target.value,10)<0){
+                                                   setVal10(0);
+                                                   
+                                               }else{
+                                                   setVal10(parseInt(e.target.value,10));
+                                               }
+                                           }}></input>
+                                           
+                                       </div>
+       
+                                       <div>
+                                           <img src ={towerDeployArr.current[10]}></img>
+                                           <input type="number" max={userTowerCollection.current[10]} min={0} value={val11}
+                                           onChange={(e)=>{
+                                               if(parseInt(e.target.value,10)>userTowerCollection.current[10]){
+                                                   setVal11(userTowerCollection.current[10]);
+                                                   
+                                               }else if(parseInt(e.target.value,10)<0){
+                                                   setVal11(0);
+                                                   
+                                               }else{
+                                                   setVal11(parseInt(e.target.value,10));
+                                               }
+                                           }}></input>
+                                           
+                                       </div>
+       
+                                       <div>
+                                           <img src ={towerDeployArr.current[11]}></img>
+                                           <input type="number" max={userTowerCollection.current[11]} min={0} value={val12}
+                                           onChange={(e)=>{
+                                               if(parseInt(e.target.value,10)>userTowerCollection.current[11]){
+                                                   setVal12(userTowerCollection.current[11]);
+                                                   
+                                               }else if(parseInt(e.target.value,10)<0){
+                                                   setVal12(0);
+                                                   
+                                               }else{
+                                                   setVal12(parseInt(e.target.value,10));
+                                               }
+                                           }}></input>
+                                           
+                                       </div>
+                                       
+       
+                                       
+                                   </div>
+                                   <button onClick={async ()=>{
+                                       //.....................
+                                       //edit here to add more tower
+                                       //.....................
+                                       setShowTooMuchDeploy(false);
+                                       if((val1+val2+val3+val4+val5+val6+val7+val8+val9+val10+val11+val12)>userTowerDeploy.current.length){
+                                           console.log((val1+val2+val3+val4+val5+val6+val7+val8+val9+val10+val11+val12));
+                                       setTimeout(()=>{setShowTooMuchDeploy(true)},10)
+                                       }else{
+                                           const tempArr=[val1,val2,val3,val4,val5,val6,val7,val8,val9,val10,val11,val12];
+                                           let tempDeployArr=[];
+                                           for(let i =0;i<tempArr.length;++i){
+                                               for(let j=0;j<tempArr[i];++j){
+                                                   tempDeployArr.push(i+1);
+       
+                                               }
+                                               
+                                           }
+                                           if(tempDeployArr.length<userTowerDeploy.current.length){
+       
+                                               //fill zeros
+                                               const tempLength = tempDeployArr.length;
+                                               for(let i=0;i<userTowerDeploy.current.length-tempLength;++i){
+                                                   tempDeployArr.push(0);
+                                               }
+                                               
+                                           }
+                                           console.log(tempDeployArr)
+                                           try{
+       
+                                               setDisplayLoadingScreen(true)
+       
+                                           const response = await fetch(`${import.meta.env.VITE_API_URL}/editTowerDeploy`,{
+                                               method:'POST',
+                                               credentials: 'include',
+                                               headers: {'Content-Type': 'application/json'},
+                                               body: JSON.stringify({
+                                                   updatedDeploy:[...tempDeployArr]
+                                               })
+                                           });
+                                           if(response.ok){
+                                               setDisplayTowerSelection(false);
+                                               console.log('success');
+                                               
+                                           }
+                                           }catch(error){
+                                               console.log(error);
+                                           }finally{
+                                               //get rid of loading
+                                               if(isDev){
+                                                   await new Promise((resolve,reject)=>{
+                                                       setTimeout(()=>{resolve();},testLoadingDelay);
+                                                   });
+                                               }
+                                               setDisplayLoadingScreen(false);
+                                               //get rid of loading
+                                           }
+       
+       
+                                           
+                                       }
+       
+                                   }}>save</button>
+       
+
+       
+       
+                       </div>
+                                   
+                                <h1 className={`${styles.welcomeTag} ${styles.welcomeTagVar}`}
+                                   style={{
+                                       display:showTooMuchDeploy?'block':'none'
+                                   }}>Maximum 3 allowed 🤬</h1>
+       
+       
+       
+                       <div style={{display:openPurchasePanel?'flex':'none'}}
+                           className={styles.panelBackdrop}>
+                            <div className={styles.panelBoard}>
+                               <h1>buy lv {towerIndex+1} tower ? </h1>
+                               <button className={styles.panelConfirmButton}
+                               onClick={async ()=>{
+                                   setNotEnoughMoneyWarning(n=>false);
+                                   if(coinAmount<towerCostArr.current[towerIndex]){
+                                       //not enough money
+                                       
+                                       setTimeout(() => {
+                                       setNotEnoughMoneyWarning(true);}, 10);
+                                   }else{
+                                       try{
+                                           //....................
+                                           //edit here to add more tower
+                                           //.....................
+       
+                                           setDisplayLoadingScreen(true);
+       
+                                           const response = await fetch(`${import.meta.env.VITE_API_URL}/addTower`,{
+                                               method:'POST',
+                                               credentials: 'include',
+                                               headers: {'Content-Type': 'application/json'},
+                                               body: JSON.stringify({
+                                                   purchasedTowerLevel:towerIndex+1
+                                               })
+       
+                                           })
+                                           if(response.ok){
+                                               //operation success
+                                               //render changes
+                                               setUpdateCoin(1);
+                                               setTowerOwnedArr(t=>{
+                                                   let temp = [...t];
+                                                   temp[towerIndex]++;
+                                                   return temp;
+                                               });
+                                               setOpenPurchasePanel(false);
+       
+                                           }else{
+                                               console.log("unknown error")
+                                           }
+       
+       
+                                       }catch(error){
+                                           console.log(error);
+                                       }finally{
+                                           //get rid of loading
+                                           if(isDev){
+                                               await new Promise((resolve,reject)=>{
+                                                   setTimeout(()=>{resolve();},testLoadingDelay);
+                                               });
+                                           }
+                                           setDisplayLoadingScreen(false);
+                                           //get rid of loading
+                                       }
+                                   }
+                               }}>yes ✅ -{towerCostArr.current[towerIndex]}$</button>
+                               <button className={styles.panelCancelButton}
+                               onClick={()=>{
+                                   setOpenPurchasePanel(false);
+                               }}>no ❌</button>
+       
+                               
+
+                            </div>
+                       </div>
+
+                       <h1 className={`${styles.welcomeTag} ${styles.welcomeTagVar}`}
+                               style={{
+                                   display:notEnoughMoneyWarning?'block':'none'
+                               }}>not Enough Speed Coins 😭</h1>
+
+                       </>
+       )
+        
+
+
+
+}
+
+
+export default TowerShop;
