@@ -13,6 +13,8 @@
     z-index: 10;
     flex-direction: column;
 
+     animation: buttonPop 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+
 }
 .loadingScreen>img{
     width:30%;
@@ -22,6 +24,12 @@
     animation-direction: normal;
 
 }
+@keyframes buttonPop {
+    0% { opacity: 0; transform: scale(0.5) translateY(10px); }
+    70% { transform: scale(1.1); }
+    100% { opacity: 1; transform: scale(1) translateY(0); }
+}
+
 @keyframes spinner {
     0%{
         transform:rotateZ(0deg) scaleX(1) scaleY(1)
@@ -43,18 +51,35 @@
     position: absolute;
     top: 20px;
     left: 20px;
-    z-index: 5;
-    border: 10px solid rgba(0, 145, 255, 0.8);
-    border-radius: 12px;
+    width: 15%;
+    height: 15%;
+    border-radius: 15px;
     overflow: hidden;
-    background: #111;
+    z-index: 4;
+    
+    /* Premium Border & Glow */
+    border: 8px solid rgba(0, 212, 255, 0.6);
+    box-shadow: 
+        0 0 15px rgba(0, 212, 255, 0.4),
+        inset 0 0 10px rgba(0, 0, 0, 0.5);
+    
+    background: #0f172a;
+    transition: all 0.3s ease;
+    animation: webcamGlow 3s infinite alternate;
 }
+
+@keyframes webcamGlow {
+    from { box-shadow: 0 0 10px rgba(0, 212, 255, 0.3); border-color: rgba(0, 212, 255, 0.4); }
+    to { box-shadow: 0 0 25px rgba(0, 212, 255, 0.7); border-color: rgba(0, 212, 255, 0.9); }
+}
+
 .webcamVideo {
-    display: block;
-    width: 320px;
-    height: 240px;
+    width: 100%;
+    height: 100%;
     object-fit: cover;
 }
+
+
 .handError {
     position: absolute;
     bottom: 0;
@@ -77,46 +102,99 @@
     font-size: 14px;
 }
 
+
+
+
 .cameraPrompt {
     position: absolute;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    width:40%;
-    height:40%;
-    z-index: 8;
+    z-index: 5;
+    
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 16px;
-    padding: 24px;
-    background: rgba(0, 0, 0, 0.85);
-    border: 4px solid rgba(0, 145, 255, 0.9);
-    border-radius: 16px;
-    color: #fff;
-    font-family: BGS, Arial, sans-serif;
-    font-size: 3.2em;
+    justify-content: center;
+    gap: 20px;
+    padding: 40px;
+    
+    /* Premium Glassmorphism */
+    background: linear-gradient(145deg, rgba(15, 23, 42, 0.95), rgba(30, 41, 59, 0.9));
+    backdrop-filter: blur(15px);
+    border-radius: 24px;
+    border: 1px solid rgba(0, 212, 255, 0.3);
+    
+    /* Heavy Depth Shadow */
+    box-shadow: 
+        0 20px 50px rgba(0, 0, 0, 0.6),
+        inset 0 1px 1px rgba(255, 255, 255, 0.1);
+    
+    width: 40%;
+   height: 30%;
     text-align: center;
 }
+
+.cameraPrompt p {
+    font-family: 'honk', Arial;
+    font-size: 3.8rem;
+    color: #fff;
+    margin-bottom: 10px;
+    text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+}
+
 .enableCameraButton {
-    width:60%;
-    height:30%;
-    padding: 12px 24px;
-    font-size: 1.1em;
-    font-weight: bold;
+    width: 90%;
+    height:20%;
+    padding: 16px 24px;
+    font-family: 'honk', Arial;
+    font-size: 3.4rem;
+    cursor: pointer;
     border: none;
     border-radius: 12px;
-    background: rgba(0, 145, 255, 0.9);
-    color: #fff;
-    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    
+    /* Blue Button (Default) */
+    background: linear-gradient(180deg, #00d4ff 0%, #007bff 100%);
+    color: white;
+    box-shadow: 0 4px 15px rgba(0, 123, 255, 0.4),
+                inset 0 -4px 0 rgba(0, 0, 0, 0.2);
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
 }
+
 .enableCameraButton:hover:not(:disabled) {
-    background: rgba(0, 165, 255, 1);
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(0, 212, 255, 0.6),
+                inset 0 -4px 0 rgba(0, 0, 0, 0.2);
+    filter: brightness(1.1);
 }
+
+.enableCameraButton:active:not(:disabled) {
+    transform: translateY(2px);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3),
+                inset 0 0 0 rgba(0, 0, 0, 0);
+}
+
 .enableCameraButton:disabled {
-    opacity: 0.7;
+    background: #475569;
     cursor: not-allowed;
+    opacity: 0.7;
+    box-shadow: none;
 }
+
+/* Red Button Variant for Mouse Control */
+.mouseControlBtn {
+    background: linear-gradient(180deg, #ff4d4d 0%, #b91c1c 100%) !important;
+    box-shadow: 0 4px 15px rgba(220, 38, 38, 0.4),
+                inset 0 -4px 0 rgba(0, 0, 0, 0.2) !important;
+}
+
+.mouseControlBtn:hover:not(:disabled) {
+    box-shadow: 0 8px 25px rgba(255, 77, 77, 0.6),
+                inset 0 -4px 0 rgba(0, 0, 0, 0.2) !important;
+}
+
+
 
 .gameWorld{
     position:relative;
@@ -137,153 +215,268 @@
     
 }
 
-.gameOverScreen{
-    position:absolute;
-    background-color: rgba(65, 65, 66, 0.538);
-    width:100%;
-    height:100%;
-    z-index: 10;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    row-gap: 2vh;
-    font-family: honk;
-    font-size: 3em;
 
+
+
+
+
+
+
+
+
+
+
+@keyframes panelDrop {
+    0% {
+        opacity: 0;
+        transform: translateX(-50%) translateY(-90%) scale(0.95);
+    }
+    60% {
+        transform: translateX(-50%) translateY(-50%) scale(1.01);
+    }
+    100% {
+        opacity: 1;
+        transform: translateX(-50%) translateY(-50%) scale(1);
+    }
 }
 
-.gamePausedScreen{
-    position:absolute;
-    background-color: rgba(65, 65, 66, 0.538);
-    width:100%;
-    height:100%;
-    z-index: 10;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    row-gap: 2vh;
-    font-family: honk;
-    font-size: 3em;
-
-}
-
-.pauseGameButton{
-    display:flex;
-    justify-content: center;
-    align-items: center;
+/* The full-screen invisible click-blocker backdrop */
+.panelBackdrop {
     position: absolute;
-    width:10%;
-    max-width: 150px;
-    max-height: 150px;
-    height:auto;
-    border-radius: 75px;
-    background-color: rgba(235, 18, 18, 0.784);
-    border: 10px solid rgb(255, 119, 0);
-    bottom: 5px;
-    right:5px;
-    z-index: 3;
-    font-family: honk,Aerial;
+    left:0px;
+    top:0px;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.55);
+    backdrop-filter: blur(4px);
+    /*-webkit-backdrop-filter: blur(4px);*/
+    z-index: 15;
+  
+    align-items: center;
+    justify-content: center;
+}
+.panelBackdropRed{
+    background: rgba(104, 0, 0, 0.517);
+}
+
+/* The actual board that drops in */
+.panelBoard {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translateX(-50%) translateY(-50%);
+
+    width:  55%;
+    
+    height: 45%;
+
+    background: linear-gradient(160deg, #0f172a 0%, #1e1b4b 100%);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 28px;
+    box-shadow:
+        0 0 0 1px rgba(255,255,255,0.05),
+        0 30px 60px rgba(0, 0, 0, 0.6),
+        0 0 80px rgba(99, 102, 241, 0.12);
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+    padding: 48px 40px;
+
+    font-family: honk, Aerial;
+    text-align: center;
+    color: white;
+    z-index: 16;
+    overflow-y: auto;
+
+    animation: panelDrop 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+.panelBoardRed{
+    background: linear-gradient(160deg, #2a180f 0%, #4b1b1b 100%);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 28px;
+    box-shadow:
+        0 0 0 1px rgba(255,255,255,0.05),
+        0 30px 60px rgba(0, 0, 0, 0.6),
+        0 0 80px rgba(241, 99, 156, 0.12);
+
+}
+
+
+
+.panelBoard h1 {
     font-size: 6em;
-}
-.pauseGameButton:hover{
-    transform: scaleX(1.5) scaleY(1.5);
-}
-.pauseGameButton:active{
-    transform: none;
-}
-
-
-
-
-.exitGameButton{
-    width:50%;
-    height:7%;
-    margin-bottom:3%;
-    border:none;
-    background-color: rgba(255, 183, 0, 0.741);
+    margin: 0 0 8px 0;
+    background: linear-gradient(135deg, #e0e7ff, #a5b4fc);
     
-    border-radius: 20px;
-    font-family: honk,Aerial;
-    font-size: 1.5em;
-    
+    background-clip: text;
+    font-family: honk;
+}
+
+/* ── CONFIRM button (yes / let's go / purchase) ── */
+
+.panelConfirmButton {
+    position: relative;
+    overflow: hidden;
+    cursor: pointer;
+    border: none;
+    border-radius: 14px;
+    padding: 14px 0;
+    width: 70%;
+    height:20%;
+
+    background: linear-gradient(145deg, #f59e0b, #d97706);
+    color: #1c1917;
+    font-family: honk, Aerial;
+    font-size: 4.2em;
     font-weight: bold;
-    
-    
-    border-bottom: 1px solid rgb(67, 56, 1);
-    transform:none;
-}
-.exitGameButton:hover{
-    transform:translateX(-10px);
-    border-bottom: 10px solid rgb(67, 56, 1);
-}
-.exitGameButton:active{
-    border-bottom: 1px solid rgb(67, 56, 1);
-    transform:none;
 
-}
+    box-shadow:
+        0 4px 0 #92400e,
+        0 8px 20px rgba(245, 158, 11, 0.35);
 
-
-
-.resumeGameButton{
-    width:50%;
-    height:auto;
-    margin-bottom:3%;
-    border:none;
-    background-color: rgba(22, 214, 1, 0.589);
-    
-    border-radius: 20px;
-    font-family: honk,Aerial;
-    font-size: 1.5em;
-    
-    font-weight: bold;
-    
-    
-    border-bottom: 1px solid rgb(1, 67, 7);
-    transform:none;
+    transition:
+        transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1),
+        box-shadow 0.3s ease,
+        background 0.3s ease;
 }
-.resumeGameButton:hover{
-    transform:translateX(-10px);
-    border-bottom: 10px solid rgb(1, 67, 7);
-}
-.resumeGameButton:active{
-     border-bottom: 1px solid rgb(1, 67, 7);
-    transform:none;
+.panelConfirmButtonGreen{
+    background: linear-gradient(145deg, #2af50b, #4cd906);
+    box-shadow:
+        0 4px 0 #1b920e,
+        0 8px 20px rgba(11, 245, 34, 0.35);
 
 }
+/* shimmer sweep */
+.panelConfirmButton::before {
+    content: '';
+    position: absolute;
+    top: 0; left: -75%;
+    width: 50%; height: 100%;
+    background: linear-gradient(120deg, transparent, rgba(255,255,255,0.3), transparent);
+    transition: left 0.5s ease;
+}
+.panelConfirmButton:hover::before { left: 130%; }
+
+.panelConfirmButton:hover {
+    background: linear-gradient(145deg, #fbbf24, #f59e0b);
+    transform: translateY(-4px) scale(1.04);
+    box-shadow:
+        0 8px 0 #92400e,
+        0 16px 30px rgba(245, 158, 11, 0.5);
+}
+.panelConfirmButtonGreen:hover{
+    background: linear-gradient(145deg, #a1fb24, #0bf532);
+    box-shadow:
+        0 8px 0 #2b920e,
+        0 16px 30px rgba(38, 245, 11, 0.5);
+
+}
+
+.panelConfirmButton:active {
+    transform: translateY(2px) scale(0.97);
+    box-shadow: 0 2px 0 #92400e;
+    transition: transform 0.1s ease, box-shadow 0.1s ease;
+}
+.panelConfirmButtonGreen:active{
+    box-shadow: 0 2px 0 #0e923c;
+
+}
+/* ── CANCEL button (nope / no / close) ── */
+/* muted ghost style — present but not distracting */
+.panelCancelButton {
+    cursor: pointer;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 14px;
+    padding: 12px 0;
+    width: 70%;
+    height:20%;
+
+    background: rgba(255, 255, 255, 0.06);
+    color: rgba(255, 255, 255, 0.7);
+    font-family: honk, Aerial;
+    font-size: 4.1em;
+
+    box-shadow: none;
+
+    transition:
+        transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1),
+        background 0.3s ease,
+        color 0.3s ease,
+        border-color 0.3s ease;
+}
+
+.panelCancelButton:hover {
+    background: rgba(239, 68, 68, 0.15);
+    border-color: rgba(239, 68, 68, 0.5);
+    color: #fca5a5;
+    transform: translateY(-3px) scale(1.03);
+}
+
+.panelCancelButton:active {
+    transform: translateY(1px) scale(0.97);
+    transition: transform 0.1s ease;
+}
+
+/*end of panel style*/
 
 
 
-.coinDisplayPanel{
-    display:flex;
-    height:15vh;
-    max-height:150px;
-    align-items: center;
-    padding-left: 10px;
-    
+
+.pauseGameButton {
+    position: absolute;
+    bottom: 20px;
+    right: 20px; /* Opposite side of the HUD */
+    height:300px;
+    width:300px;
     z-index: 4;
-    font-family: honk,Aerial;
-    font-size: 4em;
-}
-.coinDisplayPanel>img{
-    width:10vw;
-    height:auto;
-    max-width:150px;
-    max-height:150px;
-}
-
-.scoreDisplayPanel{
-    display:flex;
-    height:15vh;
-    max-height:150px;
-    align-items: center;
-    padding-right: 10px;
-    margin-left: 40px;
     
-    z-index: 4;
-    font-family: honk,Aerial;
-    font-size: 4em;
-
+    cursor: pointer;
+    font-family: 'honk', Arial;
+    font-size: 11.8rem;
+    color: white;
+    
+    /* Circular 3D Button Style */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: none;
+    border-radius: 50%;
+    
+    background: linear-gradient(180deg, #ff4d4d 0%, #b91c1c 100%);
+    box-shadow: 
+        0 4px 0 #7f1d1d, 
+        0 8px 15px rgba(0, 0, 0, 0.4);
+    
+    transition: all 0.1s ease;
 }
+
+.pauseGameButton:hover {
+    filter: brightness(1.1);
+    transform: translateY(-2px);
+    box-shadow: 
+        0 6px 0 #7f1d1d, 
+        0 12px 20px rgba(0, 0, 0, 0.4);
+}
+
+.pauseGameButton:active {
+    transform: translateY(3px);
+    box-shadow: 
+        0 1px 0 #7f1d1d, 
+        0 2px 5px rgba(0, 0, 0, 0.3);
+}
+
+
+
+
+
+
+
+
+
 
 
 
@@ -378,20 +571,7 @@
 }
 
 
-.statusDisplay{
-    display:flex;
-    flex-direction: column;
-    padding:50px;
-    row-gap: 50px;
-    position: absolute;
-    right:10px;
-    top:10px;
-
-    background-color: rgba(61, 61, 255, 0.786);
-    border-radius: 10px;
-}
-
-.hpDisplayPanel{
+.coinDisplayPanel{
     display:flex;
     height:15vh;
     max-height:150px;
@@ -399,27 +579,126 @@
     padding-left: 10px;
     
     z-index: 4;
-    font-family: Aerial;
-    font-size: 5em;
+    font-family: honk,Aerial;
+    font-size: 4em;
 }
-.hpDisplayPanel>img{
-    width:10vw;
+
+
+.scoreDisplayPanel{
+    display:flex;
+    min-height:15vh;
+    
+    align-items: center;
+    padding-right: 10px;
+   
+    
+    z-index: 4;
+    font-family: honk,Aerial;
+    font-size: 4em;
+
+}
+
+.statusDisplay {
+    display: flex;
+    flex-direction: column;
+    padding: 20px;
+    row-gap: 15px;
+    position: absolute;
+    right: 20px;
+    top: 20px;
+    width:25%;
+    min-height: 25%;
+    z-index: 8;
+
+    align-items: flex-start;
+    
+}
+
+/* Base style for all HUD panels */
+.hpDisplayPanel, .coinDisplayPanel, .scoreDisplayPanel {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    flex-wrap: wrap;
+    padding: 10px 20px;
+
+    width: fit-content; 
+    min-width: 500px; /* Gives a consistent starting size */
     height:auto;
-    max-width:200px;
-    max-height:200px;
+    min-height: 100px;
+    
+    
+    /* Deep Blue Glassmorphism */
+    background: linear-gradient(135deg, rgba(15, 23, 42, 0.9), rgba(30, 41, 59, 0.8));
+    backdrop-filter: blur(10px);
+    border-radius: 15px;
+    
+    /* The "Depth" Effect: 1px light border top, dark shadow bottom */
+    border: 1px solid rgba(0, 212, 255, 0.3);
+    box-shadow: 
+        0 8px 32px 0 rgba(0, 0, 0, 0.8),
+        inset 0 2px 4px rgba(255, 255, 255, 0.1), /* Highlight top edge */
+        inset 0 -2px 4px rgba(0, 0, 0, 0.4);      /* Shadow bottom edge */
 }
 
-.hpHealthy{
-    color: white;
+/* Icons within panels */
+.statusDisplay img {
+    width: 100px;
+    height: 100px;
+    margin-right: 15px;
+    filter: drop-shadow(0 0 5px rgba(0, 212, 255, 0.5));
 }
-.hpCritical{
-    animation: hpBlink 0.5s linear 0s infinite;
-    animation-fill-mode: forwards;
-    animation-direction: normal;
 
+.statusDisplay h1 {
+    font-family: 'honk', Arial; /* Matching your mainPage theme */
+    font-size: 7.8rem;
+    margin: 0;
+    color: #fff;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
 }
+
+
+/* The Animation for Coin and Score changes */
+.statNumber {
+    display: inline-block;
+    animation: popUpdate 0.3s ease-out;
+}
+
+@keyframes popUpdate {
+    0% { transform: scale(1); color: #00d4ff; }
+    50% { transform: scale(1.2); color: #ffd700; } /* Briefly turns gold/yellow */
+    100% { transform: scale(1); color: #fff; }
+}
+
+/* Specific Panel Tweaks */
+.hpDisplayPanel {
+    border-left: 5px solid #ff4d4d; /* Red accent for HP */
+}
+
+.coinDisplayPanel {
+    border-left: 5px solid #ffd700; /* Gold accent for Coins */
+}
+
+.scoreDisplayPanel {
+    justify-content: center;
+    border-left: 5px solid #00d4ff; /* Blue accent for Score */
+    background: rgba(0, 123, 255, 0.15);
+}
+.scoreDisplayPanel h1 {
+    text-align: center;
+}
+
+/* Preserving your blinking effect classes */
+.hpHealthy { font-family:'Courier New', Courier, monospace !important; color: #4ade80 !important; }
+.hpCritical { 
+    font-family:'Courier New', Courier, monospace !important;
+    
+    animation: hpBlink 0.5s infinite; /* Assuming you have this defined */
+}
+
+
 @keyframes hpBlink {
-    0%{color: white;}
-    100%{color:red;}    
+    0%{color: #ff4d4d}
+    100%{color: rgb(255, 183, 0)}
+    
 }
-

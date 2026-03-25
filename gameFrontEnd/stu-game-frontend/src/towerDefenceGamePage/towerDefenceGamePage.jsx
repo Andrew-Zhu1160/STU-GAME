@@ -1,6 +1,6 @@
 import { useState,useEffect,useRef,useMemo } from "react"
 import styles from "./towerDefenceGamePage.module.css"
-import { Stage, Layer, Circle, Group, Image,Rect } from 'react-konva';
+import { Stage, Layer, Circle, Group, Image as KonvaImage,Rect } from 'react-konva';
 import Konva from "konva";
 import useImage from 'use-image';
 
@@ -49,7 +49,7 @@ import lv3EnemyNormal from '../images/towerGameImg/enemyLv3.png';
 import lv3EnemyTakeDmg from '../images/towerGameImg/enemyLv3TakeDmg.png';
 import lv4EnemyNormal from '../images/towerGameImg/enemyLv4.png';
 import lv4EnemyTakeDmg from '../images/towerGameImg/enemyLv4TakeDmg.png';
-import lv4EnemyDeath from '../images/towerGameImg/enemyLv4Death.png';
+//import lv4EnemyDeath from '../images/towerGameImg/enemyLv4Death.png';
 
 import enemySpawningHole from '../images/towerGameImg/enemySpawningHole.png';
 
@@ -62,6 +62,18 @@ const testLoadingDelay = 2000;
 
 
 function TowerDefenceGamePage({switchPage,styleDisplay}){
+
+
+    /*image preload, centralized loading */
+     //image pre decoder
+    const preloadAndDecode = async (src) => {
+        const img = new Image();
+        img.src = src;
+        img.decoding = 'async';
+        await img.decode();
+        return img; // This is now a "hot" bitmap ready for Konva
+    };
+
 
     /*-----------------------------------------------------------
     loading spinner
@@ -84,62 +96,25 @@ function TowerDefenceGamePage({switchPage,styleDisplay}){
 
     },[displayLoadingScreen]);
 
-    
-    const[lv1TowerImg] = useImage(lv1Tower);
-    const[lv2TowerImg] = useImage(lv2Tower);
-    const[lv3TowerImg] = useImage(lv3Tower);
-    const[lv4TowerImg] = useImage(lv4Tower);
-    const[lv5TowerImg] = useImage(lv5Tower);
-    const[lv6TowerImg] = useImage(lv6Tower);
-    const[lv7TowerImg] = useImage(lv7Tower);
-    const[lv8TowerImg] = useImage(lv8Tower);
-    const[lv9TowerImg] = useImage(lv9Tower);
-    const[lv10TowerImg] = useImage(lv10Tower);
-    const[lv11TowerImg] = useImage(lv11Tower);
-    const[lv12TowerImg] = useImage(lv12Tower);
-    //....................
-    //edit here to add more tower and bullets
-    //....................
-    //bullets
-    const[lv1BulletImg] = useImage(lv1Bullet);
-    const[lv4BulletImg] = useImage(lv4Bullet);
-    const[lv6BulletImg] = useImage(lv6Bullet);
-    const[lv9BulletImg] = useImage(lv9Bullet);
-    const[lv10BulletImg] = useImage(lv10Bullet);
-    const[lv11BulletImg] = useImage(lv11Bullet);
-    const[lv12BulletImg] = useImage(lv12Bullet);
 
-    //enemies
-    const[lv1EnemyNormalImg] = useImage(lv1EnemyNormal);
-    const[lv1EnemyTakeDmgImg]=useImage(lv1EnemyTakeDmg);
-    const[lv2EnemyNormalImg] = useImage(lv2EnemyNormal);
-    const[lv2EnemyTakeDmgImg]=useImage(lv2EnemyTakeDmg);
-    const[lv3EnemyNormalImg] = useImage(lv3EnemyNormal);
-    const[lv3EnemyTakeDmgImg]=useImage(lv3EnemyTakeDmg);
-    const[lv4EnemyNormalImg] = useImage(lv4EnemyNormal);
-    const[lv4EnemyTakeDmgImg]=useImage(lv4EnemyTakeDmg);
-    const[lv4EnemyDeathImg]=useImage(lv4EnemyDeath);
+
+    
+    
+
+  
+  
+    
     const[enemySpawningHoleImg] = useImage(enemySpawningHole);
 
    
     
     //edit here to add more tower
 
-    const towerImgArr = [lv1TowerImg,lv2TowerImg,lv3TowerImg,lv4TowerImg,lv5TowerImg
-        ,lv6TowerImg,lv7TowerImg,lv8TowerImg,lv9TowerImg,lv10TowerImg,lv11TowerImg,
-        lv12TowerImg,
-    ];
-    const bulletImgArr=[lv1BulletImg,lv1BulletImg,lv1BulletImg,lv4BulletImg,lv4BulletImg,
-        lv6BulletImg,lv6BulletImg,lv6BulletImg,lv9BulletImg,lv10BulletImg,lv11BulletImg,
-        lv12BulletImg,
-        ];
+    const towerImgArr= useRef(null);
+    const bulletImgArr=useRef(null);
 
 
-    const enemyImgArr=[[lv1EnemyNormalImg,lv1EnemyTakeDmgImg,null],
-                        [lv2EnemyNormalImg,lv2EnemyTakeDmgImg,null],
-                        [lv3EnemyNormalImg,lv3EnemyTakeDmgImg,null],
-                        [lv4EnemyNormalImg,lv4EnemyTakeDmgImg,null]];
-
+    const enemyImgArr=useRef(null);
     
     
 
@@ -163,7 +138,10 @@ function TowerDefenceGamePage({switchPage,styleDisplay}){
    
 
     //enemy and bullet
+    const pIdCounter = useRef(1);
     const bulletData=useRef(null);
+
+
     const enemyHealthData = useRef(null);
     const enemyBodyData=useRef(null);
     
@@ -172,6 +150,11 @@ function TowerDefenceGamePage({switchPage,styleDisplay}){
     const[tower1,setTower1]=useState(null);
     const[tower2,setTower2]=useState(null);
     const[tower3,setTower3]=useState(null);
+
+    //the actual tower body
+    const tower1Body = useRef(null);
+    const tower2Body = useRef(null);
+    const tower3Body = useRef(null);
     
    //ref for rotating controller
    const rotateController = useRef(null);
@@ -281,21 +264,104 @@ const isDisplayCoinAdd = useRef(false);
         if(styleDisplay.display==='flex'){
             
 
-            const centerX = 980 - (window.innerWidth / 2);
-            const centerY = 980 - (window.innerHeight / 2);
+           
 
-            /*
-            window.scrollTo({
-                top: centerY,
-                left: centerX,
-                behavior: 'instant' // 'instant' prevents the user from seeing the "jump" from (0,0)
-            });
-            */
-            //end of start config
+           
             //auto focous main screen
             if(rotateController.current){
                 rotateController.current.focus();
             }
+
+
+
+
+            async function loadImage(){
+                try{
+                    setDisplayLoadingScreen(true);
+
+                    const decodedTowerImage = await Promise.all([
+                        preloadAndDecode(lv1Tower),
+                        preloadAndDecode(lv2Tower),
+                        preloadAndDecode(lv3Tower),
+                        preloadAndDecode(lv4Tower),
+                        preloadAndDecode(lv5Tower),
+                        preloadAndDecode(lv6Tower),
+                        preloadAndDecode(lv7Tower),
+                        preloadAndDecode(lv8Tower),
+                        preloadAndDecode(lv9Tower),
+                        preloadAndDecode(lv10Tower),
+                        preloadAndDecode(lv11Tower),
+                        preloadAndDecode(lv12Tower)
+                    ]);
+
+                    towerImgArr.current = [...decodedTowerImage];
+
+                    const [bullet1,bullet4,bullet6,bullet9,bullet10,bullet11,bullet12] = await Promise.all([
+                        preloadAndDecode(lv1Bullet),
+                        preloadAndDecode(lv4Bullet),
+                        preloadAndDecode(lv6Bullet),
+                        preloadAndDecode(lv9Bullet),
+                        preloadAndDecode(lv10Bullet),
+                        preloadAndDecode(lv11Bullet),
+                        preloadAndDecode(lv12Bullet)
+
+                    ])
+
+
+
+                    bulletImgArr.current = [bullet1,bullet1,bullet1,bullet4,bullet4,bullet6,bullet6,bullet6,bullet9,bullet10,bullet11,bullet12];
+
+                    const enemy1Img = await Promise.all([
+                        preloadAndDecode(lv1EnemyNormal),
+                        preloadAndDecode(lv1EnemyTakeDmg)
+                    ])
+                    const enemy2Img = await Promise.all([
+                        preloadAndDecode(lv2EnemyNormal),
+                        preloadAndDecode(lv2EnemyTakeDmg)
+                    ])
+                    const enemy3Img = await Promise.all([
+                        preloadAndDecode(lv3EnemyNormal),
+                        preloadAndDecode(lv3EnemyTakeDmg)
+                    ])
+                    const enemy4Img = await Promise.all([
+                        preloadAndDecode(lv4EnemyNormal),
+                        preloadAndDecode(lv4EnemyTakeDmg)
+                    ])
+
+
+                    enemyImgArr.current=[
+                        [...enemy1Img,null],
+                        [...enemy2Img,null],
+                        [...enemy3Img,null],
+                        [...enemy4Img,null]
+                    ]
+
+
+
+
+                }catch(error){
+                    if(isDev){
+                        console.log(error);
+                    }
+                }finally{
+                    //loading gear tester
+                    if(isDev){
+                        await new Promise((resolve,reject)=>{
+                            setTimeout(()=>{resolve();},testLoadingDelay);
+                        });
+                    }
+                    setDisplayLoadingScreen(false);
+                    //end of loading gear tester
+
+                        
+                }
+
+
+            }
+
+
+
+
 
             //fetching user tower layout
             async function getUserTower(){
@@ -313,10 +379,7 @@ const isDisplayCoinAdd = useRef(false);
                     setTower3(_=>{return(data[2]===null?null:{...data[2],isDestroyed:false})});
 
                     //render the tower
-                    
-                    
-                    
-                    
+                     
                 }
                 }catch(error){
                     if(isDev){console.log(error);}
@@ -396,6 +459,7 @@ const isDisplayCoinAdd = useRef(false);
             getUserTower();
             getEnemy();
             getUserCoinsAndScores();
+            loadImage();
 
         }  
 
@@ -427,11 +491,21 @@ const isDisplayCoinAdd = useRef(false);
             const EnemyLevelRange= Math.min(gameDifficultyRef.current,4);
 
             
+
+            const TowerImgArr = towerImgArr.current;
            
-            if (!BulletDataRef || !EnemyHealthRef || !EnemyBodyRef) {
+            if (!BulletDataRef || !EnemyHealthRef || !EnemyBodyRef||!TowerImgArr||!bulletImgArr.current||!enemyImgArr.current) {
                 return; 
             }
+            if(!tower1Body.current||!tower2Body.current||!tower3Body.current){return;}
 
+
+
+            //mount images
+
+            if(!tower1Body.current.image()){tower1Body.current.image(Tower1Ref===null?null:TowerImgArr[Tower1Ref.towerLevel-1])}
+             if(!tower2Body.current.image()){tower2Body.current.image(Tower2Ref===null?null:TowerImgArr[Tower2Ref.towerLevel-1])}
+              if(!tower3Body.current.image()){tower3Body.current.image(Tower3Ref===null?null:TowerImgArr[Tower3Ref.towerLevel-1])}
 
             //test
             
@@ -482,17 +556,7 @@ const isDisplayCoinAdd = useRef(false);
                     
 
                 }
-                /*
-                if(coinAdd.current>0){
-                    
-                    if(isDisplayCoinAdd.current){
-                        isDisplayCoinAdd.current = false;
-                    setCoinAddDisplay(c=>null);
-                    setTimeout(()=>{setCoinAddDisplay(c=>coinAdd.current)},5);
-                    }
-                  
-                    
-                }*/
+               
                 
 
                 //check if all towers are destroyed and game over
@@ -546,7 +610,7 @@ const isDisplayCoinAdd = useRef(false);
                             if(frame.time-EnemyBodyList[i].getAttr('enemyLastHitTime')>200){
                                 EnemyBodyList[i].setAttr('enemyState',0);
                             }
-                            EnemyBodyList[i].image(enemyImgArr[EnemyBodyList[i].getAttr('enemyLevel')-1][EnemyBodyList[i].getAttr('enemyState')]);
+                            EnemyBodyList[i].image(enemyImgArr.current[EnemyBodyList[i].getAttr('enemyLevel')-1][EnemyBodyList[i].getAttr('enemyState')]);
                             
                             EnemyBodyList[i].x(EnemyBodyList[i].x()+enemySpeed*Math.cos(EnemyBodyList[i].getAttr('enemyAngle')*Math.PI/180));
                             EnemyBodyList[i].y(EnemyBodyList[i].y()+enemySpeed*Math.sin(EnemyBodyList[i].getAttr('enemyAngle')*Math.PI/180));
@@ -724,7 +788,7 @@ const isDisplayCoinAdd = useRef(false);
                                     bulletDmg:Tower1Ref.towerDamage,
                                     bulletAngle:Tower1Ref.towerAngle+i*360/Tower1Ref.towerBulletPerRound,
                                     distance:0,
-                                    image: bulletImgArr[Tower1Ref.towerLevel-1],
+                                    image: bulletImgArr.current[Tower1Ref.towerLevel-1],
                                     x: tower1X,
                                     y:tower1Y
 
@@ -761,7 +825,7 @@ const isDisplayCoinAdd = useRef(false);
                                     bulletDmg:Tower2Ref.towerDamage,
                                     bulletAngle:Tower2Ref.towerAngle+i*360/Tower2Ref.towerBulletPerRound,
                                     distance:0,
-                                    image: bulletImgArr[Tower2Ref.towerLevel-1],
+                                    image: bulletImgArr.current[Tower2Ref.towerLevel-1],
                                     x: tower2X,
                                     y:tower2Y
 
@@ -795,7 +859,7 @@ const isDisplayCoinAdd = useRef(false);
                                     bulletDmg:Tower3Ref.towerDamage,
                                     bulletAngle:Tower3Ref.towerAngle+i*360/Tower3Ref.towerBulletPerRound,
                                     distance:0,
-                                    image: bulletImgArr[Tower3Ref.towerLevel-1],
+                                    image: bulletImgArr.current[Tower3Ref.towerLevel-1],
                                     x: tower3X,
                                     y:tower3Y
 
@@ -933,9 +997,8 @@ const isDisplayCoinAdd = useRef(false);
 
     //edit here to add more tower
     },[styleDisplay, 
-        lv1BulletImg,lv4BulletImg,lv6BulletImg,lv9BulletImg,lv10BulletImg,lv11BulletImg,lv12BulletImg,
-        lv1EnemyNormalImg,lv1EnemyTakeDmgImg,lv2EnemyNormalImg,lv2EnemyTakeDmgImg,
-        lv3EnemyNormalImg,lv3EnemyTakeDmgImg,lv4EnemyNormalImg,lv4EnemyTakeDmgImg,
+        
+       
 
         enemySpawningHoleImg
 
@@ -1006,51 +1069,61 @@ const isDisplayCoinAdd = useRef(false);
 
             </div>
 
+            <div className={styles.statusDisplay}>
             <div className={styles.coinDisplayPanel}>
                 <img src={speedCoins}></img>
-                <h1>{coinDisplay}</h1>
+                <h1 className={styles.statNumber} key={coinDisplay}>{coinDisplay}</h1>
             </div>
+            <div className={styles.scoreDisplayPanel}><h1 className={styles.statNumber} key={scoreDisplay}>Score {scoreDisplay}</h1></div>
+            </div>
+
+
 
             {coinAddDisplay!==null?<div className={styles.coinPopout}>
                 <img src = {speedCoins}></img>
                 <h1>+{coinAddDisplay}</h1>
             </div>:null}
 
-            <div className={styles.scoreDisplayPanel}><h1>Score {scoreDisplay}</h1></div>
-
+            
             <div className={styles.difficultyLevelDisplay}
             style={{display:showDifficuly?'flex':'none'}}>
                 <h3>difficulty level 💀: {gameDifficulty} </h3></div>
 
             
-            <div className={styles.gameOverScreen}
+            <div className={styles.panelBackdrop}
             style={{display:displayGameOverScreen?'flex':'none'}}>
+                <div className={styles.panelBoard}>
                 <h1>Game Over 😭</h1>
-                <h2>Highest Score: {scoreDisplay}</h2>
+                <h1>Highest Score: {scoreDisplay}</h1>
                 <button onClick={()=>{
                     switchPage(1);
-                }}>exit</button>
+                }}
+                className={styles.panelConfirmButton}>exit</button>
+                </div>
             </div>
             
 
-            <button className={styles.pauseButton}
+            <button className={styles.pauseGameButton}
             onClick={()=>{
                 setDisplayPauseScreen(d=>true)
             }}>X</button>
 
-            <div className = {styles.pauseScreen}
+            <div className = {`${styles.panelBackdrop} ${styles.panelBackdropRed}`}
             style={{display:displayPauseScreen&&!displayGameOverScreen?'flex':'none'}}>
+                <div className={`${styles.panelBoard} ${styles.panelBoardRed}`}>
                 <h1>Are you Tired? </h1>
-                <button className={styles.resumeGame}
+                <button className={`${styles.panelConfirmButton} ${styles.panelConfirmButtonGreen}`}
                 onClick={()=>{
                     setDisplayPauseScreen(d=>false)
                 }}>No! Get Me Back In 💪</button>
-                <button className={styles.exitGame}
+                <button className={styles.panelCancelButton}
                 onClick={()=>{
                     switchPage(1)
                 }}>
                     Yes, need some rest 😴
                 </button>
+
+                </div>
             </div>
 
             
@@ -1062,14 +1135,15 @@ const isDisplayCoinAdd = useRef(false);
                         fill='green' x={tower1X} y={tower1Y-150}
                         offsetX={125}
                         offsetY={15}></Rect>
-                        <Image height={250}
+                        <Rect></Rect>
+                        <KonvaImage height={250}
                         width={250}
                         offsetX={125}
                         offsetY={125}
                         x={tower1X}
                         y={tower1Y}
-                        image={tower1===null?null:towerImgArr[tower1.towerLevel-1]}
-                        rotation={tower1===null?0:tower1.towerAngleInitial+tower1.towerAngle}></Image>
+                        rotation={tower1===null?0:tower1.towerAngleInitial+tower1.towerAngle}
+                        ref={tower1Body}></KonvaImage>
 
 
 
@@ -1078,15 +1152,15 @@ const isDisplayCoinAdd = useRef(false);
                         fill='green' x={tower2X} y={tower2Y-150}
                         offsetX={125}
                         offsetY={15}></Rect>
-                        <Image height={250}
+                        <KonvaImage height={250}
                         width={250}
                         offsetX={125}
                         offsetY={125}
                         x={tower2X}
                         y={tower2Y}
-                        image={tower2===null?null:towerImgArr[tower2.towerLevel-1]}
+                       
                         rotation={tower2===null?0:tower2.towerAngleInitial+tower2.towerAngle}
-                        ></Image>
+                        ref={tower2Body}></KonvaImage>
 
 
 
@@ -1096,14 +1170,15 @@ const isDisplayCoinAdd = useRef(false);
                         fill='green' x={tower3X} y={tower3Y-150}
                         offsetX={125}
                         offsetY={15}></Rect>
-                        <Image height={250}
+                        <KonvaImage height={250}
                         width={250}
                         offsetX={125}
                         offsetY={125}
                         x={tower3X}
                         y={tower3Y}
-                        image={tower3===null?null:towerImgArr[tower3.towerLevel-1]}
-                        rotation={tower3===null?0:tower3.towerAngleInitial+tower3.towerAngle}></Image>
+                        
+                        rotation={tower3===null?0:tower3.towerAngleInitial+tower3.towerAngle}
+                        ref={tower3Body}></KonvaImage>
 
 
 

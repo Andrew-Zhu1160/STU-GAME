@@ -1,5 +1,5 @@
 import { useState,useEffect,useRef,useMemo,useCallback } from "react"
-import { Stage, Layer, Circle, Group, Image,Rect,Line } from 'react-konva';
+import { Stage, Layer, Circle, Group, Image  as KonvaImage,Rect,Line } from 'react-konva';
 import Konva from "konva";
 import styles from './pizzaSlicerGamePage.module.css'
 import useImage from 'use-image';
@@ -34,7 +34,7 @@ const backgroundArray = [background1,background2];
 
 
 
-const testLoadingDelay = 10;
+const testLoadingDelay = 2000;
 const isDev = import.meta.env.VITE_MODE==='DEV';
 
 
@@ -50,20 +50,20 @@ const FRAG_CATEGORY = 0x0004;
 function pizzaSlicerGamePage({switchPage,styleDisplay}){
     const randomBackgroundIndex = useRef(Math.floor(Math.random()*backgroundArray.length));
 
-    const [skLv1Img] = useImage(skLv1);
-    const [skLv2Img] = useImage(skLv2);
-    const [skLv3Img] = useImage(skLv3);
-    const [skLv4Img] = useImage(skLv4);
-    const skImgArr=[skLv1Img,skLv2Img,skLv3Img,skLv4Img];
+    //image pre decoder
+    const preloadAndDecode = async (src) => {
+        const img = new Image();
+        img.src = src;
+        img.decoding = 'async';
+        await img.decode();
+        return img; // This is now a "hot" bitmap ready for Konva
+    };
 
-    const [pizza1Img] = useImage(pizza1);
-    const [pizza2Img] = useImage(pizza2);
-    const [pizza3Img] = useImage(pizza3);
-    const [pizza4Img] = useImage(pizza4);
-    const [pizza5Img] = useImage(pizza5);
-    const [pizza6Img] = useImage(pizza6);
-    const [pizza7Img] = useImage(pizza7);
-    const pizzaImgArr = [pizza1Img,pizza2Img,pizza3Img,pizza4Img,pizza5Img,pizza6Img,pizza7Img];
+    
+    const skImgArr=useRef(null)
+
+    
+    const pizzaImgArr = useRef(null);
 
 
     const scaleFactor = useRef(window.innerHeight/2000);
@@ -239,8 +239,15 @@ function pizzaSlicerGamePage({switchPage,styleDisplay}){
     ------------------------------------------------ */
     const skRef = useRef(null);
     const pizzaRef = useRef(null);
-    const pizzaHealthRef = useRef(null);
+    
+
+
     const pizzaFragmentRef = useRef(null);
+
+    const pizzaNodeMap=useRef(new Map());
+    const pizzaFragmentNodeMap = useRef(new Map());
+    
+   
 
     const stageRef = useRef(null);
 
@@ -392,6 +399,43 @@ function pizzaSlicerGamePage({switchPage,styleDisplay}){
         if(styleDisplay?.display==='flex'){
             // Init only when user clicks "Enable camera" in the prompt
             if(!displayCameraRequest){
+                async function loadImage(){
+                    try{
+                        setDisplayLoadingScreen(true);
+                        const allPizzas = await Promise.all([
+                            preloadAndDecode(pizza1),
+                            preloadAndDecode(pizza2),
+                            preloadAndDecode(pizza3),
+                            preloadAndDecode(pizza4),
+                            preloadAndDecode(pizza5),
+                            preloadAndDecode(pizza6),
+                            preloadAndDecode(pizza7),
+
+
+                        ])
+                        pizzaImgArr.current = [...allPizzas];
+
+                        const allSks = await Promise.all([
+                            preloadAndDecode(skLv1),
+                            preloadAndDecode(skLv2),
+                            preloadAndDecode(skLv3),
+                            preloadAndDecode(skLv4)
+                        ])
+
+                        skImgArr.current = [...allSks];
+
+
+                    }catch(error){
+                        if(isDev) {console.log(error);}
+                    }finally{
+                        if(isDev){
+                            await new Promise((resolve,reject)=>{
+                                setTimeout(()=>{resolve();},testLoadingDelay);
+                            });
+                        }
+                        setDisplayLoadingScreen(false);
+                    }
+                }
                 //now we can start fetching
                 async function LoadGameSetting(){
                 try{
@@ -461,8 +505,9 @@ function pizzaSlicerGamePage({switchPage,styleDisplay}){
                 }
                 if(isFristLoad.current){
                     isFristLoad.current=false;
-                    LoadGameSetting()
-                }
+                    LoadGameSetting();
+                    loadImage();
+                 }
 
                 
 
@@ -477,9 +522,20 @@ function pizzaSlicerGamePage({switchPage,styleDisplay}){
                     const SkRef = skRef.current;
                     const PizzaRef = pizzaRef.current;
                     const PizzaFragmentRef = pizzaFragmentRef.current;
-                    const PizzaHealthRef = pizzaHealthRef.current;
+                    
                     const StageRef = stageRef.current;
-                    if(!SkRef||!PizzaRef||!PizzaFragmentRef||!StageRef||!PizzaHealthRef||!TrailRef)return;
+
+                    //for preventing o n^2, use a map for direct serch
+                    const PizzaNodeMap = pizzaNodeMap.current;
+
+                    const PizzaFragmentNodeMap = pizzaFragmentNodeMap.current;
+                    
+
+                   
+                    if(!SkRef||!PizzaRef||!PizzaFragmentRef||!StageRef||!TrailRef||!pizzaImgArr.current||!skImgArr.current)return;
+                    if(!SkRef.image()){
+                        SkRef.image(skImgArr.current[skNumber.current-1])
+                    }
 
 
                     //materjs init
@@ -494,7 +550,7 @@ function pizzaSlicerGamePage({switchPage,styleDisplay}){
 
                     const PizzaSpawnRange = pizzaSpawnRange.current;
                     const PizzaTargetRange = pizzaTargetRange.current;
-                    const PizzaMassDensity = pizzaMassDensity.current;
+                    //const PizzaMassDensity = pizzaMassDensity.current;
 
                     //spawn time consideration
                     const updateCollisionFrequency = 1;
@@ -562,6 +618,13 @@ function pizzaSlicerGamePage({switchPage,styleDisplay}){
                                     let newPizza;
                                     let newPizzaShape;
                                     let newPizzaHealthBar;
+                                    let newRealPizzaHealthBar;
+                                    let newPizzaHealthBackground;
+
+                                    let newHealthGroup;
+
+                                    //finally, the master mesh
+                                    let pizzaMasterGroup;
                                     
                                         
                                             newPizza = Matter.Bodies.circle(pizzaInitialX,pizzaInitialY,pizzaWidth/2,{
@@ -581,40 +644,126 @@ function pizzaSlicerGamePage({switchPage,styleDisplay}){
                                                 
                                             });
 
-                                           
+
+                                        //chnage to make hp bar in a group
+                                    
+
+
+
+                                         //the ultimate pass group
+                                       pizzaMasterGroup = new Konva.Group({
+                                            x:pizzaInitialX,
+                                             y:pizzaInitialY,
+                                             pId:pIdCounter.current
+                                       });
+                                       //lol
+
+                                       
                                             
                                        
                                     
                                      newPizzaShape = new Konva.Image({
-                                            x:pizzaInitialX,
-                                             y:pizzaInitialY,
+                                           x:0,
+                                             y:0, 
                                             width:pizzaWidth,
                                             height:pizzaHeight,
                                             offsetX:pizzaWidth/2,
                                             offsetY:pizzaHeight/2,
-                                            image:pizzaImgArr[randomPizzaNum],
+                                            image:pizzaImgArr.current[randomPizzaNum],
                                                
                                                 
-                                            pId:pIdCounter.current
+                                            
 
                                     });
 
+                                     newHealthGroup = new Konva.Group({
+                                            x: 0,
+                                            y: -250,
+                                            
+                                            
+                                        })
+
                                     newPizzaHealthBar= new Konva.Rect({
-                                        x:pizzaInitialX,
-                                        y:pizzaInitialY-250,
+                                        
                                         width:pizzaWidth,
-                                        height:80,
+                                        height:60,
                                         fullWidth:pizzaWidth,
                                         offsetX:pizzaWidth/2,
-                                        offsetY:40,
+                                        offsetY:30,
+                                        fill:"white",
+                                        
+                                        cornerRadius:8,
+
+                                        parts:"displayedHealth",
+                                        listening: false
+                                    });
+
+                                    newRealPizzaHealthBar= new Konva.Rect({
+                                        width:pizzaWidth,
+                                        height:60,
+                                        fullWidth:pizzaWidth,
+                                        offsetX:pizzaWidth/2,
+                                        offsetY:30,
                                         fill:"red",
-                                        pId:pIdCounter.current
+                                        
+                                        cornerRadius:8,
+
+                                        parts:"realHealth",
+                                        listening: false
+
                                     })
+
+
+                                    newPizzaHealthBackground = new Konva.Rect({
+
+                                       
+                                        width:pizzaWidth+8,
+                                        height:76,
+                                        fullWidth:pizzaWidth,
+                                        offsetX:(pizzaWidth+8)/2,
+                                        offsetY:38,
+                                        fill:"#4A4A4A",
+                                        stroke:"#1A1A1A"   ,   
+                                        strokeWidth:4,       
+                                        cornerRadius:8,
+                                        
+                                        
+                                        parts:"background",
+                                        listening: false
+
+                                    });
+
+                                     newHealthGroup.add(newPizzaHealthBackground);
+                                    newHealthGroup.add(newPizzaHealthBar);
+                                     newHealthGroup.add(newRealPizzaHealthBar);
+                                   
+                                    //finally, smash everything together
+                                     pizzaMasterGroup.add(newHealthGroup);
+                                     pizzaMasterGroup.add(newPizzaShape);
+
+
 
                                     Matter.Composite.add(engineRef.current.world,newPizza);
                                     PizzaBodyRef.push(newPizza);
-                                    PizzaRef.add(newPizzaShape);
-                                    PizzaHealthRef.add(newPizzaHealthBar);
+
+
+                                    PizzaRef.add(pizzaMasterGroup);
+
+
+                                    
+
+                                    //add the node reference to the node maps
+                                    PizzaNodeMap.set(pIdCounter.current,{master:pizzaMasterGroup,
+                                        pizza:newPizzaShape,
+                                        displayHealthBar: newPizzaHealthBar,
+                                        realHealthBar:newRealPizzaHealthBar
+                                    });
+                                    
+                                    //key-value pairs
+
+
+                                    
+
 
                                     const velocityUnitVector = {
                                         x:(pizzaFinalX-pizzaInitialX)/Math.sqrt((pizzaFinalX-pizzaInitialX)**2+(pizzaFinalY-pizzaInitialY)**2),
@@ -676,40 +825,50 @@ function pizzaSlicerGamePage({switchPage,styleDisplay}){
 
                             //sync visuals
                            for(let i = PizzaBodyRef.length-1;i>=0;--i){ 
-                                const pizzaShape = PizzaRef.findOne(node=>node.getAttr("pId")==PizzaBodyRef[i].pId);
-                                if(pizzaShape){
-                                    pizzaShape.x(PizzaBodyRef[i].position.x);
-                                    pizzaShape.y(PizzaBodyRef[i].position.y);
-                                    pizzaShape.rotation(PizzaBodyRef[i].label==="triangle"?(PizzaBodyRef[i].angle+Math.PI)*180/Math.PI:PizzaBodyRef[i].angle*180/Math.PI);
+                                const pizzaGroup = PizzaNodeMap.get(PizzaBodyRef[i].pId);
+                                if(!pizzaGroup)continue;
+                                
+                                
+                                    pizzaGroup.master.x(PizzaBodyRef[i].position.x);
+                                    pizzaGroup.master.y(PizzaBodyRef[i].position.y);
+                                    pizzaGroup.pizza.rotation(PizzaBodyRef[i].label==="triangle"?(PizzaBodyRef[i].angle+Math.PI)*180/Math.PI:PizzaBodyRef[i].angle*180/Math.PI);
 
                                     
-                                }
-                                const pizzaHealthBar = PizzaHealthRef.findOne(node=>node.getAttr("pId")==PizzaBodyRef[i].pId);
-                                if(pizzaHealthBar){
-                                    pizzaHealthBar.x(PizzaBodyRef[i].position.x);
-                                    pizzaHealthBar.y(PizzaBodyRef[i].position.y-250);
-                                }
+                                
+
+                                    pizzaGroup.realHealthBar.width(pizzaGroup.realHealthBar.getAttr("fullWidth")*PizzaBodyRef[i].currentHealth/PizzaBodyRef[i].totalHealth);
+                                
+                                
 
                                 //animate health bar drop
                                 if(PizzaBodyRef[i].currentHealthSliding>PizzaBodyRef[i].currentHealth){
                                     PizzaBodyRef[i].currentHealthSliding-=0.1;
-                                    if(pizzaHealthBar){
-                                        pizzaHealthBar.fill("white");
-                                        pizzaHealthBar.width(pizzaHealthBar.getAttr("fullWidth")*PizzaBodyRef[i].currentHealthSliding/PizzaBodyRef[i].totalHealth);
-                                    }
-                                }else{
-                                    if(pizzaHealthBar){
-                                        pizzaHealthBar.fill("red");
-                                    }
+                                    
+                                        
+
+                                    pizzaGroup.displayHealthBar.width(pizzaGroup.displayHealthBar.getAttr("fullWidth")*PizzaBodyRef[i].currentHealthSliding/PizzaBodyRef[i].totalHealth);
+
+
+                                    
                                 }
+
 
                                 //destroy nodes 
                                 if(PizzaBodyRef[i].position.y>2800){
                                     //clean up node process
+
+                                    PizzaNodeMap.delete(PizzaBodyRef[i].pId);
+                                   
+
+
                                     Matter.Composite.remove(engineRef.current.world,PizzaBodyRef[i]);
                                     PizzaBodyRef.splice(i,1);
-                                    if(pizzaShape){pizzaShape.destroy();}
-                                    if(pizzaHealthBar){pizzaHealthBar.destroy();}
+
+
+                                    
+
+                                    pizzaGroup.master.destroy();
+                                    
                                     //deduct lives for left a pizza uncut
 
                                     setCurrentHp(h=>h-1<0?0:h-1);
@@ -733,7 +892,7 @@ function pizzaSlicerGamePage({switchPage,styleDisplay}){
                                             setCoinAddTotal(s=>s+150+Math.min(GameDifficulty*3,200));
 
                                             //spawn fragments, delete
-                                            if(pizzaShape){
+                                            
                                             const dx=PizzaBodyRef[i].sliceExit.x-PizzaBodyRef[i].sliceEntry.x;
                                             const dy = PizzaBodyRef[i].sliceExit.y-PizzaBodyRef[i].sliceEntry.y;
                                             const angle = Math.atan2(dy,dx);
@@ -743,8 +902,8 @@ function pizzaSlicerGamePage({switchPage,styleDisplay}){
                                             const cx = PizzaBodyRef[i].position.x;
                                             const cy = PizzaBodyRef[i].position.y;
                                             const radius = PizzaBodyRef[i].circleRadius;
-                                            const w = pizzaShape.width();
-                                            const h = pizzaShape.height();
+                                            const w = pizzaGroup.pizza.width();
+                                            const h = pizzaGroup.pizza.height();
 
                                             for (let side of [-1,1]){
                                                 pIdCounter.current++;
@@ -799,27 +958,37 @@ function pizzaSlicerGamePage({switchPage,styleDisplay}){
                                                     height: h,
                                                     offsetX: w / 2,
                                                     offsetY: h / 2,
-                                                    image: pizzaShape.image(),
+                                                    image: pizzaGroup.pizza.image()
                                                     
 
                                                 });
                                                 newPizzaFragShape.add(newPizzaFragImage);
 
 
+                                                //sync canva
                                                 PizzaFragmentRef.add(newPizzaFragShape);
+
+                                                PizzaFragmentNodeMap.set(pIdCounter.current,newPizzaFragShape);
+                                                //sync canva
                                             }
 
-                                            }
+                                            
 
 
 
 
                                             //clean up node process
+
+                                            PizzaNodeMap.delete(PizzaBodyRef[i].pId);
+
+
                                             Matter.Composite.remove(engineRef.current.world,PizzaBodyRef[i]);
                                             PizzaBodyRef.splice(i,1);
-                                            if(pizzaShape){pizzaShape.destroy();}
-                                            if(pizzaHealthBar){pizzaHealthBar.destroy();}
-                                            //deduct lives for left a pizza uncut
+
+
+                                            pizzaGroup.master.destroy();
+                                            
+                                            
 
                                         }else{
                                             //reset slice information
@@ -838,16 +1007,21 @@ function pizzaSlicerGamePage({switchPage,styleDisplay}){
                            //update fragment movement as well
 
                            for (let i = PizzaFragmentBodyRef.length - 1; i >= 0; --i) {
-                                const fragShape = PizzaFragmentRef.findOne(node => node.getAttr("pId") == PizzaFragmentBodyRef[i].pId);
-                                if (fragShape) {
+                                const fragShape = PizzaFragmentNodeMap.get(PizzaFragmentBodyRef[i].pId);
+                                
+                                if (!fragShape)continue;
+
                                     fragShape.x(PizzaFragmentBodyRef[i].position.x);
                                     fragShape.y(PizzaFragmentBodyRef[i].position.y);
                                     fragShape.rotation(PizzaFragmentBodyRef[i].angle * 180 / Math.PI);
-                                }
+                                
                                 if (PizzaFragmentBodyRef[i].position.y > 2800) {
+
+                                    //destory fragments
+                                    PizzaFragmentNodeMap.delete(PizzaFragmentBodyRef[i].pId)
                                     Matter.Composite.remove(engineRef.current.world, PizzaFragmentBodyRef[i]);
                                     PizzaFragmentBodyRef.splice(i, 1);
-                                    if (fragShape) { fragShape.destroy(); }
+                                    fragShape.destroy(); 
 
                                 }
                             }
@@ -903,8 +1077,7 @@ function pizzaSlicerGamePage({switchPage,styleDisplay}){
         }
 
     },[styleDisplay?.display,displayCameraRequest,
-        skLv1Img,skLv2Img,skLv3Img,skLv4Img,
-        pizza1Img,pizza2Img,pizza3Img,pizza4Img,pizza5Img,pizza6Img,pizza7Img
+        
     ]);
 
 
@@ -940,8 +1113,8 @@ function pizzaSlicerGamePage({switchPage,styleDisplay}){
                 </button>
                 <button
                 type = "button"
-                className = {styles.enableCameraButton}
-                style = {{backgroundColor:'red'}}
+                className = {`${styles.enableCameraButton} ${styles.mouseControlBtn}`}
+              
                 onClick = {()=>{
                     setDisplayCameraRequest(false);
                     setControlMode("mouse");
@@ -957,7 +1130,9 @@ function pizzaSlicerGamePage({switchPage,styleDisplay}){
            
            <Layer ref={pizzaFragmentRef}></Layer>
            <Layer ref = {pizzaRef}></Layer>
-           <Layer ref = {pizzaHealthRef}></Layer>
+          
+           
+     
            
 
             <Layer>
@@ -970,12 +1145,12 @@ function pizzaSlicerGamePage({switchPage,styleDisplay}){
                     opacity={0.5}
                     tension={0.3}
                 />
-           <Image ref = {skRef}
+           <KonvaImage ref = {skRef}
            width = {190}
            height = {190}
            offsetX = {95}
            offsetY={95}
-           image = {skImgArr[skNumber.current-1]}></Image>
+           ></KonvaImage>
            </Layer>
 
 
@@ -1013,10 +1188,10 @@ function pizzaSlicerGamePage({switchPage,styleDisplay}){
                 </div>
                 <div className = {styles.coinDisplayPanel}>
                         <img src={speedCoins}></img>
-                        <h1>{coinAddTotal}</h1>
+                        <h1 key={coinAddTotal} className={styles.statNumber}>{coinAddTotal}</h1>
                 </div>
                 <div className={styles.scoreDisplayPanel}>
-                        <h1>Score: {scoreTotal}</h1>
+                        <h1 key={scoreTotal} className={styles.statNumber}>Score: {scoreTotal}</h1>
                 </div>
                 
 
@@ -1029,29 +1204,33 @@ function pizzaSlicerGamePage({switchPage,styleDisplay}){
                     <h1>+{coinAddDisplay}</h1> 
                 </div>}
 
-            <div className={styles.gameOverScreen}
+            <div className={styles.panelBackdrop}
                         style={{display:isGameOver?'flex':'none'}}>
+                        <div className={styles.panelBoard}>
                             <h1>Game Over 😭</h1>
                             <h1>highest Score {scoreTotal}</h1>
-                            <button className={styles.exitGameButton}
+                            <button className={styles.panelConfirmButton}
                             onClick={()=>{
                                 switchPage(1);
                             }}>exit</button>
-                           
-                        </div>
+                        </div>      
+            </div>
             
-                <div className={styles.gamePausedScreen}
+                <div className={`${styles.panelBackdrop} ${styles.panelBackdropRed}`}
                  style={{display:isGamePaused&&!isGameOver?'flex':'none'}}>
+                    <div className={`${styles.panelBoard} ${styles.panelBoardRed}`}>
                         <h1>Game Paused 🤔</h1>
-                        <button className={styles.resumeGameButton}
+                        <button className={`${styles.panelConfirmButton} ${styles.panelConfirmButtonGreen}`}
                         onClick={()=>{
                             setIsGamePaused(false);
                               
                         }}>resume 💪</button>
-                        <button className={styles.exitGameButton}
+                        <button className={styles.panelCancelButton}
                          onClick={()=>{
                             switchPage(1);
                          }}>exit Game ❌</button>
+
+                        </div>
                 </div>
 
                 <button className={styles.pauseGameButton}
