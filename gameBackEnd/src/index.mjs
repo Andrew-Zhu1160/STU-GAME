@@ -726,7 +726,8 @@ app.get('/api/towerGame/getTowerDeploy',async (req,res)=>{
                 towerFireDelay:towerSettingRef[userTowerArr[i]-1].fireDelay,
                 towerBulletPerRound:towerSettingRef[userTowerArr[i]-1].numOfBulletsPerRound,
                 towerAngleInitial:userTowerArr[i]===1?15:userTowerArr[i]===2||userTowerArr[i]===3?90:0,
-                towerAngle:0
+                towerAngle:0,
+                towerDisplayHp:towerSettingRef[userTowerArr[i]-1].hp
 
             });
         }

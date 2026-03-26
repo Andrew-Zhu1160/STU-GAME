@@ -248,6 +248,7 @@
     transform:  translateX(-50%);
     top:5vh;
     left:50%;
+    color:white;
 
 }
 @keyframes difficultyAnimation {

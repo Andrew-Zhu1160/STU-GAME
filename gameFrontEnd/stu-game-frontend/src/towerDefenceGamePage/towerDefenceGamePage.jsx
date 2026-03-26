@@ -53,6 +53,15 @@ import lv4EnemyTakeDmg from '../images/towerGameImg/enemyLv4TakeDmg.png';
 
 import enemySpawningHole from '../images/towerGameImg/enemySpawningHole.png';
 
+//import the ash image
+import lv1EnemyAsh from '../images/towerGameImg/enemyLv1Ash.png';
+import lv2EnemyAsh from '../images/towerGameImg/enemyLv2Ash.png';
+
+import lv3EnemyAsh from '../images/towerGameImg/enemyLv3Ash.png';
+
+import lv4EnemyAsh from '../images/towerGameImg/enemyLv4Ash.png';
+
+
 //coins
 import speedCoins from '../images/towerGameImg/speedCoin.png'
 
@@ -115,6 +124,8 @@ function TowerDefenceGamePage({switchPage,styleDisplay}){
 
 
     const enemyImgArr=useRef(null);
+
+    const enemyAshArr =useRef(null);
     
     
 
@@ -142,41 +153,54 @@ function TowerDefenceGamePage({switchPage,styleDisplay}){
     const bulletData=useRef(null);
 
 
-    const enemyHealthData = useRef(null);
-    const enemyBodyData=useRef(null);
+    
+    const enemyData=useRef(null);
+    const enemyNodeMap = useRef(new Map());
+
+    const enemyAshRef = useRef(null);
     
     
 
-    const[tower1,setTower1]=useState(null);
-    const[tower2,setTower2]=useState(null);
-    const[tower3,setTower3]=useState(null);
+    
 
     //the actual tower body
     const tower1Body = useRef(null);
     const tower2Body = useRef(null);
     const tower3Body = useRef(null);
+
+    //the real health and the sliding health bar
+
+
+    const tower1DisplayHealth = useRef(null);
+    const tower1RealHealth = useRef(null);
+    const tower1Background=useRef(null);
+
+    const tower2DisplayHealth = useRef(null);
+    const tower2RealHealth = useRef(null);
+     const tower2Background=useRef(null);
+
+
+
+    const tower3DisplayHealth = useRef(null);
+    const tower3RealHealth = useRef(null);
+     const tower3Background=useRef(null);
+
     
+
+
+
    //ref for rotating controller
    const rotateController = useRef(null);
 
 
    //ref in the loop
    const tower1Ref =useRef(null);
-   useEffect(()=>{
-    tower1Ref.current=tower1?{...tower1}:null;
-   },[tower1]);
-
+   
    const tower2Ref=useRef(null);
-   useEffect(()=>{
-    tower2Ref.current=tower2?{...tower2}:null;
-
-   },[tower2]);
+   
 
    const tower3Ref=useRef(null);
-   useEffect(()=>{
-    tower3Ref.current=tower3?{...tower3}:null;
-
-   },[tower3]);
+   
    //enemy ref in the loop
 
    //state for displaying scores and coins;
@@ -336,7 +360,15 @@ const isDisplayCoinAdd = useRef(false);
                         [...enemy4Img,null]
                     ]
 
+                    const enemyAsh = await Promise.all([
+                        preloadAndDecode(lv1EnemyAsh),
+                        preloadAndDecode(lv2EnemyAsh),
+                        preloadAndDecode(lv3EnemyAsh),
+                        preloadAndDecode(lv4EnemyAsh)
 
+                    ]);
+
+                    enemyAshArr.current = [...enemyAsh];
 
 
                 }catch(error){
@@ -372,11 +404,11 @@ const isDisplayCoinAdd = useRef(false);
                 if(response.ok){
                     const data = await response.json(); 
                     //console.log(data);
-
+                    if(isDev){console.log(data)}
                     //
-                    setTower1(_=>{return(data[0]===null?null:{...data[0],isDestroyed:false})});
-                    setTower2(_=>{return(data[1]===null?null:{...data[1],isDestroyed:false})});
-                    setTower3(_=>{return(data[2]===null?null:{...data[2],isDestroyed:false})});
+                    tower1Ref.current=(data[0]?{...data[0]}:null)
+                   tower2Ref.current=(data[1]?{...data[1]}:null)
+                   tower3Ref.current = (data[2]?{...data[2]}:null)
 
                     //render the tower
                      
@@ -476,6 +508,8 @@ const isDisplayCoinAdd = useRef(false);
             
 
             const BulletDataRef = bulletData.current;
+
+            const EnemyAshRef = enemyAshRef.current;
             
 
             //enemy
@@ -485,19 +519,20 @@ const isDisplayCoinAdd = useRef(false);
             const EnemySpawnAmount = gameDifficultyRef.current>4?4:gameDifficultyRef.current;
             
             
-            const EnemyHealthRef = enemyHealthData.current;
-            const EnemyBodyRef = enemyBodyData.current;
+            
+            const EnemyBodyRef = enemyData.current;
+            const EnemyNodeMap = enemyNodeMap.current;
+            
 
             const EnemyLevelRange= Math.min(gameDifficultyRef.current,4);
 
             
-
             const TowerImgArr = towerImgArr.current;
            
-            if (!BulletDataRef || !EnemyHealthRef || !EnemyBodyRef||!TowerImgArr||!bulletImgArr.current||!enemyImgArr.current) {
-                return; 
-            }
+            if (!BulletDataRef || !EnemyBodyRef||!TowerImgArr||!EnemyAshRef||!bulletImgArr.current||!enemyImgArr.current||!enemyAshArr.current) {return; }
             if(!tower1Body.current||!tower2Body.current||!tower3Body.current){return;}
+            if(!tower1DisplayHealth.current||!tower1RealHealth.current||!tower2DisplayHealth.current||!tower2DisplayHealth.current||!tower3DisplayHealth.current||!tower1RealHealth.current)return;
+            if(!tower1Background.current||!tower2Background.current||!tower3Background.current){return;}
 
 
 
@@ -571,7 +606,95 @@ const isDisplayCoinAdd = useRef(false);
 
                 }
 
+                //sync tower health bar, and do sliding animaton
 
+                if(Tower1Ref){
+                    tower1RealHealth.current.width(250*Tower1Ref.towerCurrentHp/Tower1Ref.towerHp);
+                    //chaneg hp bar color base on health remianing
+                    if(tower1RealHealth.current.width()>180){
+                        tower1RealHealth.current.fill("green")
+                    }else if(tower1RealHealth.current.width()>50){
+                        tower1RealHealth.current.fill("orange")
+                    }else{
+                        tower1RealHealth.current.fill("red")
+                    }
+                    tower1Body.current.rotation(Tower1Ref.towerAngleInitial+Tower1Ref.towerAngle);
+                    tower1Background.current.width(266);
+                    tower1Background.current.strokeWidth(8);
+                    //sliding hp bar animation
+                    if(Tower1Ref.towerDisplayHp>Tower1Ref.towerCurrentHp){
+                        const newHp = Math.max(0,Tower1Ref.towerDisplayHp-5.2);
+                        Tower1Ref.towerDisplayHp=newHp;
+                        tower1DisplayHealth.current.width(250*Tower1Ref.towerDisplayHp/Tower1Ref.towerHp);
+                    }
+
+                    
+                }else{
+                    //clear visual when tower is dead
+                    tower1RealHealth.current.width(0);
+                    tower1Body.current.image(null);
+                    tower1Background.current.width(0);
+                    tower1Background.current.strokeWidth(0);
+                    tower1DisplayHealth.current.width(0);
+                }
+
+                if(Tower2Ref){
+                    tower2RealHealth.current.width(250*Tower2Ref.towerCurrentHp/Tower2Ref.towerHp);
+                    //chaneg hp bar color base on health remianing
+                    if(tower2RealHealth.current.width()>180){
+                        tower2RealHealth.current.fill("green")
+                    }else if(tower2RealHealth.current.width()>50){
+                        tower2RealHealth.current.fill("orange")
+                    }else{
+                        tower2RealHealth.current.fill("red")
+                    }
+                    tower2Body.current.rotation(Tower2Ref.towerAngleInitial+Tower2Ref.towerAngle);
+                    tower2Background.current.width(266);
+                    tower2Background.current.strokeWidth(8);
+                     if(Tower2Ref.towerDisplayHp>Tower2Ref.towerCurrentHp){
+                        const newHp = Math.max(0,Tower2Ref.towerDisplayHp-5.2);
+                        Tower2Ref.towerDisplayHp=newHp;
+                        tower2DisplayHealth.current.width(250*Tower2Ref.towerDisplayHp/Tower2Ref.towerHp);
+                    }
+                }else{
+                    //clear visual when tower is dead
+                    tower2RealHealth.current.width(0);
+                    tower2Body.current.image(null);
+                    tower2Background.current.width(0);
+                    tower2Background.current.strokeWidth(0);
+                    tower2DisplayHealth.current.width(0);
+
+                }
+
+
+                if(Tower3Ref){
+                    tower3RealHealth.current.width(250*Tower3Ref.towerCurrentHp/Tower3Ref.towerHp);
+                    //chaneg hp bar color base on health remianing
+                    if(tower3RealHealth.current.width()>180){
+                        tower3RealHealth.current.fill("green")
+                    }else if(tower3RealHealth.current.width()>50){
+                        tower3RealHealth.current.fill("orange")
+                    }else{
+                        tower3RealHealth.current.fill("red")
+                    }
+
+                     tower3Body.current.rotation(Tower3Ref.towerAngleInitial+Tower3Ref.towerAngle);
+                     tower3Background.current.width(266);
+                    tower3Background.current.strokeWidth(8);
+                     if(Tower3Ref.towerDisplayHp>Tower3Ref.towerCurrentHp){
+                        const newHp = Math.max(0,Tower3Ref.towerDisplayHp-5.2);
+                        Tower3Ref.towerDisplayHp=newHp;
+                        tower3DisplayHealth.current.width(250*Tower3Ref.towerDisplayHp/Tower3Ref.towerHp);
+                    }
+                }else{
+                    //clear visual when tower is dead
+                    tower3RealHealth.current.width(0);
+                    tower3Body.current.image(null);
+                    tower3Background.current.width(0);
+                    tower3Background.current.strokeWidth(0);
+                    tower3DisplayHealth.current.width(0);
+
+                }
 
 
 
@@ -579,6 +702,24 @@ const isDisplayCoinAdd = useRef(false);
 
                 //bullet,enemy movement, collision detection
                 if(Tower1Ref||Tower2Ref||Tower3Ref){
+                    //animate or delete the ash
+                    let enemyAshList = EnemyAshRef.getChildren();
+                    for(let i=enemyAshList.length-1;i>=0;--i){
+                        const dt = (frame.time-enemyAshList[i].getAttr("spawnTime"))/1000;
+                        if(dt<=1){
+                            //run the function or fast in, slow out
+                            const currentOffset = (130*((dt-1)**2)-80);
+                            enemyAshList[i].offsetY(currentOffset);
+                        }else{
+                            enemyAshList[i].offsetY(-80);
+                            if(dt>3){
+                                const newOpacity = Math.max(enemyAshList[i].opacity()-0.05,0);
+                                if(newOpacity===0){enemyAshList[i].destroy();continue;}
+                                enemyAshList[i].opacity(newOpacity);
+                            }
+                        }
+
+                    }
                     
                     let BulletList = BulletDataRef.getChildren();
                     
@@ -592,37 +733,60 @@ const isDisplayCoinAdd = useRef(false);
                         }
 
                     }
-                    let EnemyHealthList = EnemyHealthRef.getChildren();
-                    for(let i = EnemyHealthList.length-1;i>=0;--i){
-                        if(frame.time-EnemyHealthList[i].getAttr('enemySpawnedTime')>2000){
-                        EnemyHealthList[i].x(EnemyHealthList[i].x()+enemySpeed*Math.cos(EnemyHealthList[i].getAttr('enemyAngle')*Math.PI/180));
-                        EnemyHealthList[i].y(EnemyHealthList[i].y()+enemySpeed*Math.sin(EnemyHealthList[i].getAttr('enemyAngle')*Math.PI/180));
-                        EnemyHealthList[i].setAttr('distance',EnemyHealthList[i].getAttr('distance')+enemySpeed);
-                        if(EnemyHealthList[i].getAttr('distance')>1600){
-                            EnemyHealthList[i].destroy();
-                        }
-                        }
-                        
-                    }
+
+                    //optimized enemy structure and spawn logic
                     let EnemyBodyList = EnemyBodyRef.getChildren();
                     for(let i = EnemyBodyList.length-1;i>=0;--i){
-                        if(frame.time-EnemyBodyList[i].getAttr('enemySpawnedTime')>2000){
-                            if(frame.time-EnemyBodyList[i].getAttr('enemyLastHitTime')>200){
-                                EnemyBodyList[i].setAttr('enemyState',0);
-                            }
-                            EnemyBodyList[i].image(enemyImgArr.current[EnemyBodyList[i].getAttr('enemyLevel')-1][EnemyBodyList[i].getAttr('enemyState')]);
-                            
-                            EnemyBodyList[i].x(EnemyBodyList[i].x()+enemySpeed*Math.cos(EnemyBodyList[i].getAttr('enemyAngle')*Math.PI/180));
-                            EnemyBodyList[i].y(EnemyBodyList[i].y()+enemySpeed*Math.sin(EnemyBodyList[i].getAttr('enemyAngle')*Math.PI/180));
-                            EnemyBodyList[i].setAttr('distance',EnemyBodyList[i].getAttr('distance')+enemySpeed);
-                            if(EnemyBodyList[i].getAttr('distance')>1600){
-                                EnemyBodyList[i].destroy();
-                            }
+                        const currentEnemyNode = EnemyNodeMap.get(EnemyBodyList[i].getAttr("pId"));
+                        if(!currentEnemyNode)continue;
+                        //update health bar animation
+                        currentEnemyNode.enemyRealHp.width(150*currentEnemyNode.master.getAttr("enemyCurrentHp")/currentEnemyNode.master.getAttr("enemyHp"));
+                        //sliding health bar
+                        if(currentEnemyNode.master.getAttr("enemyDisplayHp")>currentEnemyNode.master.getAttr("enemyCurrentHp")){
+                            const newHp = Math.max(currentEnemyNode.master.getAttr("enemyDisplayHp")-9,0);
+                            currentEnemyNode.master.setAttr("enemyDisplayHp",newHp);
+                            currentEnemyNode.enemyDisplayHp.width(150*newHp/currentEnemyNode.master.getAttr("enemyHp"));
                         }
+
+
+
+                        if(frame.time-currentEnemyNode.master.getAttr('enemySpawnedTime')>2000){
+                            if(frame.time-currentEnemyNode.master.getAttr('enemyLastHitTime')>200){
+                                currentEnemyNode.master.setAttr('enemyState',0);
+                            }
+                            currentEnemyNode.enemyBody.image(enemyImgArr.current[currentEnemyNode.master.getAttr('enemyLevel')-1][currentEnemyNode.master.getAttr('enemyState')]);
+                            
+                            currentEnemyNode.master.x(currentEnemyNode.master.x()+enemySpeed*Math.cos(currentEnemyNode.master.getAttr('enemyAngle')*Math.PI/180));
+                            currentEnemyNode.master.y(currentEnemyNode.master.y()+enemySpeed*Math.sin(currentEnemyNode.master.getAttr('enemyAngle')*Math.PI/180));
+                            currentEnemyNode.master.setAttr('distance',currentEnemyNode.master.getAttr('distance')+enemySpeed);
+
+                           
+                        }else{
+                            //do the animation, expand in
+                            const newWidth = currentEnemyNode.enemyBody.width()+5;
+                                if(currentEnemyNode.enemyBody.width()<160){
+                                    currentEnemyNode.enemyBody.width(newWidth);
+                                    currentEnemyNode.enemyBody.height(newWidth);
+                                    currentEnemyNode.enemyBody.offsetX(newWidth/2);
+                                    currentEnemyNode.enemyBody.offsetY(newWidth/2);
+
+                                }
+                        }
+
+
+                         if(currentEnemyNode.master.getAttr('distance')>1600){
+                                //delete node
+                                EnemyNodeMap.delete(EnemyBodyList[i].getAttr("pId"));
+                                EnemyBodyList[i].destroy();
+                                //
+                        }
+                        
 
 
                         
                     }
+                    
+                    
 
                     
 
@@ -631,9 +795,12 @@ const isDisplayCoinAdd = useRef(false);
 
                 //enemy hitting tower logic
                 if(Tower1Ref||Tower2Ref||Tower3Ref){
-                    let EnemyHealthList = EnemyHealthRef.getChildren();
+                    
                     let EnemyBodyList = EnemyBodyRef.getChildren();
                     for (let i= EnemyBodyList.length-1;i>=0;--i){
+                        //node quick reference
+                        
+
                         const distanceTo1 = Tower1Ref?Math.sqrt((EnemyBodyList[i].x()-tower1X)**2+(EnemyBodyList[i].y()-tower1Y)**2):100000;
                         const distanceTo2 = Tower2Ref?Math.sqrt((EnemyBodyList[i].x()-tower2X)**2+(EnemyBodyList[i].y()-tower2Y)**2):100000;
                         const distanceTo3 = Tower3Ref?Math.sqrt((EnemyBodyList[i].x()-tower3X)**2+(EnemyBodyList[i].y()-tower3Y)**2):100000;
@@ -641,31 +808,48 @@ const isDisplayCoinAdd = useRef(false);
                             Tower1Ref.towerCurrentHp-=EnemyBodyList[i].getAttr('enemyDamage');
                             if(Tower1Ref.towerCurrentHp<=0){
                                 Tower1Ref=null;
+                                //local copy assgned to null does not change the actual object
+                                tower1Ref.current=null;
                                 
                             }
                             rerenderTower=true;
+
+                            //remove node
+                            EnemyNodeMap.delete(EnemyBodyList[i].getAttr("pId"));
                             EnemyBodyList[i].destroy();
-                            EnemyHealthList[i].destroy();
+                            
                             continue;
                         }else if(distanceTo2<100){
                             Tower2Ref.towerCurrentHp-=EnemyBodyList[i].getAttr('enemyDamage');
                             if(Tower2Ref.towerCurrentHp<=0){
                                 Tower2Ref=null;
+                                tower2Ref.current=null;
+
                                 
                             }
                             rerenderTower=true;
+
+
+                            //remove node
+                            EnemyNodeMap.delete(EnemyBodyList[i].getAttr("pId"));
                             EnemyBodyList[i].destroy();
-                            EnemyHealthList[i].destroy();
+                           
                             continue;
                         }else if(distanceTo3<100){
                             Tower3Ref.towerCurrentHp-=EnemyBodyList[i].getAttr('enemyDamage');
                             if(Tower3Ref.towerCurrentHp<=0){
                                 Tower3Ref=null;
+                                tower3Ref.current=null;
                                 
                             }
                             rerenderTower=true;
+
+
+                            //remove node
+
+                            EnemyNodeMap.delete(EnemyBodyList[i].getAttr("pId"));
                             EnemyBodyList[i].destroy();
-                            EnemyHealthList[i].destroy();
+                            
                             continue;
                         }
 
@@ -678,7 +862,7 @@ const isDisplayCoinAdd = useRef(false);
 
                 //bullet collision logic
                 if(Tower1Ref||Tower2Ref||Tower3Ref){
-                    let EnemyHealthList = EnemyHealthRef.getChildren();
+                    
                     let EnemyBodyList = EnemyBodyRef.getChildren();
                     let BulletList = BulletDataRef.getChildren();
 
@@ -686,13 +870,15 @@ const isDisplayCoinAdd = useRef(false);
                     const enemyGrid = {};
 
                     for(let i = EnemyBodyList.length-1;i>=0;--i){
+                        
+
                         const gridX = Math.floor(EnemyBodyList[i].x()/Grid_Size);
                         const gridY = Math.floor(EnemyBodyList[i].y()/Grid_Size);
                         const gridKey = `${gridX},${gridY}`;
                         if(!enemyGrid[gridKey]){
                             enemyGrid[gridKey]=[];
                         }
-                        enemyGrid[gridKey].push({bodyData:EnemyBodyList[i],healthData:EnemyHealthList[i],xPos:EnemyBodyList[i].x(),yPos:EnemyBodyList[i].y(),
+                        enemyGrid[gridKey].push({bodyData:EnemyBodyList[i],healthData:EnemyBodyList[i],xPos:EnemyBodyList[i].x(),yPos:EnemyBodyList[i].y(),
                             isKilled:false
                         });
 
@@ -732,7 +918,36 @@ const isDisplayCoinAdd = useRef(false);
                                                 scoreAdd.current += Math.min(gameDifficultyRef.current*10,500);
                                                 setScoreDisplay(s=>s+Math.min(gameDifficultyRef.current*10,500));
                                                 setCoinDisplay(c=>c+currentEnemy.bodyData.getAttr('enemyCoinDrop'));
-                                                currentEnemy.healthData.destroy();
+
+
+
+                                                //spawn ashs
+                                               
+                                                const newAsh = new Konva.Image({
+                                                    x:currentEnemy.bodyData.x(),
+                                                    y:currentEnemy.bodyData.y(),
+                                                    width:160,
+                                                    height:160,
+                                                    offsetX:80,
+                                                    offsetY:50,
+                                                    opacity:1,
+                                                    image:enemyAshArr.current[currentEnemy.bodyData.getAttr("enemyLevel")-1],
+                                                    scaleX:currentEnemy.bodyData.x()>980?-1:1,
+                                                    spawnTime:frame.time
+
+                                                });
+                                                EnemyAshRef.add(newAsh);
+
+
+
+
+
+
+                                                
+                                                //delete the nodes from the map
+                                                EnemyNodeMap.delete(currentEnemy.bodyData.getAttr("pId"));
+                                                //
+
                                                 currentEnemy.bodyData.destroy();
                                                 currentEnemy.isKilled=true;
                                                 break;
@@ -743,7 +958,9 @@ const isDisplayCoinAdd = useRef(false);
 
 
                                             currentEnemy.healthData.setAttr('enemyCurrentHp',newHp);
-                                            currentEnemy.healthData.width(150*newHp/currentEnemy.healthData.getAttr('enemyHp'));
+
+
+                                            //currentEnemy.healthData.width(150*newHp/currentEnemy.healthData.getAttr('enemyHp'));
 
                                             
 
@@ -880,10 +1097,13 @@ const isDisplayCoinAdd = useRef(false);
 
 
 
-                if(EnemyBodyRef&&EnemyHealthRef&&EnemyAttributeArr!==null){
+                if(EnemyBodyRef&&EnemyAttributeArr){
                     const isSpawningTime = Math.floor(frame.time/EnemySpawnRate)>Math.floor(lastFrame/EnemySpawnRate);
                     if(isSpawningTime&&(Tower1Ref||Tower2Ref||Tower3Ref)){
                         for(let i=0;i<EnemySpawnAmount;++i){
+                            //important id for quick access in maps
+
+                            pIdCounter.current++;
                             const enemyLevelRandom = Math.floor(Math.random()*EnemyLevelRange)+1;
                             const randomAngle=Math.random()*360;
                             const randomDistance = Math.random()*300 + 900;
@@ -913,16 +1133,13 @@ const isDisplayCoinAdd = useRef(false);
 
                                 }
                             }
-                            const newEnemy = new Konva.Image({
-                                enemyLevel:enemyLevelRandom,
+
+                            const newEnemyGroup = new Konva.Group({
                                 x:initialX,
                                 y:initialY,
-                                width:150,
-                                height:150,
-                                offsetX:75,
-                                offsetY:75,
-                                distance:0,
-                                image:enemySpawningHoleImg,
+                                pId:pIdCounter.current,
+
+
                                 enemyAngle:Angle,
                                 enemySpawnedTime: frame.time,
 
@@ -934,6 +1151,26 @@ const isDisplayCoinAdd = useRef(false);
                                 enemyState:0,
 
                                 enemyLastHitTime:0,
+                                
+
+                                enemyLevel:enemyLevelRandom,
+                                distance:0,
+
+
+                                enemyDisplayHp:EnemyAttributeArr[enemyLevelRandom-1].enemyHp + enemyHealthBuffer
+                            })
+
+                            const newEnemy = new Konva.Image({
+                                
+                                x:0,
+                                y:0,
+                                width:0,
+                                height:0,
+                                offsetX:0,
+                                offsetY:0,
+                                
+                                image:enemySpawningHoleImg,
+                                
                                 isDead:false,
 
                                 scaleX:initialX>980?-1:1
@@ -941,23 +1178,62 @@ const isDisplayCoinAdd = useRef(false);
 
                             });
                             const newEnemyHp = new Konva.Rect({
-                                x:initialX,
-                                y:initialY,
+                                x:0,
+                                y:-120,
                                 width:150,
                                 height:30,
                                 offsetX:75,
-                                offsetY:145,
-                                distance:0,
+                                offsetY:15,
                                 fill:'red',
-                                enemyHp:EnemyAttributeArr[enemyLevelRandom-1].enemyHp + enemyHealthBuffer,
-                                enemyCurrentHp:EnemyAttributeArr[enemyLevelRandom-1].enemyHp + enemyHealthBuffer,
-                                enemyAngle:Angle,
-                                enemySpawnedTime:frame.time
+                                cornerRadius:16
+                                
 
 
                             });
-                            EnemyBodyRef.add(newEnemy);
-                            EnemyHealthRef.add(newEnemyHp);
+
+                            const newEnemyDisplayHp= new Konva.Rect({
+                                x:0,
+                                y:-120,
+                                width:150,
+                                height:30,
+                                offsetX:75,
+                                offsetY:15,
+                                fill:'white',
+                                cornerRadius:16
+
+                            });
+
+                            const hpBackground = new Konva.Rect({
+                                x:0,
+                                y:-120,
+                                width:166,
+                                height:46,
+                                offsetX:83,
+                                offsetY:23,
+                                fill:'#4A4A4A',
+                                stroke:"#242324",
+                                cornerRadius:32,
+                                strokeWidth:8,  
+
+                            })
+
+
+                            newEnemyGroup.add(hpBackground)
+                            newEnemyGroup.add(newEnemy);
+                            newEnemyGroup.add(newEnemyDisplayHp);
+                            newEnemyGroup.add(newEnemyHp);
+                            
+                            
+
+                            EnemyNodeMap.set(pIdCounter.current,{master:newEnemyGroup,
+                                                        enemyBody:newEnemy,
+                                                        enemyRealHp:newEnemyHp,
+                                                        enemyDisplayHp:newEnemyDisplayHp,
+
+                            })
+
+                            EnemyBodyRef.add(newEnemyGroup);
+                            
 
 
                         }
@@ -968,18 +1244,13 @@ const isDisplayCoinAdd = useRef(false);
 
                 //new update method:
                 BulletDataRef.batchDraw();
-                EnemyHealthRef.batchDraw();
+               
                 EnemyBodyRef.batchDraw();
 
 
 
                 
-                if(rerenderTower){
-                    setTower1(t=>{return Tower1Ref?{...Tower1Ref}:null})
-                    setTower2(t=>{return Tower2Ref?{...Tower2Ref}:null});
-                     setTower3(t=>{return Tower3Ref?{...Tower3Ref}:null});
-                }
-            
+               
                 
 
             
@@ -1010,38 +1281,38 @@ const isDisplayCoinAdd = useRef(false);
         console.log(e.key);
         switch(e.key.toLowerCase()){
             case 'a':
-                if(tower1){
-                setTower1(prev=>{return {...prev,towerAngle:prev.towerAngle-rotateDegree}});
+                if(tower1Ref.current){
+               tower1Ref.current.towerAngle-=rotateDegree;
                 
                 }
                 break;
             case 's':
-                if(tower1){
-                setTower1(prev=>{return {...prev,towerAngle:prev.towerAngle+rotateDegree}});
+                if(tower1Ref.current){
+                tower1Ref.current.towerAngle+=rotateDegree;
                 
                 }
                 break;
             case 'z':
-                if(tower2){
-                    setTower2(prev=>{return {...prev,towerAngle:prev.towerAngle-rotateDegree}});
+                if(tower2Ref.current){
+                    tower2Ref.current.towerAngle-=rotateDegree;
 
                 }
                 break;
             case 'x':
-                if(tower2){
-                    setTower2(prev=>{return {...prev,towerAngle:prev.towerAngle+rotateDegree}});
+               if(tower2Ref.current){
+                    tower2Ref.current.towerAngle+=rotateDegree;
 
                 }
                 break;
             case'c':
-                if(tower3){
-                    setTower3(prev=>{return {...prev,towerAngle:prev.towerAngle-rotateDegree}});
+                if(tower3Ref.current){
+                    tower3Ref.current.towerAngle-=rotateDegree;
 
                 }
                 break;
             case'v':
-                if(tower3){
-                    setTower3(prev=>{return {...prev,towerAngle:prev.towerAngle+rotateDegree}});
+                if(tower3Ref.current){
+                    tower3Ref.current.towerAngle+=rotateDegree;
 
                 }
                 break;
@@ -1129,29 +1400,91 @@ const isDisplayCoinAdd = useRef(false);
             
             <Stage width={1960} height={1960} >
                 <Layer>
+                         {/*tower 1 cluster */}
+                        <Rect height={46}
+                        offsetX={133}
+                        offsetY={23}
+                        fill="#4A4A4A"
+                        stroke="#242324"
+                        cornerRadius={32}
+                        
+                        x={tower1X} y={tower1Y-150}
+                        
+                        ref={tower1Background}></Rect>
+
+                        <Rect height={30}
+                        fill='white' x={tower1X} y={tower1Y-150}
+                        offsetX={125}
+                        offsetY={15}
+                        cornerRadius={16}
+                        strokeWidth={8}
+                        ref={tower1DisplayHealth}></Rect>
+
                     
                         <Rect height={30}
-                        width={tower1===null?0:250*tower1.towerCurrentHp/tower1.towerHp}
-                        fill='green' x={tower1X} y={tower1Y-150}
+                        
+                         x={tower1X} y={tower1Y-150}
                         offsetX={125}
-                        offsetY={15}></Rect>
-                        <Rect></Rect>
+                        offsetY={15}
+                        cornerRadius={16}
+                        strokeWidth={8}
+                        ref={tower1RealHealth}></Rect>
+
+
+                       
+
                         <KonvaImage height={250}
                         width={250}
                         offsetX={125}
                         offsetY={125}
                         x={tower1X}
                         y={tower1Y}
-                        rotation={tower1===null?0:tower1.towerAngleInitial+tower1.towerAngle}
+                        
                         ref={tower1Body}></KonvaImage>
 
 
 
+                        {/*tower 2 cluster */}
+
+                         <Rect height={46}
+                        offsetX={133}
+                        offsetY={23}
+                        fill="#4A4A4A"
+                        stroke="#242324"
+                        cornerRadius={32}
+                        
+                        x={tower2X} y={tower2Y-150}
+                        
+                        ref={tower2Background}></Rect>
+
+
+
+
                         <Rect height={30}
-                        width={tower2===null?0:250*tower2.towerCurrentHp/tower2.towerHp}
-                        fill='green' x={tower2X} y={tower2Y-150}
+                        fill='white' x={tower2X} y={tower2Y-150}
                         offsetX={125}
-                        offsetY={15}></Rect>
+                        offsetY={15}
+                        cornerRadius={16}
+                        strokeWidth={8}
+                        ref={tower2DisplayHealth}></Rect>
+
+
+                        <Rect height={30}
+                        
+                        x={tower2X} y={tower2Y-150}
+                        offsetX={125}
+                        offsetY={15}
+                        ref={tower2RealHealth}
+                         cornerRadius={16}
+                        strokeWidth={8}></Rect>
+
+
+                        
+
+
+
+
+
                         <KonvaImage height={250}
                         width={250}
                         offsetX={125}
@@ -1159,17 +1492,46 @@ const isDisplayCoinAdd = useRef(false);
                         x={tower2X}
                         y={tower2Y}
                        
-                        rotation={tower2===null?0:tower2.towerAngleInitial+tower2.towerAngle}
+                        
                         ref={tower2Body}></KonvaImage>
 
 
 
 
+                        {/*tower 3 cluster */}
+
+                        <Rect height={46}
+                        offsetX={133}
+                        offsetY={23}
+                        fill="#4A4A4A"
+                        stroke="#242324"
+                        cornerRadius={32}
+                        
+                        x={tower3X} y={tower3Y-150}
+                        ref={tower3Background}></Rect>
+
                         <Rect height={30}
-                        width={tower3===null?0:250*tower3.towerCurrentHp/tower3.towerHp}
-                        fill='green' x={tower3X} y={tower3Y-150}
+                        fill='white' x={tower3X} y={tower3Y-150}
                         offsetX={125}
-                        offsetY={15}></Rect>
+                        offsetY={15}
+                        cornerRadius={16}
+                        strokeWidth={8}
+                        ref={tower3DisplayHealth}></Rect>
+
+
+
+                        <Rect height={30}
+                        
+                         x={tower3X} y={tower3Y-150}
+                        offsetX={125}
+                        offsetY={15}
+                        ref={tower3RealHealth}
+                         cornerRadius={16}
+                        strokeWidth={8}></Rect>
+
+                        
+
+
                         <KonvaImage height={250}
                         width={250}
                         offsetX={125}
@@ -1177,7 +1539,7 @@ const isDisplayCoinAdd = useRef(false);
                         x={tower3X}
                         y={tower3Y}
                         
-                        rotation={tower3===null?0:tower3.towerAngleInitial+tower3.towerAngle}
+                        
                         ref={tower3Body}></KonvaImage>
 
 
@@ -1193,9 +1555,10 @@ const isDisplayCoinAdd = useRef(false);
                 
                 <Layer ref={bulletData}></Layer>
                 
-                <Layer ref = {enemyHealthData}></Layer>
-                
-                <Layer ref = {enemyBodyData}></Layer>
+
+                <Layer ref = {enemyData}></Layer>
+
+                <Layer ref={enemyAshRef}></Layer>
                 
 
             </Stage>
