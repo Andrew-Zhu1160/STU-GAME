@@ -7,6 +7,13 @@
     src: url(../fonts/BitcountGridSingleInk-VariableFont_CRSV\,ELSH\,ELXP\,SZP1\,SZP2\,XPN1\,XPN2\,YPN1\,YPN2\,slnt\,wght.ttf);
 }
 
+
+@keyframes buttonPop {
+    0% { opacity: 0; transform: scale(0.5) translateY(10px); }
+    70% { transform: scale(1.1); }
+    100% { opacity: 1; transform: scale(1) translateY(0); }
+}
+
 .loadingScreen{
     position:fixed;
     width:100%;
@@ -17,8 +24,10 @@
     font-size: 2em;
     row-gap: 2vh;
     background-color: rgba(73, 65, 75, 0.792);
-    z-index: 10;
+    z-index: 15;
     flex-direction: column;
+
+    animation: buttonPop 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
 
 }
 .loadingScreen>img{
@@ -54,177 +63,402 @@
     background-size: cover;
     background-attachment: fixed;
 
-    border: 20px solid rgb(128, 0, 255);
+    border: 25px solid rgb(255, 191, 0);
     border-radius: 50px;
 
     overflow:hidden;
     
+
+
+    
+
+    overflow: hidden;
+    
+    /* Optional: Subtle pulse animation */
+    animation: borderPulse 1s infinite alternate;
+}
+@keyframes borderPulse {
+    0% {
+        box-shadow: 
+            0 0 20px #fff,
+            0 0 40px rgb(255, 149, 0),
+            0 0 80px rgb(255, 149, 0),
+            inset 0 0 20px rgb(255, 157, 0);
+    }
+    100% {
+        box-shadow: 
+            0 0 35px #fff,                      /* Brighter white core */
+            0 0 65px rgb(255, 225, 0),          /* Expanded primary glow */
+            0 0 120px rgb(255, 225, 0),         /* Massive atmospheric spread */
+            inset 0 0 50px rgb(255, 230, 0);    /* Deeper internal spill */
+    }
 }
 
-.gameOverScreen{
-    position:absolute;
-    background-color: rgba(65, 65, 66, 0.538);
-    width:100%;
-    height:100%;
-    z-index: 6;
-    flex-direction: column;
-    justify-content: center;
+
+
+
+
+
+
+
+@keyframes panelDrop {
+    0% {
+        opacity: 0;
+        transform: translateX(-50%) translateY(-90%) scale(0.95);
+    }
+    60% {
+        transform: translateX(-50%) translateY(-50%) scale(1.01);
+    }
+    100% {
+        opacity: 1;
+        transform: translateX(-50%) translateY(-50%) scale(1);
+    }
+}
+
+/* The full-screen invisible click-blocker backdrop */
+.panelBackdrop {
+    position: absolute;
+    left:0px;
+    top:0px;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.55);
+    backdrop-filter: blur(4px);
+    /*-webkit-backdrop-filter: blur(4px);*/
+    z-index: 15;
+  
     align-items: center;
-    row-gap: 2vh;
-    font-family: honk;
-    font-size: 3em;
-
-}
-
-.gamePausedScreen{
-    position:absolute;
-    background-color: rgba(65, 65, 66, 0.538);
-    width:100%;
-    height:100%;
-    z-index: 6;
-    flex-direction: column;
     justify-content: center;
+}
+.panelBackdropRed{
+    background: rgba(104, 0, 0, 0.517);
+}
+
+/* The actual board that drops in */
+.panelBoard {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translateX(-50%) translateY(-50%);
+
+    width:  55%;
+    
+    height: 45%;
+
+    background: linear-gradient(160deg, #0f172a 0%, #1e1b4b 100%);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 28px;
+    box-shadow:
+        0 0 0 1px rgba(255,255,255,0.05),
+        0 30px 60px rgba(0, 0, 0, 0.6),
+        0 0 80px rgba(99, 102, 241, 0.12);
+
+    display: flex;
+    flex-direction: column;
     align-items: center;
-    row-gap: 2vh;
-    font-family: honk;
-    font-size: 3em;
+    justify-content: center;
+    gap: 20px;
+    padding: 48px 40px;
+
+    font-family: honk, Aerial;
+    text-align: center;
+    color: white;
+    z-index: 16;
+    overflow-y: auto;
+
+    animation: panelDrop 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+.panelBoardRed{
+    background: linear-gradient(160deg, #2a180f 0%, #4b1b1b 100%);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 28px;
+    box-shadow:
+        0 0 0 1px rgba(255,255,255,0.05),
+        0 30px 60px rgba(0, 0, 0, 0.6),
+        0 0 80px rgba(241, 99, 156, 0.12);
 
 }
+
+
+
+.panelBoard h1 {
+    font-size: 6em;
+    margin: 0 0 8px 0;
+    background: linear-gradient(135deg, #e0e7ff, #a5b4fc);
+    
+    background-clip: text;
+    font-family: honk;
+}
+
+/* ── CONFIRM button (yes / let's go / purchase) ── */
+
+.panelConfirmButton {
+    position: relative;
+    overflow: hidden;
+    cursor: pointer;
+    border: none;
+    border-radius: 14px;
+    padding: 14px 0;
+    width: 70%;
+    height:20%;
+
+    background: linear-gradient(145deg, #f59e0b, #d97706);
+    color: #1c1917;
+    font-family: honk, Aerial;
+    font-size: 4.2em;
+    font-weight: bold;
+
+    box-shadow:
+        0 4px 0 #92400e,
+        0 8px 20px rgba(245, 158, 11, 0.35);
+
+    transition:
+        transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1),
+        box-shadow 0.3s ease,
+        background 0.3s ease;
+}
+.panelConfirmButtonGreen{
+    background: linear-gradient(145deg, #2af50b, #4cd906);
+    box-shadow:
+        0 4px 0 #1b920e,
+        0 8px 20px rgba(11, 245, 34, 0.35);
+
+}
+/* shimmer sweep */
+.panelConfirmButton::before {
+    content: '';
+    position: absolute;
+    top: 0; left: -75%;
+    width: 50%; height: 100%;
+    background: linear-gradient(120deg, transparent, rgba(255,255,255,0.3), transparent);
+    transition: left 0.5s ease;
+}
+.panelConfirmButton:hover::before { left: 130%; }
+
+.panelConfirmButton:hover {
+    background: linear-gradient(145deg, #fbbf24, #f59e0b);
+    transform: translateY(-4px) scale(1.04);
+    box-shadow:
+        0 8px 0 #92400e,
+        0 16px 30px rgba(245, 158, 11, 0.5);
+}
+.panelConfirmButtonGreen:hover{
+    background: linear-gradient(145deg, #a1fb24, #0bf532);
+    box-shadow:
+        0 8px 0 #2b920e,
+        0 16px 30px rgba(38, 245, 11, 0.5);
+
+}
+
+.panelConfirmButton:active {
+    transform: translateY(2px) scale(0.97);
+    box-shadow: 0 2px 0 #92400e;
+    transition: transform 0.1s ease, box-shadow 0.1s ease;
+}
+.panelConfirmButtonGreen:active{
+    box-shadow: 0 2px 0 #0e923c;
+
+}
+/* ── CANCEL button (nope / no / close) ── */
+/* muted ghost style — present but not distracting */
+.panelCancelButton {
+    cursor: pointer;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 14px;
+    padding: 12px 0;
+    width: 70%;
+    height:20%;
+
+    background: rgba(255, 255, 255, 0.06);
+    color: rgba(255, 255, 255, 0.7);
+    font-family: honk, Aerial;
+    font-size: 4.1em;
+
+    box-shadow: none;
+
+    transition:
+        transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1),
+        background 0.3s ease,
+        color 0.3s ease,
+        border-color 0.3s ease;
+}
+
+.panelCancelButton:hover {
+    background: rgba(239, 68, 68, 0.15);
+    border-color: rgba(239, 68, 68, 0.5);
+    color: #fca5a5;
+    transform: translateY(-3px) scale(1.03);
+}
+
+.panelCancelButton:active {
+    transform: translateY(1px) scale(0.97);
+    transition: transform 0.1s ease;
+}
+
+/*end of panel style*/
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 .pauseGameButton{
-    display:flex;
+    position: absolute;
+    bottom: 20px;
+    right: 20px; /* Opposite side of the HUD */
+    height:180px;
+    width:180px;
+    z-index: 4;
+    
+    cursor: pointer;
+    font-family: 'honk', Arial;
+    font-size: 11.8rem;
+    color: white;
+    
+    /* Circular 3D Button Style */
+    display: flex;
     justify-content: center;
     align-items: center;
-    position: absolute;
-    width:10%;
-    max-width: 150px;
-    max-height: 150px;
-    height:auto;
-    border-radius: 75px;
-    background-color: rgba(235, 18, 18, 0.784);
-    border: 10px solid rgb(255, 119, 0);
-    bottom: 5px;
-    right:5px;
-    z-index: 3;
-    font-family: honk,Aerial;
-    font-size: 6em;
+    border: none;
+    border-radius: 50%;
+    
+    background: linear-gradient(180deg, #ff4d4d 0%, #b91c1c 100%);
+    box-shadow: 
+        0 4px 0 #7f1d1d, 
+        0 8px 15px rgba(0, 0, 0, 0.4);
+    
+    transition: all 0.1s ease;
+
 }
 .pauseGameButton:hover{
-    transform: scaleX(1.5) scaleY(1.5);
+    filter: brightness(1.1);
+    transform: translateY(-2px);
+    box-shadow: 
+        0 6px 0 #7f1d1d, 
+        0 12px 20px rgba(0, 0, 0, 0.4);
 }
 .pauseGameButton:active{
-    transform: none;
+    transform: translateY(3px);
+    box-shadow: 
+        0 1px 0 #7f1d1d, 
+        0 2px 5px rgba(0, 0, 0, 0.3);
 }
 
 
 
 
-.exitGameButton{
-    width:50%;
-    height:7%;
-    margin-bottom:3%;
-    border:none;
-    background-color: rgba(255, 183, 0, 0.741);
-    
-    border-radius: 20px;
-    font-family: honk,Aerial;
-    font-size: 1.5em;
-    
-    font-weight: bold;
-    
-    
-    border-bottom: 1px solid rgb(67, 56, 1);
-    transform:none;
-}
-.exitGameButton:hover{
-    transform:translateX(-10px);
-    border-bottom: 10px solid rgb(67, 56, 1);
-}
-.exitGameButton:active{
-    border-bottom: 1px solid rgb(67, 56, 1);
-    transform:none;
-
-}
 
 
 
-.resumeGameButton{
-    width:50%;
-    height:auto;
-    margin-bottom:3%;
-    border:none;
-    background-color: rgba(22, 214, 1, 0.589);
-    
-    border-radius: 20px;
-    font-family: honk,Aerial;
-    font-size: 1.5em;
-    
-    font-weight: bold;
-    
-    
-    border-bottom: 1px solid rgb(1, 67, 7);
-    transform:none;
-}
-.resumeGameButton:hover{
-    transform:translateX(-10px);
-    border-bottom: 10px solid rgb(1, 67, 7);
-}
-.resumeGameButton:active{
-     border-bottom: 1px solid rgb(1, 67, 7);
-    transform:none;
-
-}
 
 
 
-.coinDisplayPanel{
-    display:flex;
-    height:20vh;
-    max-height:150px;
-    align-items: center;
-    padding-left: 10px;
+
+.statusDisplay {
+    max-width:20%;
+    
+    min-height: 25%;
+    display: flex;
+    flex-direction: column;
+    padding: 20px;
+    row-gap: 15px;
     position: absolute;
-    top:50px;
-    left:50px;
-    z-index: 4;
-    font-family: honk,Aerial;
-    font-size: 4em;
-}
-.coinDisplayPanel>img{
-    width:10vw;
-    height:auto;
-    max-width:150px;
-    max-height:150px;
+    right: 20px;
+    top: 20px;
+    z-index: 10;
+    align-items: flex-end; 
 }
 
-.scoreDisplayPanel{
-    display:flex;
-    height:20vh;
-    max-height:150px;
+.coinDisplayPanel, 
+.scoreDisplayPanel {
+    display: flex;
     align-items: center;
-    padding-right: 10px;
-    position: absolute;
-    top:50px;
-    right:100px;
-    z-index: 4;
-    font-family: honk,Aerial;
-    font-size: 4em;
+    width: fit-content;
+    min-width: 300px;
+    padding: 12px 25px;
+    border-radius: 18px;
+    box-sizing: border-box;
+    flex-wrap: wrap;
+    
+    /* Premium Glassmorphism: Orange/Yellow Tint */
+    background: linear-gradient(135deg, rgba(45, 25, 0, 0.9), rgba(80, 50, 0, 0.8));
+    backdrop-filter: blur(12px);
+    
+    /* Beveled Edges (Inner Depth) */
+    border: 1px solid rgba(255, 204, 0, 0.4);
+    box-shadow: 
+        0 10px 30px rgba(0, 0, 0, 0.6),            /* External drop shadow */
+        inset 0 2px 4px rgba(255, 255, 255, 0.15), /* Top inner highlight */
+        inset 0 -2px 4px rgba(0, 0, 0, 0.5);       /* Bottom inner shadow */
+}
 
+/* Specific Gold Glow for Coins */
+.coinDisplayPanel {
+    border-left: 6px solid #ffcc00;
+    box-shadow: 
+        0 10px 30px rgba(0, 0, 0, 0.6),
+        0 0 15px rgba(255, 180, 0, 0.2);
+        min-height: 150px;
+}
+
+/* Specific Amber Glow for Score */
+.scoreDisplayPanel {
+    border-left: 6px solid #ff8800;
+    min-height: 150px;
+}
+
+.statusDisplay h1 {
+    font-family: 'honk', Arial;
+    font-size: 5.3rem;
+    margin: 0;
+    color: #fff;
+    text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+    line-height: 1;
+    white-space: nowrap;
+}
+
+.statusDisplay img {
+    width: 100px;
+    height: 100px;
+    margin-right: 15px;
+    flex-shrink: 0;
+    filter: drop-shadow(0 0 8px rgba(255, 204, 0, 0.6));
+}
+
+/* The Animation triggered on value change */
+.statNumber {
+    display: inline-block;
+    animation: popDisplay 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+@keyframes popDisplay {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.2); color: #ffd700; filter: brightness(1.5); }
+    100% { transform: scale(1); }
 }
 
 
 
 
 .coinPopout{
-    z-index: 4;
+     z-index: 4;
     display:flex;
     position: absolute;
-    background-color: rgba(255, 140, 0, 0.678);
+    background-color: rgba(255, 128, 0, 0.678);
     font-family: BGS,Aerial;
     font-size: 3em;
-    width:45%;
+    width:35%;
     border-radius: 20px;
-    height:10vh;
+    height:20vh;
     max-height:200px;
     justify-content: center;
     align-items: center;
@@ -236,7 +470,7 @@
 
 }
 .coinPopout>img{
-    width:10vw;
+   width:10vw;
     height:auto;
     max-width:150px;
     max-height:150px;
@@ -260,31 +494,54 @@
 
 
 
-.countdownPanel{
-     z-index: 4;
-    display:flex;
-    position: absolute;
-    background-color: rgba(255, 0, 0, 0.678);
-    font-family: honk,Aerial;
-    font-size: 16em;
 
+
+
+
+
+
+
+
+.countdownPanel{
+    z-index: 4;
+    display: flex;
+    position: absolute;
     
-    width:45vw;
-    height:45vw;
+    /* 1. Sizing remains exactly as requested */
+    width: 45vw;
+    height: 45vw;
     max-width: 700px;
     max-height: 700px;
-    border-radius:390px;
-    border: 30px solid rgba(255, 204, 0, 0.91);
+    border-radius: 50%; /* Cleaner than 390px for perfect circle */
     
-
+    /* 2. Position remains exactly as requested */
     justify-content: center;
     align-items: center;
-    
-    
-    transform:  translateX(-50%) translateY(-50%);
-    top:50%;
-    left:50%;
+    top: 50%;
+    left: 50%;
+    transform: translateX(-50%) translateY(-50%);
 
+    /* 3. The Depth Styling */
+    /* Darker, richer red glass for the center */
+    background: radial-gradient(circle, rgba(220, 38, 38, 0.8) 0%, rgba(153, 27, 27, 0.9) 100%);
+    backdrop-filter: blur(10px);
+
+    /* Removing the flat border and replacing with a 3D Bezel via box-shadow */
+    border: 2px solid rgba(255, 204, 0, 0.5); /* Thin "rim" highlight */
+    
+    box-shadow: 
+        /* Outer Glow and Depth */
+        0 0 40px rgba(0, 0, 0, 0.6), 
+        0 0 0 25px rgba(255, 204, 0, 0.9),  /* The main yellow "ring" body */
+        0 0 0 30px rgba(184, 134, 11, 1),   /* The darker gold "edge" for 3D depth */
+        
+        /* Inner Depth (makes the red center look "recessed") */
+        inset 0 0 25px rgba(0, 0, 0, 0.7),
+        inset 0 0 60px rgba(255, 204, 0, 0.2);
+
+    /* 4. Font and Animation remains exactly as requested */
+    font-family: honk, Aerial;
+    font-size: 16em;
     animation: countdownAnimation 0.7s linear;
     animation-fill-mode: forwards;
 

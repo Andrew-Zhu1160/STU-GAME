@@ -60,7 +60,41 @@
     width:1960px;
     height:1960px;
 
+
+    animation: borderPulse 1s infinite alternate;
+
 }
+@keyframes borderPulse {
+    0% {
+        box-shadow: 
+            0 0 20px #fff,
+            0 0 40px rgb(128, 0, 255),
+            0 0 80px rgb(128, 0, 255),
+            inset 0 0 20px rgb(128, 0, 255);
+    }
+    100% {
+        box-shadow: 
+            0 0 35px #fff,                      /* Brighter white core */
+            0 0 70px rgb(174, 0, 255),          /* Expanded primary glow */
+            0 0 130px rgb(174, 0, 255),         /* Massive atmospheric spread */
+            inset 0 0 50px rgb(204, 0, 255);    /* Deeper internal spill */
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 .test{
     transform: translateX(-50%) translateY(-50%);
     position:absolute;

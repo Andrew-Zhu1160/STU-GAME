@@ -6,8 +6,8 @@ import loadingGear from '../images/loadingGear.png';
 
 
 //updates panel
-import update1 from '../images/towerGameImg/towerLv11.png';
-import update2 from '../images/towerGameImg/towerLv12.png';
+import update1 from '../images/pizzaSlicerGameImage/pizza5.png';
+import update2 from '../images/pizzaSlicerGameImage/playerSk4.png';
 
 //for playground
 import Matter from 'matter-js';
@@ -20,7 +20,7 @@ import lv10Tower from '../images/towerGameImg/towerLv10.png';
 import ball5 from '../images/ballClutchGameImg/ballNo5.png';
 import ball4 from '../images/ballClutchGameImg/ballNo4.png';
 import pizza1 from '../images/pizzaSlicerGameImage/pizza1.png';
-import pizza3 from '../images/pizzaSlicerGameImage/pizza3.png';
+import pizza4 from '../images/pizzaSlicerGameImage/pizza4.png';
 import spinningBlade from '../images/spinningBlade.png';
 
 
@@ -299,7 +299,7 @@ function LoginPage({switchPage,styleDisplay}) {
                         preloadAndDecode(ball4),
                         preloadAndDecode(ball5),
                         preloadAndDecode(pizza1),
-                        preloadAndDecode(pizza3),
+                        preloadAndDecode(pizza4),
                         preloadAndDecode(spinningBlade)
                     ]);
                     imageArr.current=[...allImage];
@@ -363,7 +363,7 @@ function LoginPage({switchPage,styleDisplay}) {
 
                 Matter.Engine.update(engineRef.current,frame.timeDiff);
                 const lastFrame = frame.time-frame.timeDiff;
-                const spawnBallFrequency = 500;
+                const spawnBallFrequency = 400;
                 const isSpawnTime  = Math.floor(frame.time/spawnBallFrequency)>Math.floor(lastFrame/spawnBallFrequency);
                 if(isSpawnTime&&remainingBall.current>0){
                     pIdCounter.current++;
@@ -373,12 +373,18 @@ function LoginPage({switchPage,styleDisplay}) {
                     });
                     Matter.Composite.add(engineRef.current.world, newBallBody);
                     playBallBodyRef.current.push(newBallBody);
+
+                    //give it a little random velocity
+                    const randomX = (Math.random() - 0.5) * 10;
+                    const randomY = Math.random() * 2;
+                    Matter.Body.setVelocity(newBallBody, { x: randomX, y: randomY });
+
                     const newBallNode= new Konva.Image({
                         width:dimentionsRef.current.width/10 +5,
                         height:dimentionsRef.current.width/10+5,
                         offsetX:(dimentionsRef.current.width/10 +5)/2,
                         offsetY:(dimentionsRef.current.width/10 +5)/2,
-                        image:imageArr.current[Math.floor(Math.random()*imageArr.current.length-1)],
+                        image:imageArr.current[Math.floor(Math.random()*(imageArr.current.length-1))],
                         pId:pIdCounter.current
                     });
                     playBallRef.current.add(newBallNode);
@@ -391,7 +397,9 @@ function LoginPage({switchPage,styleDisplay}) {
                     if(playBallBodyRef.current[i].position.x>dimentionsRef.current.width+50||playBallBodyRef.current[i].position.x<-50||
                         playBallBodyRef.current[i].position.y>dimentionsRef.current.height+50|| playBallBodyRef.current[i].position.y<-300
                     ){
-                        Matter.Body.setPosition(playBallBodyRef.current[i],{x:dimentionsRef.current.width/2,y:0});
+                        const randomDivergenceX = Math.random()*20,randomDivergenceY=Math.random()*20;
+
+                        Matter.Body.setPosition(playBallBodyRef.current[i],{x:dimentionsRef.current.width/2 + randomDivergenceX,y:randomDivergenceY});
                     }
 
                     if(ballNode){ballNode.x(playBallBodyRef.current[i].position.x);
@@ -502,9 +510,11 @@ function LoginPage({switchPage,styleDisplay}) {
             
             <img src = {update2}></img>
             <img src={update1}></img>
-            <h1>New Tower!!</h1>
+            <h2>AI Powered Game !</h2>
 
         </div>
+
+        <h1 className={styles.dragMe}>drag ^ Me </h1>
 
     </div>);
 

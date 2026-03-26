@@ -208,11 +208,29 @@
     background-size: cover;
     background-attachment: fixed;
 
-    border: 20px solid rgb(0, 145, 255);
+    border: 25px solid rgb(0, 68, 255);
     border-radius: 50px;
 
     overflow:hidden;
+
+    animation: borderPulse 1s infinite alternate;
     
+}
+@keyframes borderPulse {
+    0% {
+        box-shadow: 
+            0 0 20px #fff,
+            0 0 40px rgb(0,68, 255),
+            0 0 80px rgb(0, 68, 255),
+            inset 0 0 20px rgb(0, 68, 255);
+    }
+    100% {
+        box-shadow: 
+            0 0 30px #fff,                      /* Brighter white core */
+            0 0 65px rgb(0, 179, 255),          /* Expanded primary glow */
+            0 0 125px rgb(0, 179, 255),         /* Massive atmospheric spread */
+            inset 0 0 50px rgb(0, 179, 255);    /* Deeper internal spill */
+    }
 }
 
 
@@ -446,9 +464,9 @@
     border: none;
     border-radius: 50%;
     
-    background: linear-gradient(180deg, #ff4d4d 0%, #b91c1c 100%);
+    background: linear-gradient(180deg, #4d9aff 0%, #1c33b9 100%);
     box-shadow: 
-        0 4px 0 #7f1d1d, 
+        0 4px 0 #1d257f, 
         0 8px 15px rgba(0, 0, 0, 0.4);
     
     transition: all 0.1s ease;
@@ -458,14 +476,14 @@
     filter: brightness(1.1);
     transform: translateY(-2px);
     box-shadow: 
-        0 6px 0 #7f1d1d, 
+        0 6px 0 #1d347f, 
         0 12px 20px rgba(0, 0, 0, 0.4);
 }
 
 .pauseGameButton:active {
     transform: translateY(3px);
     box-shadow: 
-        0 1px 0 #7f1d1d, 
+        0 1px 0 #1d377f, 
         0 2px 5px rgba(0, 0, 0, 0.3);
 }
 

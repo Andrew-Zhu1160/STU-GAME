@@ -19,6 +19,8 @@
     z-index: 10;
     flex-direction: column;
 
+    animation: buttonPop 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+
 }
 .loadingScreen>img{
     width:30vw;
@@ -27,6 +29,11 @@
     animation-fill-mode: forwards;
     animation-direction: normal;
 
+}
+@keyframes buttonPop {
+    0% { opacity: 0; transform: scale(0.5) translateY(10px); }
+    70% { transform: scale(1.1); }
+    100% { opacity: 1; transform: scale(1) translateY(0); }
 }
 @keyframes spinner {
     0%{
@@ -238,6 +245,40 @@
 
     }
 }
+
+.dragMe{
+    position:absolute;
+    display: flex;
+    padding:20px;
+    left:2vw;
+    top:14vh;
+    z-index: 0;
+    font-family: BGS,Aerial;
+    font-size: 2.1em;
+    
+    animation: dragme 6s;
+    animation-iteration-count: infinite;
+    animation-timing-function: linear;
+    align-items: center;
+}
+
+@keyframes dragme {
+    0%{
+        transform:none;
+        opacity: 0
+
+    }
+    50%{
+        transform:  scaleX(1.2) scaleY(1.2);
+        opacity: 0.4;
+    }
+    100%{
+        transform:none;
+        opacity: 0
+
+    }
+}
+
 
 
 

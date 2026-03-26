@@ -1,5 +1,5 @@
 import { useState,useEffect,useRef,useMemo } from "react"
-import { Stage, Layer, Circle, Group, Image,Rect } from 'react-konva';
+import { Stage, Layer, Circle, Group, Image as KonvaImage,Rect } from 'react-konva';
 import Konva from "konva";
 import styles from './ballClutchGamePage.module.css'
 import useImage from 'use-image';
@@ -34,6 +34,9 @@ import stoneTexture from '../images/ballClutchGameImg/stoneTexture.png';
 import stickyTexture from '../images/ballClutchGameImg/stickyTexture.png';
 import iceTexture from '../images/ballClutchGameImg/iceTexture.png';
 
+const borderColorArr=["#333","#573901","#02396d"];
+
+
 import speedCoins from '../images/towerGameImg/speedCoin.png';
 
 //collision filter masks
@@ -46,6 +49,17 @@ const testLoadingDelay = 2000;
 
 
 function BallClutchGamePage({switchPage,styleDisplay}){
+
+    /*image preload, centralized loading */
+     //image pre decoder
+    const preloadAndDecode = async (src) => {
+        const img = new Image();
+        img.src = src;
+        img.decoding = 'async';
+        await img.decode();
+        return img; // This is now a "hot" bitmap ready for Konva
+    };
+
     //state variables for game page related button and game over page display
 
     /*-----------------------------------------------------------
@@ -187,21 +201,14 @@ function BallClutchGamePage({switchPage,styleDisplay}){
 
     //image imports
     //edit here to add more balls
-    const [ball1Img] = useImage(ball1);
-    const [ball2Img] = useImage(ball2);
-    const [ball3Img] = useImage(ball3);
-    const [ball4Img] = useImage(ball4);
-    const[ball5Img] = useImage(ball5);
-    const[ball6Img] = useImage(ball6);
-    const ballImgArray = [ball1Img,ball2Img,ball3Img,ball4Img,ball5Img,ball6Img];
+
+    const ballImgArray = useRef(null);
 
     const [borderSideImg]= useImage(borderSideTexture);
     const [borderBottomImg] = useImage(borderBottomTexture);
 
-    const [stoneTextureImg] = useImage(stoneTexture);
-    const [stickyTextureImg] = useImage(stickyTexture);
-    const [iceTextureImg] = useImage(iceTexture);
-    const platformTextureArray = [stoneTextureImg,stickyTextureImg,iceTextureImg];
+    
+    const platformTextureArray =useRef(null);
 
 
     //game related images and mechanics
@@ -213,6 +220,9 @@ function BallClutchGamePage({switchPage,styleDisplay}){
     //the main game element
     const ballRef = useRef(null);
     const movingPlatformRef = useRef(null);
+
+    //map for quick cross reference
+    const platformNodeMap = useRef(new Map())
 
     const gameDifficulty = useRef(1);
     const platformHeight = useRef(1800);
@@ -259,6 +269,43 @@ function BallClutchGamePage({switchPage,styleDisplay}){
 
             if(jumpController.current){
                 jumpController.current.focus();
+            }
+
+            async function loadImage(){
+                try{
+                    setDisplayLoadingScreen(true);
+                    const ballImg = await Promise.all([
+                        preloadAndDecode(ball1),
+                        preloadAndDecode(ball2),
+                        preloadAndDecode(ball3),
+                        preloadAndDecode(ball4),
+                        preloadAndDecode(ball5),
+                        preloadAndDecode(ball6)
+
+                    ]);
+                    ballImgArray.current=[...ballImg];
+
+                    const platformTexture = await Promise.all([
+                        preloadAndDecode(stoneTexture),
+                        preloadAndDecode(stickyTexture),
+                        preloadAndDecode(iceTexture)
+                    ]);
+                    platformTextureArray.current=[...platformTexture];
+
+                }catch(error){
+                    if(isDev){console.log(error)}
+                }finally{
+
+                    //get rid of loading
+                    if(isDev){
+                        await new Promise((resolve,reject)=>{
+                            setTimeout(()=>{resolve();},testLoadingDelay);
+                        });
+                    }
+                    setDisplayLoadingScreen(false);
+                    //get rid of loading
+                }
+
             }
 
             async function LoadGameSetting(){
@@ -315,21 +362,21 @@ function BallClutchGamePage({switchPage,styleDisplay}){
 
 
                             platfromSideRef.current=[
-                                Matter.Bodies.rectangle(35,1000,70,2000,{isStatic:true,friction:0,frictionStatic: 0,restitution: 0,slop: 0,
+                                Matter.Bodies.rectangle(-35,1000,70,2000,{isStatic:true,friction:0,frictionStatic: 0,restitution: 0,slop: 0,
                                     label:'leftSideWall',
                                     collisionFilter: {
                                         category: WALL_CATEGORY,
                                         mask: BALL_CATEGORY //collide only with ball
                                     }
                                 }),
-                                Matter.Bodies.rectangle(1465,1000,70,2000,{isStatic:true,friction:0,frictionStatic: 0,restitution: 0,slop: 0,
+                                Matter.Bodies.rectangle(1535,1000,70,2000,{isStatic:true,friction:0,frictionStatic: 0,restitution: 0,slop: 0,
                                     label:'rightSideWall',
                                     collisionFilter: {
                                         category: WALL_CATEGORY,
                                         mask: BALL_CATEGORY //collide only with ball
                                     }
                                 }),
-                                Matter.Bodies.rectangle(750,35,1500,70,{isStatic:true,friction:0,frictionStatic: 0,restitution: 0,slop: 0,
+                                Matter.Bodies.rectangle(750,-35,1500,70,{isStatic:true,friction:0,frictionStatic: 0,restitution: 0,slop: 0,
                                     label:'topWall',
                                     collisionFilter: {
                                         category: WALL_CATEGORY,
@@ -382,6 +429,7 @@ function BallClutchGamePage({switchPage,styleDisplay}){
 
             if(isFirstLoad.current){
                 LoadGameSetting();
+                loadImage();
                 
                 isFirstLoad.current=false;
             }
@@ -403,19 +451,29 @@ function BallClutchGamePage({switchPage,styleDisplay}){
                 //these are for knova visual update, do not confuse with matter.js body reference, which is used for physics engine calculation
                 const BallRef = ballRef.current;
                 const MovingPlatformRef = movingPlatformRef.current;
+
+                //node map for easy access
+                const PlatformNodeMap = platformNodeMap.current;
                 
-                if(!BallRef||!MovingPlatformRef){return;}
+                if(!BallRef||!MovingPlatformRef||!ballImgArray.current||!platformTextureArray.current){return;}
+                
 
                 const BallNumber = ballNumber.current;
                 const BallConfigArr = ballConfigArr.current;
                 const PlatformConfigArr = platformConfigArr.current;
 
+
+                
                 //physics engine related
                 const BallBodyRef = ballBodyRef.current;
                 const MovingPlatformBodyRef= movingPlatformBodyRef.current;
                 const BallSensorRef = ballSensorRef.current;
                 
-                
+                if(!BallRef.image()){
+                    if(BallNumber){
+                        BallRef.image(ballImgArray.current[BallNumber-1]);
+                    }
+                }
 
                 
                 let GameDifficulty = gameDifficulty.current;
@@ -535,9 +593,26 @@ function BallClutchGamePage({switchPage,styleDisplay}){
 
 
 
+                       
+                        let rotationSpeed = 0;
+                        const randomNum=Math.floor(Math.random()*3)+1;
+                        if(GameDifficulty>=10&&randomNum===3){
+                             //also will start spawning rotating platform when difficulty level is above 10
+                             //Math.random()*0.02 +0.02;
+                             const speedMagnitude = Math.random()*0.01 +0.004;
+                             const direction = (Math.floor( Math.random()*2))===1?1:-1;
+                             rotationSpeed = speedMagnitude*direction;
+
+                             if(directionDecider<=CurrentSpawnPivot){
+                                platformVelocity+=1;
+
+                             }else{
+                                platformVelocity-=1;
+
+                             }
 
 
-
+                        }
 
 
                         const newPlatformInstance = Matter.Bodies.rectangle(platformX,platformY,platformWidth,60,{
@@ -552,7 +627,11 @@ function BallClutchGamePage({switchPage,styleDisplay}){
                             collisionFilter: {
                                 category: PLATFORM_CATEGORY,
                                 mask: BALL_CATEGORY //collide only with ball
-                            }
+                            },
+                            angularVelocityCustom:rotationSpeed
+
+
+
                         });
                         MovingPlatformBodyRef.push(newPlatformInstance);
                         //debug purpose
@@ -568,17 +647,22 @@ function BallClutchGamePage({switchPage,styleDisplay}){
                             width:platformWidth,
                             height:60,
                             
-                            fillPatternImage:platformTextureArray[randomPlatformIndex],
+                            fillPatternImage:platformTextureArray.current[randomPlatformIndex],
                             fillPatternScale:{x:0.5,y:0.5},
                             offsetX:platformWidth/2,
                             offsetY:30,
                             rotation:platformAngleDeg,
                             pId:pIdCounter.current,
                             
-                            stroke: 'yellow',      
-                            strokeWidth: 8
+
+                            stroke:borderColorArr[randomPlatformIndex],    
+                            strokeWidth: 8,
+
+                            cornerRadius:16
 
                         });
+
+                        PlatformNodeMap.set(pIdCounter.current,newPlatform);
                         MovingPlatformRef.add(newPlatform);
                         
 
@@ -685,15 +769,21 @@ function BallClutchGamePage({switchPage,styleDisplay}){
                         const platformBody = MovingPlatformBodyRef[i];
                         Matter.Body.setPosition(platformBody,{x:platformBody.position.x+platformBody.velocityCustom.x
                             ,y:platformBody.position.y});
+                        
+
+                        const newAngle = platformBody.angle + platformBody.angularVelocityCustom;
+
+                        Matter.Body.setAngle(platformBody, newAngle);
                         //debug
                         //console.log([platformBody.position.x,platformBody.position.y,platformBody.pId]);
 
 
-                        const platformShape = MovingPlatformRef.findOne(node=>node.getAttr('pId') === platformBody.pId);
+                        const platformShape = PlatformNodeMap.get(platformBody.pId);
                         if(platformShape){
                             
                             platformShape.x(platformBody.position.x);
                             platformShape.y(platformBody.position.y);
+                            platformShape.rotation(platformBody.angle*180/Math.PI)
                         }
                     }
 
@@ -763,14 +853,23 @@ function BallClutchGamePage({switchPage,styleDisplay}){
                         const platform = MovingPlatformBodyRef[i];
                         if(platform.position.x<-1500||platform.position.x>3000){
                             
+                            
+                            
+
+                            const shapeToRemove = PlatformNodeMap.get(platform.pId);
+                            if(shapeToRemove) {
+                                PlatformNodeMap.delete(platform.pId);
+                                shapeToRemove.destroy();
+                            
+                            }
+
                             Matter.Composite.remove(engineRef.current.world,platform);
                             MovingPlatformBodyRef.splice(i,1);
 
-                            const shapeToRemove = MovingPlatformRef.findOne(node=>node.getAttr('pId') === platform.pId);
-                            if(shapeToRemove) {shapeToRemove.destroy();}
-
                         }
                     }
+
+
 
 
                     //froze for the first 3 seconds to let the player get ready
@@ -796,7 +895,7 @@ function BallClutchGamePage({switchPage,styleDisplay}){
 
 
 
-                    
+                    //safty net
                     MovingPlatformRef.batchDraw();
 
                    
@@ -812,17 +911,12 @@ function BallClutchGamePage({switchPage,styleDisplay}){
 
         }
     },[styleDisplay,
-        ball1Img,
-        ball2Img,
-        ball3Img,
-        ball4Img,
+       
 
         borderSideImg,
         borderBottomImg,
 
-        stoneTextureImg,
-        stickyTextureImg,
-        iceTextureImg
+      
     ])
 
 
@@ -840,39 +934,52 @@ function BallClutchGamePage({switchPage,styleDisplay}){
 
             </div>
             
-            <div className={styles.gameOverScreen}
+            <div className={styles.panelBackdrop}
             style={{display:isGameOver?'flex':'none'}}>
+                <div className={styles.panelBoard}>
                 <h1>Game Over 😭</h1>
                 <h1>highest Score {scoreTotal}</h1>
-                <button className={styles.exitGameButton}
+                <button className={styles.panelConfirmButton}
                 onClick={()=>{
                     switchPage(1);
                 }}>exit</button>
+                </div>
                
             </div>
 
-            <div className={styles.gamePausedScreen}
+            <div className={`${styles.panelBackdrop} ${styles.panelBackdropRed}`}
             style={{display:isGamePaused&&!isGameOver?'flex':'none'}}>
+
+                <div className={`${styles.panelBoard} ${styles.panelBoardRed}`}>
                 <h1>Game Paused 🤔</h1>
-                <button className={styles.resumeGameButton}
+                <button className={`${styles.panelConfirmButton} ${styles.panelConfirmButtonGreen}`}
                 onClick={()=>{
                     setIsGamePaused(false);
                     jumpController.current.focus();
                 }}>resume 💪</button>
-                <button className={styles.exitGameButton}
+                <button className={`${styles.panelCancelButton}`}
                 onClick={()=>{
                     switchPage(1);
                 }}>exit Game ❌</button>
+
+                </div>
             </div>
 
+
+
+            <div className={styles.statusDisplay}>
             <div className = {styles.coinDisplayPanel}>
                 <img src={speedCoins}></img>
-                <h1>{coinAddTotal}</h1>
+                <h1 key={coinAddTotal} className={styles.statNumber}>{coinAddTotal}</h1>
             </div>
 
             <div className={styles.scoreDisplayPanel}>
-                <h1>{scoreTotal}</h1>
+                <h1 key={scoreTotal} className={styles.statNumber}>score: {scoreTotal}</h1>
             </div>
+            </div>
+
+
+
 
             <button className={styles.pauseGameButton}
             onClick={()=>{
@@ -908,32 +1015,17 @@ function BallClutchGamePage({switchPage,styleDisplay}){
                     
                     ></Rect>
 
-                    <Rect x={0} y={0}
-                    width={70}
-                    height={2000}
-                    fillPatternImage={borderSideImg}
-                    fillPatternScale={{ x: 0.5, y: 0.5 }}></Rect>
-                    <Rect x={0} y={0}
-                    width={1500}
-                    height={70}
-                    fillPatternImage={borderSideImg}
-                    fillPatternScale={{ x: 0.5, y: 0.5 }}></Rect>
-                    <Rect x={1500} y={0}
-                    width={70}
-                    height={2000}
-                    offsetX={70}
-                    fillPatternImage={borderSideImg}
-                    fillPatternScale={{ x: 0.5, y: 0.5 }}></Rect>
+                    
                     
                 </Layer>
 
                 <Layer>
-                    <Image ref={ballRef}
+                    <KonvaImage ref={ballRef}
                     width={220}
                     height={220}
                     offsetX={110}
                     offsetY={110}
-                    image={ballImgArray[ballNumber.current-1]}></Image>
+                    ></KonvaImage>
                 </Layer>
 
                 
