@@ -104,7 +104,7 @@ function TowerShop({styles, setDisplayLoadingScreen,setUpdateCoin,coinAmount,set
         async function loadTowerGameShop(){
                 try{
                     setDisplayLoadingScreen(true);
-                    const response = await fetch(`${import.meta.env.VITE_API_URL}/towerShop`, { credentials: 'include' });
+                    const response = await fetch(`${import.meta.env.VITE_API_URL}/towerGame/towerShop`, { credentials: 'include' });
                     if(response.ok){
                     const data = await response.json();
                     towerDmgArr.current=[data.tower1.damage,
@@ -262,7 +262,7 @@ function TowerShop({styles, setDisplayLoadingScreen,setUpdateCoin,coinAmount,set
                                        setDisplayLoadingScreen(true);
                                        //loading screen
        
-                                       const response = await fetch(`${import.meta.env.VITE_API_URL}/getUserTowerCollection`,{credentials: 'include'});
+                                       const response = await fetch(`${import.meta.env.VITE_API_URL}/towerGame/getUserTowerCollection`,{credentials: 'include'});
                                        if(response.ok){
                                            const {towerCollection,towerLayout} = await response.json();
                                            userTowerCollection.current = [...towerCollection];
@@ -536,7 +536,7 @@ function TowerShop({styles, setDisplayLoadingScreen,setUpdateCoin,coinAmount,set
        
                                                setDisplayLoadingScreen(true)
        
-                                           const response = await fetch(`${import.meta.env.VITE_API_URL}/editTowerDeploy`,{
+                                           const response = await fetch(`${import.meta.env.VITE_API_URL}/towerGame/editTowerDeploy`,{
                                                method:'POST',
                                                credentials: 'include',
                                                headers: {'Content-Type': 'application/json'},
@@ -600,7 +600,7 @@ function TowerShop({styles, setDisplayLoadingScreen,setUpdateCoin,coinAmount,set
        
                                            setDisplayLoadingScreen(true);
        
-                                           const response = await fetch(`${import.meta.env.VITE_API_URL}/addTower`,{
+                                           const response = await fetch(`${import.meta.env.VITE_API_URL}/towerGame/addTower`,{
                                                method:'POST',
                                                credentials: 'include',
                                                headers: {'Content-Type': 'application/json'},

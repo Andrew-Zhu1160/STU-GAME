@@ -14,9 +14,7 @@ import PizzaSlicerGamePage from './pizzaSlicerGamePage/pizzaSlicerGamePage.jsx';
 //background styles
 import styles from './App.module.css'
 
-//periodic update setting sheet to reflect updates
-import { Stage, Layer, Circle, Group, Image,Rect } from 'react-konva';
-import Konva from "konva";
+
 
 function App() {
 const[displayPage,setDisplayPage] = useState([

@@ -3,6 +3,9 @@ import styles from './loginPage.module.css';
 import fortImage from '../images/Fort-Login-Page.png';
 import loadingGear from '../images/loadingGear.png';
 
+//oauth login images
+import googleIcon from '../images/google.png';
+
 
 
 //updates panel
@@ -498,6 +501,12 @@ function LoginPage({switchPage,styleDisplay}) {
             <button className={styles.btn} onClick={handleLogin}>
                 Log In 😍
                 </button>
+
+                <button className={styles.btn} onClick={()=>{
+                    window.location.href=`${import.meta.env.VITE_API_URL}/auth/google`;
+                }}><img src={googleIcon} alt="Google Icon" />Log in with Google</button>
+
+
 
             </div>
             

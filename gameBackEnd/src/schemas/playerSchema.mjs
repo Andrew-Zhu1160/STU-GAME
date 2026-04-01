@@ -4,7 +4,12 @@ const playerSchema = new mongoose.Schema({
 
     playerName:{type:String, 
                 unique:true},
-    playerPassword:{type:String},
+
+    displayedName:{type:String,default:null},
+
+    
+
+    playerPassword:{type:String,default:null},
 
     speedCoins:{type:Number,default:0,
         min:[0,"coins cannot be negative"]

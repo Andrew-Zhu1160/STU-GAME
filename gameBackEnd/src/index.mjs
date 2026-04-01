@@ -7,22 +7,37 @@ import 'dotenv/config'
 
 
 //import userschema
-import Player from './playerSchema.mjs';
-//import towerGameCofig
-import TowerGameConfig from './towerGameSchema.mjs';
-//import pizzaGameConfig
-import PizzaGameConfig from './pizzaGameSchema.mjs';
+import Player from './schemas/playerSchema.mjs';
 
 //pasword hashing functions
-import {hashPassword,verifyPassword} from './passwordScure.mjs';
+import {hashPassword,verifyPassword} from './utils/passwordScure.mjs';
 
 //for anti spam and safty
 import MongoStore from 'connect-mongo';
 import helmet from 'helmet';
 import { rateLimit } from 'express-rate-limit';
 
-//for ball clutch game
-import BallGameConfig from './ballGameSchema.mjs';
+
+
+//middlewares import
+import {validateInput,checkSession,validate} from './generalMiddleware/validation.mjs';
+import{initTowerGameSetting,updateTowerGameSetting} from './settingSheetFunctions/towerGameSettingSheetFunc.mjs';
+import {initBallGameSetting,updateBallGameSetting} from './settingSheetFunctions/ballGameSettingSheetFunc.mjs';
+import {initPizzaGameSetting,updatePizzaGameSetting} from './settingSheetFunctions/pizzaGameSettingSheetFunc.mjs';
+
+
+//import individual game routes
+import towerGameRoute from './routes/towerGameRoute.mjs';
+import ballGameRoute from './routes/ballGameRoute.mjs';
+import pizzaGameRoute from './routes/pizzaGameRoute.mjs';
+
+
+
+//oauth2.0 imports
+import passport from 'passport';
+import { Strategy as GoogleStrategy } from 'passport-google-oauth20';
+
+
 
 
 
@@ -101,52 +116,39 @@ try{
 }
 
 
-//get the towerGameStats from DB
+//init all the setting sheets when server start, if not exist create one with default value, 
+// if exist just load it to the memory for later use, this is to make sure we only have one setting sheet for each game, 
+// and we can easily update the setting sheet in the future without restarting the server, 
+// just update the setting sheet in the database and call the update function to update the memory data,
+//  this is to avoid the problem of having multiple setting sheets in the database and not knowing which one is the correct one to use
 
-let towerGameSetting;
 try{
-towerGameSetting = await TowerGameConfig.findOne({Name:"towerGameSettingSheet"});
-if(!towerGameSetting){
-    towerGameSetting = new TowerGameConfig({Name:"towerGameSettingSheet"});
-}
-//any changes to the setting before save goes here?
-
-await towerGameSetting.save();
+    await initTowerGameSetting();
+    await initBallGameSetting();
+    await initPizzaGameSetting();
 }catch(error){
-    console.log(error);
+    console.error("Error initializing game settings:", error);
     
 }
 
 
-//get ballGame stats from DB
-let ballGameSetting;
-try{
-ballGameSetting = await BallGameConfig.findOne({Name:"ballGameSettingSheet"});
-if(!ballGameSetting){
-    ballGameSetting = new BallGameConfig({Name:"ballGameSettingSheet"});
-}
-
-await ballGameSetting.save();
-}catch(error){
-    console.log(error);
-}
-
-
-//get pizzaGame stats from DB
-let pizzaGameSetting;
-try{
-pizzaGameSetting = await PizzaGameConfig.findOne({Name:"pizzaGameSettingSheet"});
-if(!pizzaGameSetting){
-    pizzaGameSetting = new PizzaGameConfig({Name:"pizzaGameSettingSheet"});
-}
-await pizzaGameSetting.save();
-}catch(error){
-    console.log(error);
-}
+//use router for each game, this is to make the code more organized and easier to maintain, 
+// each game has its own route file, and all the routes related to that game are defined in that file, 
+// and then we just need to use the router in the main file, this is to avoid having a very long main file with all the routes defined in it,
+//  which can be hard to read and maintain
+app.use("/api/towerGame", towerGameRoute);
+app.use("/api/ballGame", ballGameRoute);
+app.use("/api/pizzaGame", pizzaGameRoute);
 
 
 
-
+//oauth app.use, will create custom session, do not app.use(passport.session()) 
+// because we are not using the default session of passport, we are using our own session with express-session, 
+// and we will store the playerName in our own session, and use that to check if the user is logged in or not, 
+// so no need to use passport.session() which will create another session and cause confusion
+app.use(passport.initialize());
+//populate passport strategies
+import './strategies/googleStrategies.mjs';
 
 
 
@@ -169,14 +171,6 @@ const globalLimiter = rateLimit({
 app.use('/api/', globalLimiter);
 
 
-//specfic limitter
-const speedClickLimiter = rateLimit({
-    windowMs: 2000, // 2 seconds
-    limit: 2,       // 1 action per 2 seconds
-    message: { 
-        message: " Action too frequent." 
-    }
-});
 
 //singup/login limmiter
 const singUpLoginLimiter = rateLimit({
@@ -187,32 +181,7 @@ const singUpLoginLimiter = rateLimit({
     }
 });
 
-//validation middleware general purpose
-const validate = (req, res, next) => {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {return res.status(400).json({ 
-        message: errors.array()[0].msg });}
-    next();
-};
 
-//some universal endpoint here and functions here
-function checkSession(req,res,next){
-    if(!req.session.playerName){
-        return res.status(400).json({message:'player not found'});
-    }else{
-        next();
-    }
-}
-function validateInput(req,res,next){
-    const error = validationResult(req);
-    console.log(error);
-    if(!error.isEmpty()){
-        return res.status(400).json({message:'invalid input'})
-    }else{
-        next();
-    }
-
-}
 
 
 
@@ -223,20 +192,13 @@ app.get('/api/updateSettingSheet',updateSettingSheetLimiter,async (req,res)=>{
     
     try{
         
-        const newTowerSetting = await TowerGameConfig.findOne({Name:"towerGameSettingSheet"});
-        if(!newTowerSetting){
-            return res.sendStatus(401);}
-        towerGameSetting=newTowerSetting;
-
-        const newBallSetting= await BallGameConfig.findOne({Name:"ballGameSettingSheet"});
-        if(!newBallSetting){return res.sendStatus(401);}
-        ballGameSetting = newBallSetting;
+        await updateTowerGameSetting();
+        await updateBallGameSetting();
+        await updatePizzaGameSetting();
 
 
          //edit here to add more games
         return res.sendStatus(201);
-
-       
 
     }catch(error){
         return res.sendStatus(401);
@@ -278,6 +240,66 @@ app.post('/api/addSpeedCoins',checkSession,addSpeedCoinsLimiter,
 
 
 
+
+
+
+
+
+
+//oauth2.0 routes, for google login
+app.get('/api/auth/google',
+  passport.authenticate('google', { scope: ['profile'],session: false, ...(process.env.NODE_ENV === 'development' ? { prompt: 'consent select_account' } : {})   })
+);
+
+app.get('/api/auth/google/callback',
+  passport.authenticate('google', { failureRedirect: process.env.REACT_URL,session: false }),
+  async (req, res) => {
+    //create the session
+    try{
+        await new Promise((resolve, reject) => {
+                req.session.regenerate((err) => (err ? reject(err) : resolve()));
+        });
+
+        //repopulate session data
+        req.session.playerName = req.user.playerName;
+        req.session.displayedName = req.user.displayedName;
+
+        await new Promise((resolve, reject) => {
+                req.session.save((err) => (err ? reject(err) : resolve()));
+        });
+
+        res.redirect(process.env.REACT_URL);
+    }catch(error){
+        console.error('Error during Google OAuth callback:', error);
+        res.redirect(process.env.REACT_URL);
+    }
+  });
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 app.post(`/api/signUp`,singUpLoginLimiter,async (req,res)=>{
     
     try{
@@ -302,6 +324,12 @@ app.post(`/api/signUp`,singUpLoginLimiter,async (req,res)=>{
         return res.status(400).json({message:'playerName must be 3-30 characters long and can only contain letters, numbers, and underscores!'});
     }
 
+    //now adding oauth2.0, need to make sure manual signed in user cannot use the google_ prefix in their name
+    if(newPlayerName.startsWith('google_')){
+        return res.status(400).json({message:'playerName cannot start with google_ !'});
+    }
+    //make sure to add more prefix filter when add oauth for other third party in the future
+
 
 
 
@@ -309,7 +337,7 @@ app.post(`/api/signUp`,singUpLoginLimiter,async (req,res)=>{
         const hashedPassword = await hashPassword(newPlayerPassword);
 
 
-        const newPlayer = new Player({playerName:newPlayerName,playerPassword:hashedPassword});
+        const newPlayer = new Player({playerName:newPlayerName,playerPassword:hashedPassword,displayedName:newPlayerName});
         await newPlayer.save();
         return  res.status(201).json({message:'player created successfully!'});
 
@@ -347,6 +375,7 @@ app.post(`/api/login`,singUpLoginLimiter,async (req,res)=>{
         });
 
         req.session.playerName = loginPlayer.playerName;
+        req.session.displayedName = loginPlayer.displayedName;
 
         // Use a Promise to make save "awaitable"
         await new Promise((resolve, reject) => {
@@ -369,29 +398,19 @@ app.post(`/api/login`,singUpLoginLimiter,async (req,res)=>{
 
 
 
-//test if data is there
-/*
-app.get('/api/profile', (req, res) => {
-    // If the cookie was sent correctly, req.session.playerName will exist
-    if (req.session.playerName) {
-        return res.json({ 
-            loggedIn: true, 
-            playerName: req.session.playerName 
-        });
-    } else {
-        return res.status(401).json({ loggedIn: false, message: "Not logged in" });
-    }
-});
-*/
-//end of test
+//general endpoints
 
 
 app.get('/api/currentPlayer',(req,res)=>{
-
-    if(req.session.playerName===undefined){
-        return res.status(401).json({message:'not logged in'});
-    }else{
-        return res.status(200).json({message:`Welcome Back! ${req.session.playerName}`});
+    try{
+        if(req.session.playerName===undefined){
+            return res.status(401).json({message:'not logged in'});
+        }else{
+            return res.status(200).json({message:`Welcome Back! ${req.session.displayedName || req.session.playerName}`});
+        }
+    }catch(error){
+        console.log('Error in /api/currentPlayer:', error);
+        return res.status(500).json({message:'unknown error'});
     }
 });
 
@@ -420,960 +439,18 @@ app.get('/api/getUserCoins',async (req,res)=>{
 
 
 
-app.get('/api/towerShop', async(req,res)=>{
-    try{
-        if(req.session.playerName){
-            const playerData = await Player.findOne({ playerName: req.session.playerName });
-            if(towerGameSetting){
-            const responseObj= {
-                tower1:{
-                    damage:towerGameSetting.towerLv1.damage,
-                    cost:towerGameSetting.towerLv1.cost,
-                    owned:playerData.towerGameAssets.Lv1towers
-                },
-                tower2:{
-                    damage:towerGameSetting.towerLv2.damage,
-                    cost:towerGameSetting.towerLv2.cost,
-                    owned:playerData.towerGameAssets.Lv2towers
-                },
-                tower3:{
-                    damage:towerGameSetting.towerLv3.damage,
-                    cost:towerGameSetting.towerLv3.cost,
-                    owned:playerData.towerGameAssets.Lv3towers
-                },
-                tower4:{
-                    damage:towerGameSetting.towerLv4.damage,
-                    cost:towerGameSetting.towerLv4.cost,
-                    owned:playerData.towerGameAssets.Lv4towers
-                },
-                tower5:{
-                    damage:towerGameSetting.towerLv5.damage,
-                    cost:towerGameSetting.towerLv5.cost,
-                    owned:playerData.towerGameAssets.Lv5towers
-                },
-                tower6:{
-                    damage:towerGameSetting.towerLv6.damage,
-                    cost:towerGameSetting.towerLv6.cost,
-                    owned:playerData.towerGameAssets.Lv6towers
-                },
-                tower7:{
-                    damage:towerGameSetting.towerLv7.damage,
-                    cost:towerGameSetting.towerLv7.cost,
-                    owned:playerData.towerGameAssets.Lv7towers
-                },
-                tower8:{
-                    damage:towerGameSetting.towerLv8.damage,
-                    cost:towerGameSetting.towerLv8.cost,
-                    owned:playerData.towerGameAssets.Lv8towers
-                },
-                tower9:{
-                    damage:towerGameSetting.towerLv9.damage,
-                    cost:towerGameSetting.towerLv9.cost,
-                    owned:playerData.towerGameAssets.Lv9towers
-                },
-                tower10:{
-                    damage:towerGameSetting.towerLv10.damage,
-                    cost:towerGameSetting.towerLv10.cost,
-                    owned:playerData.towerGameAssets.Lv10towers
-                },
-                tower11:{
-                    damage:towerGameSetting.towerLv11.damage,
-                    cost:towerGameSetting.towerLv11.cost,
-                    owned:playerData.towerGameAssets.Lv11towers
-                },
-                tower12:{
-                    damage:towerGameSetting.towerLv12.damage,
-                    cost:towerGameSetting.towerLv12.cost,
-                    owned:playerData.towerGameAssets.Lv12towers
-                },
-            };
-            return res.status(201).json(responseObj);
-            
-            //.....................
-            //edit here to add more towers
-            //.........................
-
-
-            }else{
-                return res.sendStatus(404);
-            }
-    }else{
-        return res.sendStatus(404);
-
-    }
-
-
-    }catch(error){
-         console.error(error);
-        return res.sendStatus(500);
-    }
-
-});
 
 
 
-app.post('/api/addTower',[
-    speedClickLimiter, 
-    body('purchasedTowerLevel').isInt({ min: 1, max: 12 }),
-    validate
-    ],async (req,res)=>{
-    try{
-    if(!req.session.playerName){
-        return res.sendStatus(404);
-    }
-    const thePlayer = await Player.findOne({playerName:req.session.playerName});
-    if(!thePlayer||!towerGameSetting){
-        return res.sendStatus(404);
-    }
-
-    
-        const {purchasedTowerLevel} = req.body;
-        const towerCostArr=[towerGameSetting.towerLv1.cost,
-                            towerGameSetting.towerLv2.cost,
-                            towerGameSetting.towerLv3.cost,
-                            towerGameSetting.towerLv4.cost,
-                            towerGameSetting.towerLv5.cost,
-                            towerGameSetting.towerLv6.cost,
-                            towerGameSetting.towerLv7.cost,
-                            towerGameSetting.towerLv8.cost,
-                            towerGameSetting.towerLv9.cost,
-                            towerGameSetting.towerLv10.cost,
-                            towerGameSetting.towerLv11.cost,
-                            towerGameSetting.towerLv12.cost
-        ];
-        if(thePlayer.speedCoins<towerCostArr[purchasedTowerLevel-1]){
-            return res.sendStatus(400);
-
-        }
-        //....................
-        //edit here to add more towers
-        //...................
 
 
-        switch(purchasedTowerLevel){
-            case 1:
-                thePlayer.towerGameAssets.Lv1towers++;
-                thePlayer.speedCoins-=towerGameSetting.towerLv1.cost;
-                break;
-            case 2:
-                thePlayer.towerGameAssets.Lv2towers++;
-                thePlayer.speedCoins-=towerGameSetting.towerLv2.cost;
-                break;
-            case 3:
-                thePlayer.towerGameAssets.Lv3towers++;
-                thePlayer.speedCoins-=towerGameSetting.towerLv3.cost;
-                break;
-            case 4:
-                thePlayer.towerGameAssets.Lv4towers++;
-                thePlayer.speedCoins-=towerGameSetting.towerLv4.cost;
-                break;
-            case 5:
-                thePlayer.towerGameAssets.Lv5towers++;
-                thePlayer.speedCoins-=towerGameSetting.towerLv5.cost;
-                break;
-            case 6:
-                thePlayer.towerGameAssets.Lv6towers++;
-                thePlayer.speedCoins-=towerGameSetting.towerLv6.cost;
-                break;
-            case 7:
-                thePlayer.towerGameAssets.Lv7towers++;
-                thePlayer.speedCoins-=towerGameSetting.towerLv7.cost;
-                break;
-            case 8:
-                thePlayer.towerGameAssets.Lv8towers++;
-                thePlayer.speedCoins-=towerGameSetting.towerLv8.cost;
-                break;
-            case 9:
-                thePlayer.towerGameAssets.Lv9towers++;
-                thePlayer.speedCoins-=towerGameSetting.towerLv9.cost;
-                break;
-            case 10:
-                thePlayer.towerGameAssets.Lv10towers++;
-                thePlayer.speedCoins-=towerGameSetting.towerLv10.cost;
-                break;
-            case 11:
-                thePlayer.towerGameAssets.Lv11towers++;
-                thePlayer.speedCoins-=towerGameSetting.towerLv11.cost;
-                break;
-            case 12:
-                thePlayer.towerGameAssets.Lv12towers++;
-                thePlayer.speedCoins-=towerGameSetting.towerLv12.cost;
-                break;
-            default:break;
-            //edit here to add more towers
-
-    }
-    thePlayer.markModified('towerGameAssets');
-    thePlayer.markModified('speedCoins');
-    await thePlayer.save();
-    return res.sendStatus(201);
 
 
-    }catch(error){
-        console.log(error);
-        return res.sendStatus(500);
-
-    }   
-})
 
 
-app.get('/api/getUserTowerCollection',async (req,res)=>{
-    if(!req.session.playerName){
-        return res.sendStatus(404);
-    }
-    const thePlayer = await Player.findOne({playerName:req.session.playerName});
-    if(!thePlayer){
-        return res.sendStatus(404);
-    }
-    try{
-        return res.status(201).json({
-            towerCollection:[
-                thePlayer.towerGameAssets.Lv1towers,
-                thePlayer.towerGameAssets.Lv2towers,
-                thePlayer.towerGameAssets.Lv3towers,
-                thePlayer.towerGameAssets.Lv4towers,
-                thePlayer.towerGameAssets.Lv5towers,
-                thePlayer.towerGameAssets.Lv6towers,
-                thePlayer.towerGameAssets.Lv7towers,
-                thePlayer.towerGameAssets.Lv8towers,
-                thePlayer.towerGameAssets.Lv9towers,
-                thePlayer.towerGameAssets.Lv10towers,
-                thePlayer.towerGameAssets.Lv11towers,
-                thePlayer.towerGameAssets.Lv12towers,
-            ],
-            towerLayout:thePlayer.towerGameAssets.towerDeployLayout
-        })
-        //.......................
-        //edit here to add more tower
-        //.....................
 
-    }catch(error){
-        return res.sendStatus(500);
-    }
-});
-
-
-app.post('/api/editTowerDeploy',[
-    body('updatedDeploy').isArray({ min: 3, max: 3 }),
-    body('updatedDeploy.*').isInt({ min: 0, max: 12 }),
-    validate
-],async (req,res)=>{
-    //...................
-    //edit here to add more tower
-    //.................
-    if(!req.session.playerName){
-        return res.sendStatus(404);
-    }
-    const thePlayer = await Player.findOne({playerName:req.session.playerName});
-    if(!thePlayer){
-        return res.sendStatus(404);
-    }
-    if(req.body.updatedDeploy.length!==3){
-        return res.sendStatus(400);
-    }
-    try{
-        thePlayer.towerGameAssets.towerDeployLayout=req.body.updatedDeploy;
-        await thePlayer.save();
-        return res.sendStatus(201);
-    }catch(error){
-        return res.sendStatus(500);
-    }
     
 
-});
-
-
-
-
-
-app.get('/api/towerGame/getTowerDeploy',async (req,res)=>{
-    if(!req.session.playerName){
-        return res.sendStatus(404);
-    }
-    try{
-        const thePlayer = await Player.findOne({playerName:req.session.playerName});
-        if(!thePlayer||!towerGameSetting){
-            return res.sendStatus(404);
-        }
-        const userTowerArr= [...thePlayer.towerGameAssets.towerDeployLayout];
-        const towerSettingRef = [{...towerGameSetting.towerLv1},
-                                {...towerGameSetting.towerLv2},
-                                {...towerGameSetting.towerLv3},
-                                {...towerGameSetting.towerLv4},
-                                {...towerGameSetting.towerLv5},
-                                {...towerGameSetting.towerLv6},
-                                {...towerGameSetting.towerLv7},
-                                {...towerGameSetting.towerLv8},
-                                {...towerGameSetting.towerLv9},
-                                {...towerGameSetting.towerLv10},
-                                {...towerGameSetting.towerLv11},
-                                {...towerGameSetting.towerLv12},
-        ];
-        //..........................
-        //edit here to add more tower
-        //..........................
-        let towerInitArr=[];
-        for(let i=0;i<userTowerArr.length;++i){
-            if(userTowerArr[i]===0){
-                towerInitArr.push(null);
-                continue;
-            }
-            towerInitArr.push({
-                towerLevel:userTowerArr[i],
-                towerDamage:towerSettingRef[userTowerArr[i]-1].damage,
-                towerHp:towerSettingRef[userTowerArr[i]-1].hp,
-                towerCurrentHp:towerSettingRef[userTowerArr[i]-1].hp,
-                towerFireDelay:towerSettingRef[userTowerArr[i]-1].fireDelay,
-                towerBulletPerRound:towerSettingRef[userTowerArr[i]-1].numOfBulletsPerRound,
-                towerAngleInitial:userTowerArr[i]===1?15:userTowerArr[i]===2||userTowerArr[i]===3?90:0,
-                towerAngle:0,
-                towerDisplayHp:towerSettingRef[userTowerArr[i]-1].hp
-
-            });
-        }
-        return res.status(201).json(towerInitArr);
-
-
-
-
-
-
-
-
-
-    }catch(error){
-        return res.sendStatus(500);
-
-    }
-});
-
-app.get('/api/towerGame/getEnemyAttribute',(req,res)=>{
-    if(!req.session.playerName){
-        return res.sendStatus(404);
-    }
-    try{
-        if(!towerGameSetting){
-            return res.sendStatus(404);
-        }
-        const enemySettingRef=[{...towerGameSetting.enemyLv1},
-                                {...towerGameSetting.enemyLv2},
-                                {...towerGameSetting.enemyLv3},
-                                {...towerGameSetting.enemyLv4}
-        ];
-        let enemyInitArr=[];
-        for(let i=0;i<enemySettingRef.length;++i){
-            enemyInitArr.push({
-                enemyLevel:i+1,
-                enemyHp:enemySettingRef[i].hp,
-                
-                isDead:false,
-                enemyDmg:enemySettingRef[i].attackDmg,
-                enemyCoinDrop:enemySettingRef[i].coinDrop
-
-            });
-
-
-
-        }
-        return res.status(201).json(enemyInitArr);
-
-
-
-    }catch(error){
-        return res.sendStatus(500);
-    }
-});
-
-
-app.get('/api/towerGame/getCoinsAndScores',async (req,res)=>{
-    if(!req.session.playerName){
-        return res.sendStatus(404);
-    }
-    try{
-        const thePlayer = await Player.findOne({playerName:req.session.playerName});
-        if(!thePlayer){
-            return res.sendStatus(404);
-        }
-        return res.status(201).json({
-            
-            highestScoreRecord:thePlayer.towerGameAssets.highestScore
-        })
-
-
-    }catch(error){
-        return res.sendStatus(500);
-    }
-});
-
-
-
-
-
-app.post('/api/towerGame/addCoins',[
-    body('coinAddAmount').isInt({ min: 1, max: 20000 })
-        .withMessage('Invalid coin amount'),
-    validate
-],async (req,res)=>{
-    if(!req.session.playerName){
-        return res.sendStatus(404);
-    }
-    try{
-    const thePlayer = await Player.findOne({playerName:req.session.playerName});
-    if(!thePlayer){
-        return res.sendStatus(404);
-    }
-    thePlayer.speedCoins += req.body.coinAddAmount;
-    await thePlayer.save();
-    return res.sendStatus(201);
-
-    }catch(error){
-        return res.sendStatus(500);
-    }
-});
-
-
-
-
-
-
-app.post('/api/towerGame/updateScoreRecord',[
-    speedClickLimiter,
-    body('newScore').isInt({ min: 0, max: 999999999 }),
-    validate
-],async(req,res)=>{
-    if(!req.session.playerName){
-        return res.sendStatus(404);
-
-    }
-    try{
-    const thePlayer = await Player.findOne({playerName:req.session.playerName});
-    if(req.body.newScore>thePlayer.towerGameAssets.highestScore){
-        thePlayer.towerGameAssets.highestScore = req.body.newScore;
-        thePlayer.markModified('towerGameAssets');
-        await thePlayer.save();
-        return res.status(201).json({
-            currentHighestScore:req.body.newScore
-        })
-    }else{
-        return res.status(201).json({
-            currentHighestScore:thePlayer.towerGameAssets.highestScore
-        });
-    }
-
-    }catch(error){
-        return res.sendStatus(500)
-    }
-
-});
-
-
-
-//-----------------------------------
-//end of towergame route!!!!
-//----------------------------------
-
-
-
-
-
-
-
-//-----------------------------------------
-//start of bouncy ball game rounte
-//------------------------------------
-
-
-
-
-//from now on, all post request eith send a json with updated data,
-//or send a failed status code with a json object witha message attribute
-//some helper middleware
-
-
-//must have safty check to make sure old user's array get updated to the correct length when new ball is added to the setting, otherwise it will cause unpredicted bugs
-
-
-//edit here to add more balls
-const expectedBallArrayLength = 6;
-const expectedPlatformArrayLength = 3;
-
-//very important migate old user fuction
-//edit here to add more balls
-async function migrateOldUserData(req,res,next){
-    try{
-        let thePlayer = await Player.findOne({playerName:req.session.playerName});
-        if(!thePlayer){return res.status(404).json({message:'player not found'})}
-        await thePlayer.save();
-
-        //now do the migration
-        thePlayer = await Player.findOne({playerName:req.session.playerName});
-        if(!thePlayer){return res.status(404).json({message:'player not found'})};
-        if(thePlayer.ballGameAssets.ballSelectionStatus.length<expectedBallArrayLength){
-            //these are old data that needs expansion
-            const lengthDifference = expectedBallArrayLength-thePlayer.ballGameAssets.ballSelectionStatus.length;
-            for(let i=0;i<lengthDifference;++i){
-                thePlayer.ballGameAssets.ballSelectionStatus.push(0);
-            }
-            thePlayer.markModified('ballGameAssets');
-            await thePlayer.save();
-        }
-        next();
-    }catch(error){
-        if(error.name){
-            if(error.name==='Version Error'){
-                return res.status(400).json({message:'server busy'});
-            }
-            return res.status(500).json({message:'unknown error'});
-        }
-        return res.status(500).json({message:'internet error'})
-    }
-
-}
-async function updateBallGameSetting(req,res,next){
-    try{
-        if(!ballGameSetting){return res.status(404).json({message:'setting sheet missing'})}
-        if(ballGameSetting.balls.length<expectedBallArrayLength||
-            ballGameSetting.platforms.length<expectedPlatformArrayLength
-        ){
-            const lengthDifference = expectedBallArrayLength-ballGameSetting.balls.length;
-            for(let i=0; i<lengthDifference;++i){
-                //push a average ball setting
-                ballGameSetting.balls.push({
-                    cost:1000000,
-                    width:200,
-                    height:200,
-                    friction:1.2,
-                    density:0.0035
-
-                });
-            }
-            const lengthDifference2 = expectedPlatformArrayLength-ballGameSetting.platforms.length;
-            for(let i =0;i<lengthDifference2;++i){
-                //push a default platform
-                ballGameSetting.platforms.push({
-                    friction:1000
-                });
-            }
-            ballGameSetting.markModified('balls');
-            ballGameSetting.markModified('platforms');
-            await ballGameSetting.save();
-        }
-        next();
-
-    }catch(error){
-        return res.status(500).json({message:'internet error'})
-    }
-}
-
-
-
-
-function checkBallGameSetting(req,res,next){
-    if(!ballGameSetting){
-        return res.status(404).json({message: 'fail to load setting'})
-    }else{
-        next();
-    }
-}
-
-
-
-
-
-
-
-const ballGameBaseRoute = "/api/ballGame";
-
-
-
-const getUserBallStatusLimiter = rateLimit({windowMs: 2000, limit: 2 });
-app.get(`${ballGameBaseRoute}/getUserBallStatus`,checkSession,
-    getUserBallStatusLimiter,migrateOldUserData,async (req,res)=>{
-        try{
-            const thePlayer = await Player.findOne({playerName:req.session.playerName});
-            if(!thePlayer){return res.sendStatus(404);}
-            return res.status(200).json({data:thePlayer.ballGameAssets.ballSelectionStatus});
-        }catch(error){
-            return res.sendStatus(500);
-        }
-    }
-);
-
-
-const getBallGameSettingLimiter = rateLimit({windowMs: 1000, limit: 1 });
-app.get(`${ballGameBaseRoute}/getBallGameSetting`,checkSession,getBallGameSettingLimiter,
-    checkBallGameSetting,updateBallGameSetting,
-    (req,res)=>{
-        try{
-            
-            return res.status(200).json({data:ballGameSetting.balls});
-
-        }catch(error){
-            return res.sendStatus(500);
-        }
-    }
-)
-
-
-//edit here to add more ball
-const changeBallStatusArrLimiter = rateLimit({windowMs: 1000, limit: 1,message: { message: " Action too frequent." } });
-app.post(`${ballGameBaseRoute}/changeBallStatusArr`,checkSession, changeBallStatusArrLimiter,checkBallGameSetting,
-    migrateOldUserData,
-    updateBallGameSetting,
-    body('purchasedBallNumber').exists().isInt({min:1,max:6}),
-    body('mode').exists().isString(),
-    body('selectedBallNumber').exists().isInt({min:1,max:6}),
-    validateInput,
-    async(req,res)=>{
-        try{
-            const thePlayer= await Player.findOne({playerName:req.session.playerName});
-            if(!thePlayer){return res.status(401).json({message:'player no longer exist'})}
-            if(req.body?.mode==='purchaseNewBall'){
-                const ballCost = ballGameSetting.balls[req.body.purchasedBallNumber-1].cost;
-                
-                    //success
-                    
-                    thePlayer.speedCoins-=ballCost;
-                    thePlayer.ballGameAssets.ballSelectionStatus[req.body.purchasedBallNumber-1]=1;
-                    thePlayer.markModified('ballGameAssets');
-                    await thePlayer.save();
-                    return res.status(200).json({
-                        data: thePlayer.ballGameAssets.ballSelectionStatus
-                    });
-
-                
-
-            }else if(req.body?.mode==='selectBall'){
-                for(let i=0;i<thePlayer.ballGameAssets.ballSelectionStatus.length;++i){
-                    if(thePlayer.ballGameAssets.ballSelectionStatus[i]===2){
-                        thePlayer.ballGameAssets.ballSelectionStatus[i]=1;
-
-                    }
-                }
-                if(thePlayer.ballGameAssets.ballSelectionStatus[req.body.selectedBallNumber-1]===1){
-                    thePlayer.ballGameAssets.ballSelectionStatus[req.body.selectedBallNumber-1]=2;
-                }
-                thePlayer.markModified('ballGameAssets');
-                await thePlayer.save();
-                return res.status(200).json({
-                    data:thePlayer.ballGameAssets.ballSelectionStatus
-                })
-
-
-
-            }else{
-                return res.status(400).json({message:'invalid mode'});
-            }
-        }catch(error){
-            if(error.name){
-                if(error.name==='ValidationError'){
-                    return res.status(400).json({message:'not enough coins 😭'})
-
-                }else if(error.name ==='VersionError'){
-                    return res.status(400).json({message:'server busy, try again'})
-                    
-                }
-                return res.status(500).json({message:'unknown error'})
-
-            }
-            return res.status(500).json({message:'unknown error,try again'})
-        }
-
-    });
-
-
-    const getSelectedBallLimiter = rateLimit({windowMs: 1000, limit: 1 });
-    app.get(`${ballGameBaseRoute}/getSelectedBall`,checkSession,getSelectedBallLimiter,checkBallGameSetting,
-        migrateOldUserData,
-        async(req,res)=>{
-        try{
-            const thePlayer = await Player.findOne({playerName:req.session.playerName});
-            if(!thePlayer){return res.sendStatus(404)}
-            return res.status(200).json({data:thePlayer.ballGameAssets.ballSelectionStatus});
-
-        }catch(error){
-            return res.sendStatus(500);
-
-        }
-    });
-
-    const getPlatformSettingLimiter = rateLimit({windowMs: 1000, limit: 1 });
-    app.get(`${ballGameBaseRoute}/getPlatformSetting`,checkSession,getPlatformSettingLimiter,checkBallGameSetting,
-        updateBallGameSetting,
-        async(req,res)=>{
-        try{
-            return res.status(200).json({data:ballGameSetting.platforms}); 
-        }catch(error){
-            return res.sendStatus(500);
-        }
-    });
-
-    const updateBallGameScoreLimiter = rateLimit({windowMs:1000,limit:1});
-    app.post(`${ballGameBaseRoute}/updateScore`,checkSession,updateBallGameScoreLimiter,
-        body('newScore').exists().isInt({min:0,max:999999999}),
-        validateInput,
-        async (req,res)=>{
-            try{
-                const thePlayer = await Player.findOne({playerName:req.session.playerName});
-                const {newScore}=req.body;
-                if(!thePlayer){return res.status(404).json({message:'player no longer exist'})}
-                if(thePlayer.ballGameAssets.highestScore<newScore){
-                    thePlayer.ballGameAssets.highestScore = newScore;
-                    thePlayer.markModified('ballGameAssets');
-                    await thePlayer.save();
-                    return res.status(201).json({newHighScore:newScore});
-
-                }else{
-                    return res.status(201).json({newHighScore:thePlayer.ballGameAssets.highestScore});
-
-
-                }
-            }catch(error){
-                if(error.name){
-                    if(error.name==='VersionError'){
-                        return res.status(400).json({message:'server busy, request denined'});
-                    }
-                    return res.status(500).json({message:'unknown error'});
-                }
-                return res.status(500).json({message:'internet error'});
-            }
-
-        }
-    );
-
-
-
-    /*--------------------------------------
-    end of ballGame route
-    ---------------------------------------- */
-
-
-
-
-
-
-    /*--------------------------------------
-    start of pizzaGame route
-    ---------------------------------------- */
-
-
-    const pizzaGameBaseRoute = "/api/pizzaGame";
-    //just like every new game, define a base route for the game, 
-    const getPizzaSlicingSettingLimiter = rateLimit({windowMs: 1000, limit: 1 });
-
-    const expectedSkArrayLength = 4;
-    const expectedPizzaArrayLength = 7;
-
-    async function migrateOldUserData_pizzaGame(req,res,next){
-        try{
-            let thePlayer = await Player.findOne({playerName:req.session.playerName});
-            if(!thePlayer){return res.status(404).json({message:'player not found'})};
-            if(thePlayer.pizzaGameAssets.skSelectionStatus.length<expectedSkArrayLength){
-                const lengthDifference = expectedSkArrayLength-thePlayer.pizzaGameAssets.skSelectionStatus.length;
-                for(let i=0;i<lengthDifference;++i){
-                    thePlayer.pizzaGameAssets.skSelectionStatus.push(0);
-                }
-                thePlayer.markModified('pizzaGameAssets');
-                await thePlayer.save();
-            }
-            next();
-
-        }catch(error){
-            if(error.name){
-                if(error.name==='VersionError'){
-                    return res.status(400).json({message:'server busy, request denied'});
-                }
-                return res.status(500).json({message:'unknown error'});
-            }
-            return res.status(500).json({message:'internet error, try again'});
-        }
-
-    }
-
-    async function updatePizzaGameSetting(req,res,next){
-
-        try{
-            if(!pizzaGameSetting){return res.status(404).json({message:'setting sheet missing'})}
-            if(pizzaGameSetting.sks.length<expectedSkArrayLength||
-                pizzaGameSetting.pizzas.length<expectedPizzaArrayLength
-            ){
-                const lengthDifference = expectedSkArrayLength-pizzaGameSetting.sks.length;
-                const baseDamage = pizzaGameSetting.sks[pizzaGameSetting.sks.length-1].damage;
-                for(let i=0;i<lengthDifference;++i){
-                    pizzaGameSetting.sks.push({
-                        number:i+1,
-                        cost:100000,
-                        width:190,
-                        height:190,
-                        damage:baseDamage+i
-                    });
-                }
-                const lengthDifference2 = expectedPizzaArrayLength-pizzaGameSetting.pizzas.length;
-                for(let i=0;i<lengthDifference2;++i){
-                    pizzaGameSetting.pizzas.push({
-                        width:450,
-                        height:450, 
-                    });
-                }
-                pizzaGameSetting.markModified('sks');
-                pizzaGameSetting.markModified('pizzas');
-                await pizzaGameSetting.save();
-            }
-            next();
-
-        }catch(error){
-            return res.status(500).json({message:'internet error, try again'});
-        }
-            
-    }
-    //edit here to add more pizzaGame route
-
-    const getUserSkStatusLimiter = rateLimit({windowMs: 1000, limit: 1 });
-    app.get(`${pizzaGameBaseRoute}/getUserSkStatus`,checkSession,getUserSkStatusLimiter,
-        migrateOldUserData_pizzaGame,
-        async(req,res)=>{
-        try{
-            const thePlayer = await Player.findOne({playerName:req.session.playerName});
-            if(!thePlayer){return res.status(404).json({message:'player not found'})};
-            return res.status(200).json({data:thePlayer.pizzaGameAssets.skSelectionStatus});
-        }catch(error){
-            return res.sendStatus(500);
-        }
-    });
-
-
-    const getPizzaGameSettingLimiter = rateLimit({windowMs: 1000, limit: 1 });
-    app.get(`${pizzaGameBaseRoute}/getPizzaGameSetting`,checkSession,getPizzaGameSettingLimiter,
-        updatePizzaGameSetting,
-        (req,res)=>{
-            try{
-                return res.status(200).json({data:pizzaGameSetting.sks})
-            }catch(error){
-                return res.sendStatus(500);
-
-            }
-        }
-    )
-
-    const changeSkStatusArrLimiter = rateLimit({windowMs:1000,limit:1,message: { message: " Action too frequent." }});
-    app.post(`${pizzaGameBaseRoute}/changeSkStatusArr`,checkSession,
-        changeSkStatusArrLimiter,
-        migrateOldUserData_pizzaGame,
-        updatePizzaGameSetting,
-        body('mode').exists().isString(),
-        body('purchasedSkNumber').exists().isInt({min:1,max:4}),
-        body('selectedSkNumber').exists().isInt({min:1,max:4}),
-        validateInput,
-        async(req,res)=>{
-            try{
-                const thePlayer= await Player.findOne({playerName:req.session.playerName});
-                if(!thePlayer){return res.status(404).json({message:'player no longer exists'});}
-                if(req.body?.mode === "purchaseNewSk"){
-                    const skCost = pizzaGameSetting.sks[req.body.purchasedSkNumber-1].cost;
-                    thePlayer.speedCoins-=skCost;
-                    thePlayer.pizzaGameAssets.skSelectionStatus[req.body.purchasedSkNumber-1]=1;
-                    thePlayer.markModified('pizzaGameAssets');
-                    await thePlayer.save();
-                    return res.status(200).json({
-                        data:thePlayer.pizzaGameAssets.skSelectionStatus
-                    })
-
-                }else if (req.body?.mode==="selectSk"){
-                    for(let i =0;i<thePlayer.pizzaGameAssets.skSelectionStatus.length;++i){
-                        if(thePlayer.pizzaGameAssets.skSelectionStatus[i]===2){
-                            thePlayer.pizzaGameAssets.skSelectionStatus[i]=1;
-                        }
-                    }
-                    if (thePlayer.pizzaGameAssets.skSelectionStatus[req.body.selectedSkNumber-1]===1){
-                        thePlayer.pizzaGameAssets.skSelectionStatus[req.body.selectedSkNumber-1]=2;
-                    }
-                    await thePlayer.save();
-                    return res.status(200).json({
-                        data:thePlayer.pizzaGameAssets.skSelectionStatus
-                    });
-
-                }else{
-                    return res.status(400).json({message:"invalid mode"})
-                }
-                
-
-            }catch(error){
-                if(error.name){
-                    if(error.name==='ValidationError'){
-                        return res.status(400).json({message:'not enough coins 😭'})
-    
-                    }else if(error.name ==='VersionError'){
-                        return res.status(400).json({message:'server busy, try again'})
-                        
-                    }
-                    return res.status(500).json({message:'unknown error'})
-    
-                }
-                return res.status(500).json({message:'unknown error,try again'})
-            }
-        }
-    );
-
-
-
-    const getPizzaGameSetting2Limiter = rateLimit({windowMs: 1000, limit: 1 });
-    app.get(`${pizzaGameBaseRoute}/getPizzaGameSetting2`,checkSession,updatePizzaGameSetting,getPizzaGameSetting2Limiter,
-        async(req,res)=>{
-            try{
-                return res.status(200).json({data:pizzaGameSetting.pizzas});
-            }catch(error){
-                return res.sendStatus(500);
-            }
-        }
-    );
-
-
-
-
-
-    const updatePizzaGameScoreLimiter = rateLimit({windowMs:1000,limit:1});
-    app.post(`${pizzaGameBaseRoute}/updateScore`,checkSession,updatePizzaGameScoreLimiter,
-        body('newScore').exists().isInt({min:0,max:999999999}),
-        validateInput,
-        async (req,res)=>{
-            try{
-                const thePlayer = await Player.findOne({playerName:req.session.playerName});
-                const {newScore}=req.body;
-                if(!thePlayer){return res.status(404).json({message:'player no longer exist'})}
-                if(thePlayer.pizzaGameAssets.highestScore<newScore){
-                    thePlayer.pizzaGameAssets.highestScore = newScore;
-                    thePlayer.markModified('pizzaGameAssets');
-                    await thePlayer.save();
-                    return res.status(201).json({newHighScore:newScore});
-
-                }else{
-                    return res.status(201).json({newHighScore:thePlayer.pizzaGameAssets.highestScore});
-
-
-                }
-            }catch(error){
-                if(error.name){
-                    if(error.name==='VersionError'){
-                        return res.status(400).json({message:'server busy, request denined'});
-                    }
-                    return res.status(500).json({message:'unknown error'});
-                }
-                return res.status(500).json({message:'internet error'});
-            }
-
-        }
-    );
-
-
-
-    
-
-    
-    /*--------------------------------------
-    end of pizzaGame route
-    ---------------------------------------- */
-
-    
     
     
 
