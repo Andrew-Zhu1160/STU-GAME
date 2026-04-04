@@ -5,7 +5,7 @@ import Player from "../schemas/playerSchema.mjs";
 passport.use(new GoogleStrategy({
     clientID: process.env.GOOGLE_CLIENT_ID,
     clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-    callbackURL: `${process.env.BACKEND_URL}/api/auth/google/callback`
+    callbackURL: `${process.env.NODE_ENV==="production"?process.env.REACT_URL:process.env.BACKEND_URL}/api/auth/google/callback`
   },
   async function(accessToken, refreshToken, profile, cb) {
     try{
