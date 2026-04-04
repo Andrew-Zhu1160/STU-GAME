@@ -1,6 +1,14 @@
 import { useState,useEffect } from 'react'
 //you can import .env variables like this:
 //import.meta.env.VITE_PORT
+
+//seyup react router, replace the old display page logic
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+
+
+//landing page:
+import LandingPage from './landingPage/landingPage.jsx'
+
 import LoginPage from './loginPage/loginPage.jsx'
 
 import MainPage from './mainPage/mainPage.jsx'
@@ -17,9 +25,7 @@ import styles from './App.module.css'
 
 
 function App() {
-const[displayPage,setDisplayPage] = useState([
-  true,false,false,false,false
-]);
+
 
 const isDev = import.meta.env.VITE_MODE ==='DEV';
 const updateSettingSheetRate=60000;
@@ -42,33 +48,7 @@ async function processUpdateSettingSheet(){
 useEffect( () => {
   //On initial load, check if user is already logged in
   //direct to the main page if so
-  async function checkLoginStatus(){
-  try{
-    const response = await fetch(`${import.meta.env.VITE_API_URL}/currentPlayer`, { credentials: 'include' });
-    const data = await response.json();
-    if(response.ok){
-      setDisplayPage(d=>{
-          let temp=d.map(_=>false);
-          temp[1]=true;
-          return temp;
-        });
-        
-      
-    }else{
-      setDisplayPage(d=>{
-          let temp=d.map(_=>false);
-          temp[0]=true;
-          return temp;
-        });
-
-    }
-    console.log(data.message);
-  }catch(error){
-    console.log("unknown error", error);
-  }
-
-}
-checkLoginStatus();
+  
 
   
   
@@ -91,6 +71,7 @@ const particles = Array.from({ length: 12 });
 
 
   return(
+    <Router>
     <div style={{ width: '100vw', height: '100vh' ,position:'absolute'}}
     className={styles.appBackground}>
 
@@ -114,7 +95,41 @@ const particles = Array.from({ length: 12 });
 
       
 
-      {displayPage[0]&&(<LoginPage styleDisplay={{display: 'flex'}} 
+      <Routes>
+
+        <Route path="/" element={<LandingPage />} />
+        <Route path="/login" element={<LoginPage />} />
+        <Route path="/main" element={<MainPage />} />
+        <Route path="/towerDefence" element={<TowerDefenceGamePage />} />
+        <Route path="/ballClutch" element={<BallClutchGamePage />} />
+        <Route path="/pizzaSlicer" element={<PizzaSlicerGamePage />} />
+
+       
+      </Routes>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      {/*
+      old display page logic, RIP,lol
+      {displayPage[0]&&(<LoginPage 
       switchPage={(pageIndex) => {
           setDisplayPage(d => d.map((_, i) => i === pageIndex));
         }}/>
@@ -122,7 +137,7 @@ const particles = Array.from({ length: 12 });
         
     
 
-      {displayPage[1]&&(<MainPage styleDisplay={{display: 'flex'}} 
+      {displayPage[1]&&(<MainPage  
       switchPage={(pageIndex) => {
           setDisplayPage(d => d.map((_, i) => i === pageIndex));
         }}/>
@@ -131,7 +146,7 @@ const particles = Array.from({ length: 12 });
       
       {displayPage[2] && (
       <TowerDefenceGamePage 
-        styleDisplay={{display: 'flex'}} // This triggers the useEffect inside the game page
+        
         switchPage={(pageIndex) => {
           setDisplayPage(d => d.map((_, i) => i === pageIndex));
         }} 
@@ -140,7 +155,7 @@ const particles = Array.from({ length: 12 });
 
       {displayPage[3] && (
       <BallClutchGamePage
-        styleDisplay={{display: 'flex'}} // This triggers the useEffect inside the game page
+        
         switchPage={(pageIndex) => {
           setDisplayPage(d => d.map((_, i) => i === pageIndex));
         }} 
@@ -150,12 +165,14 @@ const particles = Array.from({ length: 12 });
 
       {displayPage[4] && (
       <PizzaSlicerGamePage
-        styleDisplay={{display: 'flex'}} // This triggers the useEffect inside the game page
+        
         switchPage={(pageIndex) => {
           setDisplayPage(d => d.map((_, i) => i === pageIndex));
         }} 
         />
       )}
+
+    */}
 
 
 
@@ -164,6 +181,7 @@ const particles = Array.from({ length: 12 });
 
 
     </div>
+    </Router>
 
   )
   

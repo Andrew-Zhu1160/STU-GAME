@@ -1,4 +1,5 @@
 //image imports fo pizza slicing game shop
+import { useNavigate } from 'react-router-dom';
 import skLv1 from '../../images/pizzaSlicerGameImage/playerSk1.png';
 import skLv2 from '../../images/pizzaSlicerGameImage/playerSk2.png';
 import skLv3 from '../../images/pizzaSlicerGameImage/playerSk3.png';
@@ -10,7 +11,10 @@ const isDev = import.meta.env.VITE_MODE==='DEV';
 const testLoadingDelay = 2000;
 
 function PizzaShop({styles,setDisplayLoadingScreen,setUpdateCoin,toggle,setIsShopFirstLoad}){
-     /*----------------------------------------------------------------
+     const navigate = useNavigate();
+    
+    
+    /*----------------------------------------------------------------
    PizzaGame shop variable block start
    ------------------------------------------------------------------- */ 
     
@@ -54,6 +58,11 @@ function PizzaShop({styles,setDisplayLoadingScreen,setUpdateCoin,toggle,setIsSho
                     const {data} = await response.json();
                     setSkOwnedStatusArr([...data]);
                     if(isDev){console.log(data);}
+                }else{
+                    if(response.status===440){
+                        //session not found
+                        navigate("/login");
+                    }
                 }
                 }catch(error){
                     if(isDev){console.log(error);}
@@ -71,6 +80,11 @@ function PizzaShop({styles,setDisplayLoadingScreen,setUpdateCoin,toggle,setIsSho
                         const {data} = await response.json();
                         setSkGameSettingArr([...data]);
                         if(isDev){console.log(data)}
+                    }else{
+                        if(response.status===440){
+                            //session not found
+                            navigate("/login");
+                        }
                     }
                 }catch(error){
                     if(isDev){console.log(error)}
@@ -161,6 +175,11 @@ function PizzaShop({styles,setDisplayLoadingScreen,setUpdateCoin,toggle,setIsSho
                                         setPizzaSlicer_showPurchaseOrSelect(false);
 
                                     }else{
+                                        if(response.status===440){
+                                            //session not found
+                                            navigate("/login");
+                                        }
+
                                         const {message} = await response.json();
                                         setPizzaSlicer_warningMessage(message);
                                         setDisplayPizzaSlicer_warningMessage(false);
@@ -209,6 +228,10 @@ function PizzaShop({styles,setDisplayLoadingScreen,setUpdateCoin,toggle,setIsSho
                                         setPizzaSlicer_showPurchaseOrSelect(false);
 
                                     }else{
+                                        if(response.status===440){
+                                            //session not found
+                                            navigate("/login");
+                                        }
                                         const {message} = await response.json();
                                         setPizzaSlicer_warningMessage(message);
                                         setDisplayPizzaSlicer_warningMessage(false);

@@ -1,4 +1,7 @@
-import { useState,useEffect,useRef,useMemo,useCallback } from "react"
+import { useState,useEffect,useRef,useMemo,useCallback } from "react";
+import { useNavigate } from 'react-router-dom';
+
+
 import { Stage, Layer, Circle, Group, Image  as KonvaImage,Rect,Line } from 'react-konva';
 import Konva from "konva";
 import styles from './pizzaSlicerGamePage.module.css'
@@ -47,7 +50,11 @@ const FRAG_CATEGORY = 0x0004;
 
 
 
-function pizzaSlicerGamePage({switchPage,styleDisplay}){
+function pizzaSlicerGamePage(){
+
+
+    const navigate = useNavigate();
+
     const randomBackgroundIndex = useRef(Math.floor(Math.random()*backgroundArray.length));
 
     //image pre decoder
@@ -113,6 +120,11 @@ function pizzaSlicerGamePage({switchPage,styleDisplay}){
             if(response.ok){
                 if(isDev){console.log('save coins successfull')}
             }else{
+
+                if(response.status===440){
+                    //session not found
+                    navigate("/login");
+                }
                 if(isDev){console.log('save unsuccessfull')}
             }
 
@@ -137,6 +149,11 @@ function pizzaSlicerGamePage({switchPage,styleDisplay}){
                 const {newHighScore}=await response.json();
                 setScoreTotal(newHighScore);
 
+            }else{
+                if(response.status===440){
+                    //session not found
+                    navigate("/login");
+                }
             }
 
         }catch(error){
@@ -292,7 +309,7 @@ function pizzaSlicerGamePage({switchPage,styleDisplay}){
 
     const requestCamera = useCallback(async () => {
         // Only request camera while this game page is visible
-        if(styleDisplay?.display !== 'flex') return;
+       
         if(webcamReady || cameraRequesting) return;
         if (!videoRef.current) return;
         setCameraRequesting(true);
@@ -332,7 +349,7 @@ function pizzaSlicerGamePage({switchPage,styleDisplay}){
             }
             setDisplayLoadingScreen(false);
         }
-    }, [styleDisplay?.display, webcamReady, cameraRequesting]);
+    }, [ webcamReady, cameraRequesting]);
 
     // Detection loop driven by Konva.Animation (same timing as Stage redraws)
     useEffect(() => {
@@ -392,11 +409,11 @@ function pizzaSlicerGamePage({switchPage,styleDisplay}){
             setHandResultUi(null);
             setWebcamReady(false);
         };
-    }, [styleDisplay?.display]);
+    }, []);
 
     //actual game loop here
     useEffect(()=>{
-        if(styleDisplay?.display==='flex'){
+     
             // Init only when user clicks "Enable camera" in the prompt
             if(!displayCameraRequest){
                 async function loadImage(){
@@ -445,6 +462,11 @@ function pizzaSlicerGamePage({switchPage,styleDisplay}){
                         const {data} = await response.json();
                         if(isDev){console.log(data);}
                         skConfigArr.current = [...data];
+                    }else{
+                        if(response.status===440){
+                            //session not found
+                            navigate("/login");
+                        }
                     }
                     response = await fetch(`${import.meta.env.VITE_API_URL}/pizzaGame/getUserSkStatus`,{credentials:'include'});
                     if (response.ok){
@@ -452,12 +474,22 @@ function pizzaSlicerGamePage({switchPage,styleDisplay}){
                         if(isDev){console.log(data);}
                         skNumber.current = data.indexOf(2) !==-1? data.indexOf(2)+1:1;
                         if(isDev){console.log(skNumber.current);}
+                    }else{
+                        if(response.status===440){
+                            //session not found
+                            navigate("/login");
+                        }
                     }
                     response = await fetch(`${import.meta.env.VITE_API_URL}/pizzaGame/getPizzaGameSetting2`,{credentials:'include'});
                     if(response.ok){
                         const {data} = await response.json();
                         if(isDev){console.log(data);}
                         pizzaConfigArr.current = [...data];
+                    }else{
+                        if(response.status===440){
+                            //session not found
+                            navigate("/login");
+                        }
                     }
 
 
@@ -1074,16 +1106,16 @@ function pizzaSlicerGamePage({switchPage,styleDisplay}){
 
                 return ()=>{anim.stop}
             }
-        }
+        
 
-    },[styleDisplay?.display,displayCameraRequest,
+    },[displayCameraRequest,
         
     ]);
 
 
 
 
-    return(<div style = {{...styleDisplay,
+    return(<div style = {{
         
         transform: `translateX(-50%) translateY(-50%) scaleX(${ scaleFactor.current}) scaleY(${ scaleFactor.current}) `,
         backgroundImage:`url(${backgroundArray[randomBackgroundIndex.current]})`
@@ -1100,7 +1132,7 @@ function pizzaSlicerGamePage({switchPage,styleDisplay}){
         </div>
 
         {/* Camera prompt when page is visible and camera not yet enabled */}
-        {styleDisplay?.display === 'flex' && !webcamReady && displayCameraRequest && (
+        { !webcamReady && displayCameraRequest && (
             <div className={styles.cameraPrompt} >
                 <p>This game uses your camera for hand tracking.</p>
                 <button
@@ -1211,8 +1243,12 @@ function pizzaSlicerGamePage({switchPage,styleDisplay}){
                             <h1>highest Score {scoreTotal}</h1>
                             <button className={styles.panelConfirmButton}
                             onClick={()=>{
-                                switchPage(1);
+                                navigate('/main');
                             }}>exit</button>
+                            <button onClick={()=>{
+                                window.location.reload()
+                            }}
+                            className={styles.panelConfirmButton}>🔁 Try Again</button>
                         </div>      
             </div>
             
@@ -1227,7 +1263,7 @@ function pizzaSlicerGamePage({switchPage,styleDisplay}){
                         }}>resume 💪</button>
                         <button className={styles.panelCancelButton}
                          onClick={()=>{
-                            switchPage(1);
+                            navigate('/main');
                          }}>exit Game ❌</button>
 
                         </div>

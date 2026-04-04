@@ -1,4 +1,6 @@
 //image import for towerDefence game shop
+import { useNavigate } from 'react-router-dom';
+
 import lv1Tower from '../../images/towerGameImg/towerLv1.png';
 import lv2Tower from '../../images/towerGameImg/towerLv2.png';
 import lv3Tower from '../../images/towerGameImg/towerLv3.png';
@@ -19,7 +21,10 @@ const isDev = import.meta.env.VITE_MODE==='DEV';
 const testLoadingDelay = 2000;
                                         
 function TowerShop({styles, setDisplayLoadingScreen,setUpdateCoin,coinAmount,setIsShopFirstLoad,toggle}){
-     /*----------------------------------------------------------------
+     
+    const navigate = useNavigate();
+    
+    /*----------------------------------------------------------------
        tower shop variable block start
        ------------------------------------------------------------------- */ 
         const[towerIndex,setTowerIndex]=useState(0);
@@ -168,6 +173,10 @@ function TowerShop({styles, setDisplayLoadingScreen,setUpdateCoin,coinAmount,set
                     //......................
 
                     }else{
+                        if(response.status===440){
+                            //session not found
+                            navigate("/login");
+                        }
                         console.log('fail to fetch');
 
                     }
@@ -273,6 +282,11 @@ function TowerShop({styles, setDisplayLoadingScreen,setUpdateCoin,coinAmount,set
        
        
                                        }else{
+                                            if(response.status===440){
+                                                //session not found
+                                                navigate("/login");
+                                            }
+                                        
                                            console.log("something wrong");
                                        }
        
@@ -548,6 +562,11 @@ function TowerShop({styles, setDisplayLoadingScreen,setUpdateCoin,coinAmount,set
                                                setDisplayTowerSelection(false);
                                                console.log('success');
                                                
+                                           }else{
+                                            if(response.status===440){
+                                                //session not found
+                                                navigate("/login");
+                                            }
                                            }
                                            }catch(error){
                                                console.log(error);
@@ -621,6 +640,10 @@ function TowerShop({styles, setDisplayLoadingScreen,setUpdateCoin,coinAmount,set
                                                setOpenPurchasePanel(false);
        
                                            }else{
+                                                if(response.status===440){
+                                                    //session not found
+                                                    navigate("/login");
+                                                }
                                                console.log("unknown error")
                                            }
        

@@ -1,4 +1,10 @@
 import { useEffect, useState,useRef } from "react";
+
+//router
+import { useNavigate } from 'react-router-dom';
+
+
+
 import styles from './mainPage.module.css';
 import shopIcon from '../images/gameShopIcon.png';
 import towerIcon from '../images/towerGameImg/towerLv1.png';
@@ -23,42 +29,6 @@ import ballGameIcon from '../images/ballClutchGameImg/ballNo1.png';
 import pizza1 from '../images/pizzaSlicerGameImage/pizza1.png';
 
 
-/*-------------------------
-metadata section begin
----------------------------*/
-
-
-//gamecard metadata
-/*const gameCardArr=[
-        {gameNameIdentifier: "Tower Defense",description:"endless enemy, how long can your tower survive? ☠️",icon:towerGameIcon},
-        {gameNameIdentifier: "Ball Clutch",description:"keep the ball on the platform ❗", icon:ballGameIcon},
-        {gameNameIdentifier: "Pizza Slicer", description:"just cut it 🍕",icon:pizza1}
-     ];*/
-     
-
-
-
-/*-------------------------
-metadata section end
----------------------------*/
-
-//----------------------------
-//edit here to add more tower
-//----------------------------
-
-
-//image imports for ballclutch game shop
-//edit here to add more balls
-
-
-//
-
-
-
-//image imports fo pizza slicing game shop
-
-
-//end of pizza slicing image
 
 
 
@@ -72,7 +42,12 @@ const testLoadingDelay = 2000;
 
 
 
-function MainPage({switchPage,styleDisplay}) {
+function MainPage() {
+    const navigate = useNavigate();
+
+
+
+
     const [welcomeMessage, setWelcomeMessage]=useState("");
     const [welcomeMessageLoaded, setWelcomeMessageLoaded]=useState(false);
 
@@ -137,7 +112,7 @@ function MainPage({switchPage,styleDisplay}) {
         setWelcomeMessageLoaded(false);
         async function fetchWelcomeMessage(){
             console.log("Fetching welcome message");
-            if(styleDisplay.display==='flex'){
+            
             try{
                 //loading gear tester
                 setDisplayLoadingScreen(true);
@@ -148,6 +123,11 @@ function MainPage({switchPage,styleDisplay}) {
                 if(response.ok){
                 const data = await response.json();
                 setWelcomeMessage(data.message);
+                }else{
+                    if(response.status===440){
+                        //session not found
+                        navigate("/login");
+                    }
                 }
                 
 
@@ -168,7 +148,7 @@ function MainPage({switchPage,styleDisplay}) {
 
             setWelcomeMessageLoaded(true);
             
-            }
+            
             
         }
 
@@ -179,7 +159,7 @@ function MainPage({switchPage,styleDisplay}) {
 
 
 
-    }, [styleDisplay]);
+    }, []);
 
 
 
@@ -220,6 +200,11 @@ function MainPage({switchPage,styleDisplay}) {
                 if(response.ok){
                     const coins = await response.json();
                     setCoinAmount(coins.userCoins);
+                }else{
+                    if(response.status===440){
+                        //session not found
+                        navigate("/login");
+                    }
                 }
 
 
@@ -279,7 +264,7 @@ function MainPage({switchPage,styleDisplay}) {
 
 
     return(
-        <div style={{...styleDisplay}} className={styles.container}>
+        <div  className={styles.container}>
             <h1 className={styles.welcomeTag}
             style={{display:welcomeMessageLoaded?'block':'none'}}>{welcomeMessage}</h1>
 
@@ -563,14 +548,14 @@ function MainPage({switchPage,styleDisplay}) {
                 onClick={async ()=>{
                     switch (gameName){
                         case 'Tower Defense':
-                            switchPage(2);
+                            navigate('/towerDefence');
                             break;
                         //add more game entry here
                         case 'Ball Clutch':
-                            switchPage(3);
+                            navigate('/ballClutch');
                             break;
                         case 'Pizza Slicer':
-                            switchPage(4);
+                            navigate('/pizzaSlicer');
                             break;
                         default:
                             break;
@@ -624,8 +609,12 @@ function MainPage({switchPage,styleDisplay}) {
                         });
                         if (response.ok) {
                 
-                        switchPage(0);
+                            navigate('/login');
                         } else {
+                            if(response.status===440){
+                                //session not found
+                                navigate("/login");
+                            }
                             console.error('Logout failed');
                         }
 

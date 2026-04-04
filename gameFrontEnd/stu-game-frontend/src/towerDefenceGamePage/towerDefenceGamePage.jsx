@@ -1,4 +1,6 @@
 import { useState,useEffect,useRef,useMemo } from "react"
+import { useNavigate } from 'react-router-dom';
+
 import styles from "./towerDefenceGamePage.module.css"
 import { Stage, Layer, Circle, Group, Image as KonvaImage,Rect } from 'react-konva';
 import Konva from "konva";
@@ -70,7 +72,9 @@ const isDev = import.meta.env.VITE_MODE==='DEV';
 const testLoadingDelay = 2000;
 
 
-function TowerDefenceGamePage({switchPage,styleDisplay}){
+function TowerDefenceGamePage(){
+
+    const navigate = useNavigate();
 
 
     /*image preload, centralized loading */
@@ -232,6 +236,11 @@ function TowerDefenceGamePage({switchPage,styleDisplay}){
         })
         if(response.ok){
             if(isDev){console.log('updated coins from tower defence');}
+        }else{
+            if(response.status===440){
+                //session not found
+                navigate("/login");
+            }
         }
         
         }catch(error){
@@ -258,6 +267,11 @@ function TowerDefenceGamePage({switchPage,styleDisplay}){
             if(response.ok){
                 const data = await response.json();
                 setScoreDisplay(s=>data.currentHighestScore);
+            }else{
+                if(response.status===440){
+                    //session not found
+                    navigate("/login");
+                }
             }
             
         }catch(error){
@@ -285,7 +299,7 @@ const isDisplayCoinAdd = useRef(false);
 
     
     useEffect(()=>{
-        if(styleDisplay.display==='flex'){
+        
             
 
            
@@ -412,6 +426,11 @@ const isDisplayCoinAdd = useRef(false);
 
                     //render the tower
                      
+                }else{
+                    if(response.status===440){
+                        //session not found
+                        navigate("/login");
+                    }
                 }
                 }catch(error){
                     if(isDev){console.log(error);}
@@ -439,6 +458,11 @@ const isDisplayCoinAdd = useRef(false);
                         const data = await response.json();
                         if(isDev){console.log(data);}
                         enemyAttributeArr.current=data?[...data]:null;
+                    }else{
+                        if(response.status===440){
+                            //session not found
+                            navigate("/login");
+                        }
                     }
 
                 }catch(error){
@@ -467,6 +491,11 @@ const isDisplayCoinAdd = useRef(false);
                         const data = await response.json();
                         previousHighScore.current = data.highestScoreRecord;
                         
+                    }else{
+                        if(response.status===440){
+                            //session not found
+                            navigate("/login");
+                        }
                     }
 
                 }catch(error){
@@ -1263,11 +1292,11 @@ const isDisplayCoinAdd = useRef(false);
         return () => {
             anim.stop();
         };
-    }
+    
 
 
     //edit here to add more tower
-    },[styleDisplay, 
+    },[
         
        
 
@@ -1327,7 +1356,7 @@ const isDisplayCoinAdd = useRef(false);
     
     
     return (
-        <div  style={{...styleDisplay,backgroundImage:`url(${backgroundArr[randomBackground]})`,
+        <div  style={{backgroundImage:`url(${backgroundArr[randomBackground]})`,
         transform: `translateX(-50%) translateY(-50%) scaleX(${ scaleFactor.current}) scaleY(${ scaleFactor.current}) `}}
         className={styles.gameWorld} 
         tabIndex="0" onKeyDown={handleTowerRotate} ref={rotateController}>
@@ -1367,10 +1396,15 @@ const isDisplayCoinAdd = useRef(false);
                 <h1>Game Over 😭</h1>
                 <h1>Highest Score: {scoreDisplay}</h1>
                 <button onClick={()=>{
-                    switchPage(1);
+                    navigate('/main');
                 }}
                 className={styles.panelConfirmButton}>exit</button>
+                <button onClick={()=>{
+                    window.location.reload()
+                }}
+                className={styles.panelConfirmButton}>🔁 Try Again</button>
                 </div>
+                
             </div>
             
 
@@ -1389,7 +1423,7 @@ const isDisplayCoinAdd = useRef(false);
                 }}>No! Get Me Back In 💪</button>
                 <button className={styles.panelCancelButton}
                 onClick={()=>{
-                    switchPage(1)
+                    navigate('/main');
                 }}>
                     Yes, need some rest 😴
                 </button>

@@ -80,14 +80,14 @@ app.use(session({
     store: MongoStore.create({
         mongoUrl: process.env.MONGODB_URL,
 
-        ttl: 14 * 24 * 60 * 60,
+        ttl: 1 * 24 * 60 * 60,
     }),
     //production block end
     
     cookie:{
         httpOnly:true,
-        //for production
-        maxAge:1000 * 60 * 60 * 24 * 7,
+        //for production, expired in a day
+        maxAge:1000 * 60 * 60 * 24 * 1,
         secure:process.env.NODE_ENV==='production',
         sameSite:process.env.NODE_ENV === 'production' ? 'none' : 'lax',
 
@@ -252,7 +252,7 @@ app.get('/api/auth/google',
 );
 
 app.get('/api/auth/google/callback',
-  passport.authenticate('google', { failureRedirect: process.env.REACT_URL,session: false }),
+  passport.authenticate('google', { failureRedirect: `${process.env.REACT_URL}/login`,session: false }),
   async (req, res) => {
     //create the session
     try{
@@ -268,10 +268,10 @@ app.get('/api/auth/google/callback',
                 req.session.save((err) => (err ? reject(err) : resolve()));
         });
 
-        res.redirect(process.env.REACT_URL);
+        res.redirect(`${process.env.REACT_URL}/main`);
     }catch(error){
         console.error('Error during Google OAuth callback:', error);
-        res.redirect(process.env.REACT_URL);
+        res.redirect(`${process.env.REACT_URL}/login`);
     }
   });
 
@@ -401,10 +401,13 @@ app.post(`/api/login`,singUpLoginLimiter,async (req,res)=>{
 //general endpoints
 
 
-app.get('/api/currentPlayer',(req,res)=>{
+
+const currentPlayerLimiter = rateLimit({windowMs: 1000, limit: 20 });
+app.get('/api/currentPlayer',currentPlayerLimiter,(req,res)=>{
     try{
+        
         if(req.session.playerName===undefined){
-            return res.status(401).json({message:'not logged in'});
+            return res.status(440).json({message:'not logged in'});
         }else{
             return res.status(200).json({message:`Welcome Back! ${req.session.displayedName || req.session.playerName}`});
         }
@@ -415,12 +418,12 @@ app.get('/api/currentPlayer',(req,res)=>{
 });
 
 
-app.get('/api/getUserCoins',async (req,res)=>{
+
+
+const getUserCoinsLimiter = rateLimit({windowMs: 1000, limit: 10 });
+app.get('/api/getUserCoins',getUserCoinsLimiter,checkSession,async (req,res)=>{
     try {
-        if (req.session.playerName===undefined) {
-            
-            return res.status(401).json({message:'Player not found'}); 
-        }
+      
 
         const thePlayer = await Player.findOne({ playerName: req.session.playerName });
 
@@ -463,11 +466,9 @@ app.get('/api/getUserCoins',async (req,res)=>{
 
 
 //finally the logout logic
-app.post('/api/logout', (req, res) => {
+app.post('/api/logout', checkSession,(req, res) => {
     // Check if user is logged in
-    if (!req.session.playerName) {
-        return res.status(400).json({ message: 'Not logged in' });
-    }
+    
 
     const playerName = req.session.playerName;
 
