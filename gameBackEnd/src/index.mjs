@@ -99,6 +99,8 @@ app.use(session({
         secure:process.env.NODE_ENV==='production',
         sameSite:process.env.NODE_ENV === 'production' ? 'lax' : 'lax',
 
+        domain: process.env.NODE_ENV === 'production' ? '.vercel.app' : undefined,
+
         //safari specific
         //partitioned: process.env.NODE_ENV === 'production', commentedout because it doesn't work
 
@@ -506,6 +508,7 @@ app.post('/api/logout', checkSession,(req, res) => {
             secure: process.env.NODE_ENV === 'production', // ADD THIS
             sameSite: process.env.NODE_ENV === 'production' ? 'lax' : 'lax', // MATCH SESSION CONFIG
 
+            domain: process.env.NODE_ENV === 'production' ? '.vercel.app' : undefined,
             //safari specific
             //partitioned: process.env.NODE_ENV === 'production'
             //end of production block
