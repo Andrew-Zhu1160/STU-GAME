@@ -3,6 +3,10 @@ import mongoose from 'mongoose';
 import cors from 'cors';
 import { param, query,body,validationResult } from 'express-validator';
 import session from 'express-session';
+//cookie parser for legacy user
+import cookieParser from 'cookie-parser';
+
+
 import 'dotenv/config'
 
 
@@ -49,7 +53,7 @@ app.set('trust proxy', 1);
 
 app.use(helmet());
 
-
+app.use(cookieParser());
 
 
 app.use(express.json({ limit: '10kb' }));
@@ -83,13 +87,17 @@ app.use(session({
         ttl: 1 * 24 * 60 * 60,
     }),
     //production block end
+
+    name: "session.safadapt",
     
     cookie:{
+        //a new version of the cookie, safari compatable
+
         httpOnly:true,
         //for production, expired in a day
         maxAge:1000 * 60 * 60 * 24 * 1,
         secure:process.env.NODE_ENV==='production',
-        sameSite:process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+        sameSite:process.env.NODE_ENV === 'production' ? 'lax' : 'lax',
 
         //safari specific
         //partitioned: process.env.NODE_ENV === 'production', commentedout because it doesn't work
@@ -406,7 +414,18 @@ const currentPlayerLimiter = rateLimit({windowMs: 1000, limit: 20 });
 app.get('/api/currentPlayer',currentPlayerLimiter,(req,res)=>{
     try{
         
-        if(req.session.playerName===undefined){
+        if(!req.session.playerName){
+            //check the cookie of the user
+        //if it is a legacy sameSite:none version, clear that cookie
+            if (req.cookies && req.cookies['connect.sid']) {
+                console.log("Clearing legacy SameSite=None cookie");
+                res.clearCookie('connect.sid', {
+                    path: '/', 
+                    httpOnly: true,
+                    secure: process.env.NODE_ENV === 'production', 
+                    sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+                });
+            }
             return res.status(440).json({message:'not logged in'});
         }else{
             return res.status(200).json({message:`Welcome Back! ${req.session.displayedName || req.session.playerName}`});
@@ -480,11 +499,12 @@ app.post('/api/logout', checkSession,(req, res) => {
         }
 
         // Clear the session cookie
-        res.clearCookie('connect.sid', {
+        res.clearCookie('session.safadapt', {
             //for production
+
             httpOnly: true,
             secure: process.env.NODE_ENV === 'production', // ADD THIS
-            sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax', // MATCH SESSION CONFIG
+            sameSite: process.env.NODE_ENV === 'production' ? 'lax' : 'lax', // MATCH SESSION CONFIG
 
             //safari specific
             //partitioned: process.env.NODE_ENV === 'production'
