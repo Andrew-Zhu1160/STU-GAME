@@ -1,5 +1,6 @@
 //image imports for ballclutch game shop
 //edit here to add more balls
+import { useNavigate } from 'react-router-dom';
 import ballNo1 from '../../images/ballClutchGameImg/ballNo1.png';
 import ballNo2 from '../../images/ballClutchGameImg/ballNo2.png';
 import ballNo3 from '../../images/ballClutchGameImg/ballNo3.png';
@@ -18,6 +19,7 @@ const testLoadingDelay = 2000;
 
 
 function BallShop({styles, setDisplayLoadingScreen,setUpdateCoin,toggle,setIsShopFirstLoad}){
+    const navigate = useNavigate();
      /*----------------------------------------------------------------
        ballGame  variable block start
        ------------------------------------------------------------------- */ 
@@ -70,6 +72,11 @@ function BallShop({styles, setDisplayLoadingScreen,setUpdateCoin,toggle,setIsSho
                     if(isDev){console.log(data);}
                     setBallOwnedStatusArr([...data]);
 
+                }else{
+                    if(response.status===440){
+                        //session not found
+                        navigate("/login");
+                    }
                 }
             }catch(error){
                 if(isDev){console.log(error)}
@@ -87,6 +94,11 @@ function BallShop({styles, setDisplayLoadingScreen,setUpdateCoin,toggle,setIsSho
                     if(isDev){console.log(data)}
                     setBallGameSettingArr([...data]);
                     
+                }else{
+                    if(response.status===440){
+                        //session not found
+                        navigate("/login");
+                    }
                 }
 
             }catch(error){
@@ -196,6 +208,10 @@ function BallShop({styles, setDisplayLoadingScreen,setUpdateCoin,toggle,setIsSho
                                             setBallClutch_showPurchaseOrSelect(b=>false);
     
                                         }else{
+                                            if(response.status===440){
+                                                //session not found
+                                                navigate("/login");
+                                            }
                                             const{message} = await response.json();
                                             if(isDev){console.log(message)}
                                             setBallClutch_warningMessage(message);
@@ -244,6 +260,10 @@ function BallShop({styles, setDisplayLoadingScreen,setUpdateCoin,toggle,setIsSho
                                             setBallClutch_showPurchaseOrSelect(b=>false);
     
                                         }else{
+                                            if(response.status===440){
+                                                //session not found
+                                                navigate("/login");
+                                            }
                                             const{message} = await response.json();
                                             if(isDev){console.log(message)}
                                             setBallClutch_warningMessage(message);

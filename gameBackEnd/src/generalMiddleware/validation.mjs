@@ -20,7 +20,8 @@ export const validate = (req, res, next) => {
 
 export function checkSession(req,res,next){
     if(!req.session.playerName){
-        return res.status(400).json({message:'player not found'});
+        //send out a unique status code for losing session (use 440), frontend use it to redirect to login page
+        return res.status(440).json({message:'player not found'});
     }else{
         next();
     }

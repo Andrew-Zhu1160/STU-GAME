@@ -1,4 +1,9 @@
 import { useState,useEffect,useRef } from "react";
+
+import { useNavigate } from 'react-router-dom';
+
+
+
 import styles from './loginPage.module.css';
 import fortImage from '../images/Fort-Login-Page.png';
 import loadingGear from '../images/loadingGear.png';
@@ -29,24 +34,15 @@ import spinningBlade from '../images/spinningBlade.png';
 
 
 
-const StyleMain={
-    width:'100%',
-    height:'100%',
-    display:'flex',
-    justifyContent:'center',
-    alignItems:'center',
-    background:'linear-gradient(170deg, #1840f0ff 0%, #a991c1ff 100%)',
-    margin: 0,
-    position:'relative',
-    overflow:'hidden'
-}
+
 
 
 
 const testLoadingDelay = 2000;
 const isDev = import.meta.env.VITE_MODE==='DEV';
 
-function LoginPage({switchPage,styleDisplay}) {
+function LoginPage() {
+    const navigate = useNavigate();
     /*-----------------------------------------------------------
     loading spinner
     ------------------------------------------------------------- */
@@ -159,7 +155,7 @@ function LoginPage({switchPage,styleDisplay}) {
                         console.log(loginData.message);
                         setGameNameInput('');
                         setPasswordInput('');
-                        switchPage(1);
+                        navigate('/main');
 
                     }
 
@@ -224,7 +220,7 @@ function LoginPage({switchPage,styleDisplay}) {
             console.log(loginData.message);
             setGameNameInput('');
             setPasswordInput('');
-            switchPage(1);
+            navigate('/main');
 
         }
     }catch(error){
@@ -281,7 +277,27 @@ function LoginPage({switchPage,styleDisplay}) {
     };
     
     useEffect(()=>{
-        if(styleDisplay?.display==='flex'){
+        async function checkLoginStatus(){
+            try{
+              const response = await fetch(`${import.meta.env.VITE_API_URL}/currentPlayer`, { credentials: 'include' });
+              const data = await response.json();
+              if(response.ok){
+                navigate('/main');
+                  
+                
+              }else{
+                navigate('/login');
+          
+              }
+              console.log(data.message);
+            }catch(error){
+                navigate('/login');
+              console.log("unknown error", error);
+            }
+          
+          }
+          checkLoginStatus();
+        
            
             const handleResize = () => {
                     setDimensions({
@@ -429,16 +445,16 @@ function LoginPage({switchPage,styleDisplay}) {
 
 
             return () =>{ window.removeEventListener('resize', handleResize);anim.stop();}
-        }
+        
 
-    },[styleDisplay?.display])
-
-
+    },[])
 
 
 
 
-    return(<div style={{...StyleMain,...styleDisplay}}>
+
+
+    return(<div  className={styles.styleMain}>
         <Stage width={dimensions.width} height={dimensions.height} ref={stageRef}>
             <Layer ref={playBallRef}></Layer>
             <Layer>

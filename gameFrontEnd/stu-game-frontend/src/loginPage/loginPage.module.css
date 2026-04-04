@@ -6,6 +6,59 @@
     font-family: "BGS";
     src: url(../fonts/BitcountGridSingleInk-VariableFont_CRSV\,ELSH\,ELXP\,SZP1\,SZP2\,XPN1\,XPN2\,YPN1\,YPN2\,slnt\,wght.ttf);
 }
+
+.styleMain{
+     width:100%;
+    height:100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: linear-gradient(170deg, #1840f0ff 0%, #a991c1ff 100%);
+    margin: 0;
+    position:relative;
+    overflow-y:auto;
+    overflow-x: hidden;
+    z-index: 1;
+}
+
+.styleMain::-webkit-scrollbar {
+    width: 10px; /* Slim and modern */
+}
+
+/* 2. The background track (the 'rail') */
+.styleMain::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.05); /* Very subtle glass effect */
+    backdrop-filter: blur(4px);
+    border-radius: 10px;
+}
+
+/* 3. The draggable handle (the 'thumb') */
+.styleMain::-webkit-scrollbar-thumb {
+    background: linear-gradient(180deg, #007bff 0%, #00d4ff 100%);
+    border-radius: 10px;
+    border: 2px solid rgba(255, 255, 255, 0.1); /* Creates a 'floating' look */
+    box-shadow: 0 0 10px rgba(0, 212, 255, 0.3);
+}
+
+/* 4. Hover state for the handle */
+.styleMain::-webkit-scrollbar-thumb:hover {
+    background: #00d4ff;
+    box-shadow: 0 0 15px rgba(0, 212, 255, 0.6);
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 .loadingScreen{
     position:fixed;
     width:100vw;

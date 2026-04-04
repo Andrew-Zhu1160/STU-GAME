@@ -22,9 +22,9 @@ const speedClickLimiter = rateLimit({
 
 
 
-router.get('/towerShop', async(req,res)=>{
+router.get('/towerShop',checkSession, async(req,res)=>{
     try{
-        if(req.session.playerName){
+        //old legacy code, still check session maally, now removed
             const playerData = await Player.findOne({ playerName: req.session.playerName });
             //add this line to every rute basically. copy the refernce of the setting sheet to here and use it to get the data for response. it throw error if the setting sheet is not initialized for some reason, which will be caught by the catch block and return 500 error.
             const towerGameSetting =  getTowerGameSetting();
@@ -102,10 +102,7 @@ router.get('/towerShop', async(req,res)=>{
             }else{
                 return res.sendStatus(404);
             }
-    }else{
-        return res.sendStatus(404);
-
-    }
+   
 
 
     }catch(error){
@@ -118,6 +115,7 @@ router.get('/towerShop', async(req,res)=>{
 
 
 router.post('/addTower',[
+    checkSession,
     speedClickLimiter, 
     body('purchasedTowerLevel').isInt({ min: 1, max: 12 }),
     validate
@@ -126,9 +124,7 @@ router.post('/addTower',[
 
     const towerGameSetting =  getTowerGameSetting();
 
-    if(!req.session.playerName){
-        return res.sendStatus(404);
-    }
+    //the check for towerGameSetting is now redudant, but keep it here wont hurt
     const thePlayer = await Player.findOne({playerName:req.session.playerName});
     if(!thePlayer||!towerGameSetting){
         return res.sendStatus(404);
@@ -225,10 +221,8 @@ router.post('/addTower',[
 })
 
 
-router.get('/getUserTowerCollection',async (req,res)=>{
-    if(!req.session.playerName){
-        return res.sendStatus(404);
-    }
+router.get('/getUserTowerCollection',checkSession,async (req,res)=>{
+   
     const thePlayer = await Player.findOne({playerName:req.session.playerName});
     if(!thePlayer){
         return res.sendStatus(404);
@@ -264,6 +258,7 @@ router.get('/getUserTowerCollection',async (req,res)=>{
 
 
 router.post('/editTowerDeploy',[
+    checkSession,
     body('updatedDeploy').isArray({ min: 3, max: 3 }),
     body('updatedDeploy.*').isInt({ min: 0, max: 12 }),
     validate
@@ -271,9 +266,7 @@ router.post('/editTowerDeploy',[
     //...................
     //edit here to add more tower
     //.................
-    if(!req.session.playerName){
-        return res.sendStatus(404);
-    }
+
     const thePlayer = await Player.findOne({playerName:req.session.playerName});
     if(!thePlayer){
         return res.sendStatus(404);
@@ -298,10 +291,8 @@ router.post('/editTowerDeploy',[
 
 
 
-router.get('/getTowerDeploy',async (req,res)=>{
-    if(!req.session.playerName){
-        return res.sendStatus(404);
-    }
+router.get('/getTowerDeploy',checkSession,async (req,res)=>{
+    
     try{
         //no need for null check, the function will throw error if setting shet is null, getter is the only sync function
         const towerGameSetting =  getTowerGameSetting();
@@ -362,10 +353,8 @@ router.get('/getTowerDeploy',async (req,res)=>{
     }
 });
 
-router.get('/getEnemyAttribute',(req,res)=>{
-    if(!req.session.playerName){
-        return res.sendStatus(404);
-    }
+router.get('/getEnemyAttribute',checkSession,(req,res)=>{
+    
     try{
          const towerGameSetting =  getTowerGameSetting();
 
@@ -402,10 +391,8 @@ router.get('/getEnemyAttribute',(req,res)=>{
 });
 
 
-router.get('/getCoinsAndScores',async (req,res)=>{
-    if(!req.session.playerName){
-        return res.sendStatus(404);
-    }
+router.get('/getCoinsAndScores',checkSession,async (req,res)=>{
+    
     try{
         const thePlayer = await Player.findOne({playerName:req.session.playerName});
         if(!thePlayer){
@@ -427,13 +414,12 @@ router.get('/getCoinsAndScores',async (req,res)=>{
 
 
 router.post('/addCoins',[
+    checkSession,
     body('coinAddAmount').isInt({ min: 1, max: 20000 })
         .withMessage('Invalid coin amount'),
     validate
 ],async (req,res)=>{
-    if(!req.session.playerName){
-        return res.sendStatus(404);
-    }
+    
     try{
     const thePlayer = await Player.findOne({playerName:req.session.playerName});
     if(!thePlayer){
@@ -454,14 +440,12 @@ router.post('/addCoins',[
 
 
 router.post('/updateScoreRecord',[
+    checkSession,
     speedClickLimiter,
     body('newScore').isInt({ min: 0, max: 999999999 }),
     validate
 ],async(req,res)=>{
-    if(!req.session.playerName){
-        return res.sendStatus(404);
-
-    }
+    
     try{
     const thePlayer = await Player.findOne({playerName:req.session.playerName});
     if(req.body.newScore>thePlayer.towerGameAssets.highestScore){

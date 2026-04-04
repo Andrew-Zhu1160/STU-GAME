@@ -1,4 +1,5 @@
 import { useState,useEffect,useRef,useMemo } from "react"
+import { useNavigate } from 'react-router-dom';
 import { Stage, Layer, Circle, Group, Image as KonvaImage,Rect } from 'react-konva';
 import Konva from "konva";
 import styles from './ballClutchGamePage.module.css'
@@ -48,7 +49,9 @@ const PLATFORM_CATEGORY = 0x0004;
 const testLoadingDelay = 2000;
 
 
-function BallClutchGamePage({switchPage,styleDisplay}){
+function BallClutchGamePage(){
+
+    const navigate = useNavigate();
 
     /*image preload, centralized loading */
      //image pre decoder
@@ -119,6 +122,10 @@ function BallClutchGamePage({switchPage,styleDisplay}){
             if(response.ok){
                 if(isDev){console.log('save coins successfull')}
             }else{
+                if(response.status===440){
+                    //session not found
+                    navigate("/login");
+                }
                 if(isDev){console.log('save unsuccessfull')}
             }
 
@@ -143,6 +150,11 @@ function BallClutchGamePage({switchPage,styleDisplay}){
                 const {newHighScore}=await response.json();
                 setScoreTotal(newHighScore);
 
+            }else{
+                if(response.status===440){
+                    //session not found
+                    navigate("/login");
+                }
             }
 
         }catch(error){
@@ -264,7 +276,7 @@ function BallClutchGamePage({switchPage,styleDisplay}){
     const scaleFactor = useRef(window.innerHeight/2000);
 
     useEffect(()=>{
-        if(styleDisplay.display === 'flex'){
+        
 
 
             if(jumpController.current){
@@ -402,10 +414,20 @@ function BallClutchGamePage({switchPage,styleDisplay}){
                                     platformConfigArr.current = [...data3];
 
                                     movingPlatformBodyRef.current=[];
+                                }else{
+                                    if(response.status===440){
+                                        //session not found
+                                        navigate("/login");
+                                    }
                                 }
 
                             }
 
+                    }else{
+                        if(response.status===440){
+                            //session not found
+                            navigate("/login");
+                        }
                     }
                     
 
@@ -909,8 +931,8 @@ function BallClutchGamePage({switchPage,styleDisplay}){
                 anim.stop();
             }
 
-        }
-    },[styleDisplay,
+        
+    },[
        
 
         borderSideImg,
@@ -921,7 +943,7 @@ function BallClutchGamePage({switchPage,styleDisplay}){
 
 
     return(
-        <div style={{...styleDisplay,
+        <div style={{
         backgroundImage:`url(${backgroundArray[randomBackgroundIndex.current]})`,
         transform: `translateX(-50%) translateY(-50%) scaleX(${ scaleFactor.current}) scaleY(${ scaleFactor.current}) `}}
         className={styles.gameWorld}
@@ -941,8 +963,12 @@ function BallClutchGamePage({switchPage,styleDisplay}){
                 <h1>highest Score {scoreTotal}</h1>
                 <button className={styles.panelConfirmButton}
                 onClick={()=>{
-                    switchPage(1);
+                    navigate('/main');
                 }}>exit</button>
+                <button onClick={()=>{
+                    window.location.reload()
+                }}
+                className={styles.panelConfirmButton}>🔁 Try Again</button>
                 </div>
                
             </div>
@@ -959,7 +985,7 @@ function BallClutchGamePage({switchPage,styleDisplay}){
                 }}>resume 💪</button>
                 <button className={`${styles.panelCancelButton}`}
                 onClick={()=>{
-                    switchPage(1);
+                    navigate('/main');
                 }}>exit Game ❌</button>
 
                 </div>

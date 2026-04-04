@@ -43,6 +43,7 @@
 
 
 .gameWorld{
+    display: flex;
     background-color: none;
    border: 30px solid hsla(251, 95%, 58%, 0.614); 
    border-radius: 50px;
