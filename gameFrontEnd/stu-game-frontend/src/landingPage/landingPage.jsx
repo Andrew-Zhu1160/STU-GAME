@@ -302,12 +302,12 @@ function LandingPage(){
               <h2 className="shrink-0 text-xl font-bold text-white drop-shadow-lg sm:text-2xl">
                 See it in Action
               </h2>
-              <video
-                className="aspect-video w-full max-h-[min(11.5rem,42vh)] max-w-[min(100%,17.5rem)] shrink-0 rounded-2xl border-2 border-cyan-200/45 bg-slate-950/70 object-cover shadow-lg"
-                controls
-                playsInline
-                preload="metadata"
-                src="./gameDemo.mp4"
+              <iframe
+                className="aspect-video w-full max-h-[min(11.5rem,42vh)] max-w-[min(100%,17.5rem)] shrink-0 rounded-2xl border-2 border-cyan-200/45 bg-slate-950/70 shadow-lg"
+                src="https://www.youtube.com/embed/OsoZ7lQbVKc?controls=0&modestbranding=1&rel=0&fs=0&iv_load_policy=3&playsinline=1"
+                title="Game demo"
+                allow="accelerometer; autoplay; encrypted-media; gyroscope"
+                loading="lazy"
               />
             </div>
           </div>
