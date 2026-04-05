@@ -39,33 +39,67 @@ This is currently a solo project by a Computer Engineering undergrad at the Univ
 ## 📂 File Structure
 
 ```
+# Project Structure
+
+```text
 stuGame/
-├── gameFrontEnd/
-│   └── stu-game-frontend/
-│       └── src/
-│           ├── ballClutchGamePage/       # Physics-based arcade game
-│           │   └── ballClutchGamePage.jsx
-│           ├── loginPage/                # User authentication UI
-│           │   └── loginPage.jsx
-│           ├── mainPage/                 # Game selection dashboard
-│           │   └── mainPage.jsx
-│           ├── pizzaSlicerGamePage/      # AI hand-tracking pizza game
-│           │   └── pizzaSlicerGamePage.jsx
-│           ├── towerDefenceGamePage/     # Strategic defense game
-│           │   └── towerDefenceGamePage.jsx
-│           ├── assets/                   # Shared global assets
-│           ├── fonts/                    # Custom typography
-│           ├── images/                   # UI textures and sprites
-│           ├── App.jsx                   # Root component & routing
-│           └── main.jsx                  # React entry point
-└── gameBackEnd/
-    └── src/
-        ├── index.mjs                     # Main Express server & API entry
-        ├── passwordSecure.mjs            # Auth & encryption utility
-        ├── playerSchema.mjs              # user  data
-        ├── ballGameSchema.mjs            # ball game settings sheet (only one document)
-        ├── pizzaGameSchema.mjs           # pizza game setting sheet (only one document)
-        └── towerGameSchema.mjs           # tower game setting sheet (only one document)
+├── gameBackEnd/   #entry of the Express js Server
+│   ├── src/
+│   │   ├── generalMiddleware/   #contain middleware functions that apply to most of the endpoints
+│   │   ├── routes/             #contain routers for each games in the game collection website
+│   │   ├── schemas/            #contain the schmas for the setting sheet of each game as well as player profile
+│   │   ├── settingSheetFunctions/     #contain specific getter functions exports for all files to reference to the game setting sheet
+│   │   ├── strategies/                #strategies collection for oauth2.0 (currently only google)
+│   │   │   └── googleStrategies.mjs
+│   │   ├── utils/                 #contain helper functions (currently only the hash function)
+│   │   └── index.mjs          #the entry point of all the routes 
+│   ├── .env                   #contain secret for sessions and oauth, and environment dependent url
+│   ├── package-lock.json      
+│   ├── package.json
+│   └── vercel.json             #vercel specific setting
+└── gameFrontEnd/
+    └── stu-game-frontend/
+        ├── public/             #public folder containing general image and model
+        │   ├── wasm/           #the hand landmarker model interpreter
+        │   ├── gmail.png       #image used in landing page
+        │   ├── hand_landmarker.task     #the hand landmarker model inference
+        │   ├── instagram.png      #image used in landing page
+        │   ├── linkdin.png      #image used in landing page
+        │   └── stuGameFav.png   #website fav
+        ├── src/
+        │   ├── assets/         #react fav (pretty much useless, kept for showing this project is a react project)
+        │   ├── ballClutchGamePage/   #game page
+        │   ├── fonts/         #fonts use in UI
+        │   ├── images/        #img collection, for all games and mainpage Ui
+        │   ├── landingPage/    #The website's landing page componenet   (using the newest tailwind and framer motion)
+        │   ├── loginPage/      #the website's login page component (for all page componenet, it is usually a jsx file and a module.css)
+        │   │   ├── loginPage.jsx
+        │   │   └── loginPage.module.css
+        │   ├── mainPage/      #website's lobby or mainpage   
+        │   │   ├── gameShops/   #specific game shop componenet (created to make mainPage clean)
+        │   │   ├── gameData.js   #contain paragraphs for game tutorial
+        │   │   ├── mainPage.jsx   #the mainPage componenet (all shop componenets are imported here)
+        │   │   └── mainPage.module.css   #stylesheet (shared with all componenet across the folder)
+        │   ├── pizzaSlicerGamePage/   #game page 
+        │   ├── towerDefenceGamePage/   #game page
+        │   ├── App.jsx              #the entry point (contain react router defined for all pages)
+        │   ├── App.module.css
+        │   ├── index.css
+        │   └── main.jsx
+        ├── .env             #contain environment specific URL
+        ├── eslint.config.js
+        ├── index.html
+        ├── package-lock.json
+        └── package.json
+
+
+
+
+
+
+
+
+
 ```
 
 ---
