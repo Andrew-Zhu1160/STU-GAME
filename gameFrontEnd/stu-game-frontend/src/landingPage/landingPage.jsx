@@ -4,7 +4,7 @@ import {useState,useEffect,useRef,useCallback} from 'react';
 import gameIcon from "../images/towerGameImg/towerLv2.png";
 import gameIcon2 from "../images/towerGameImg/towerLv11.png";
 
-import {Mail,LinkIcon} from 'lucide-react';
+import {Mail,LinkIcon,Bot} from 'lucide-react';
 
 
 
@@ -177,7 +177,9 @@ function LandingPage(){
                 C 400 100, 400 500, 64 700
          C -250 900, -250 1300, 64 1500
          C 400 1700, 400 2300, 64 2500
-         C -250 2700, -250 3100, 64 3300"
+         C -250 2700, -250 3100, 64 3300
+         C 400 3500, 400 3900, 64 4100
+         "
          stroke="url(#gradient)"
          strokeWidth="18"
          strokeLinecap="round"
@@ -275,14 +277,14 @@ function LandingPage(){
           </div>
         </motion.div>
 
-        {/* Leaf 3 - See it in Action (Left side) */}
-        <motion.div
+        {/*leaf 3: ai agent demo */}
+         <motion.div
             ref={demoRef}
           initial={{ scale: 0, opacity: 0, x: 100 }}
           animate={{
-            scale: scrollProgress > 0.5 ? 1 : 0,
-            opacity: scrollProgress > 0.5 ? 1 : 0,
-            x: scrollProgress > 0.5 ? 0 : 100,
+            scale: scrollProgress > 0.3 ? 1 : 0,
+            opacity: scrollProgress > 0.3 ? 1 : 0,
+            x: scrollProgress > 0.3 ? 0 : 100,
           }}
           transition={{ duration: 0.8, ease: "easeOut" }}
           className="relative mb-60 ml-[13%]"
@@ -294,6 +296,44 @@ function LandingPage(){
                 width: '100px',          // 1. Length of the triangle
                 height: '50px',         // 2. Thickness at the base (the "leaf" side)
                 clipPath: 'polygon(0% 0%, 0% 100%, 100% 50%)', // 3. The magic triangle shape
+                filter: 'blur(1px) drop-shadow(0 0 10px rgba(34, 211, 238, 0.8))'
+            }} 
+            />
+            <div className="flex h-full min-h-0 w-full flex-col items-center justify-center gap-2 px-1 text-center">
+            <Bot className="mb-4 w-20 h-20" size={80}></Bot>
+              <h2 className="shrink-0 text-xl font-bold text-white drop-shadow-lg sm:text-2xl">
+                Ask AI to suggest a game for you 😋
+              </h2>
+              <iframe
+                className="aspect-video w-full max-h-[min(11.5rem,42vh)] max-w-[min(100%,17.5rem)] shrink-0 rounded-2xl border-2 border-cyan-200/45 bg-slate-950/70 shadow-lg"
+                src="https://www.youtube.com/embed/CzGeoWi0R_g?controls=0&modestbranding=1&rel=0&fs=0&iv_load_policy=3&playsinline=1&autoplay=1&loop=1&playlist=CzGeoWi0R_g"
+                title="AI game assistant agent v1.00 demo"
+                allow="accelerometer; autoplay; encrypted-media; gyroscope"
+                loading="lazy"
+              />
+            </div>
+          </div>
+        </motion.div>
+
+        {/* Leaf 4 - See it in Action (Right side) */}
+        <motion.div
+            ref={demoRef}
+          initial={{ scale: 0, opacity: 0, x: 100 }}
+          animate={{
+            scale: scrollProgress > 0.6 ? 1 : 0,
+            opacity: scrollProgress > 0.6 ? 1 : 0,
+            x: scrollProgress > 0.6 ? 0 : 100,
+          }}
+          transition={{ duration: 0.8, ease: "easeOut" }}
+          className="relative mb-60 ml-auto mr-[13%] w-fit"
+        >
+          <div className="relative w-140 h-96 bg-gradient-to-br from-cyan-400/90 via-blue-500/90 to-blue-600/90 rounded-[50%] backdrop-blur-sm border-2 border-cyan-300/50 p-8 shadow-2xl" style={{ boxShadow: '0 0 60px rgba(34, 211, 238, 0.4), inset 0 0 40px rgba(59, 130, 246, 0.2)' }}>
+          <div 
+            className="absolute right-full top-1/2 -translate-y-1/2 bg-cyan-400" 
+            style={{ 
+                width: '100px',          // 1. Length of the triangle
+                height: '50px',         // 2. Thickness at the base (the "leaf" side)
+                clipPath: 'polygon(100% 0%, 100% 100%, 0% 50%)', // 3. The magic triangle shape
                 filter: 'blur(1px) drop-shadow(0 0 10px rgba(34, 211, 238, 0.8))'
             }} 
             />
@@ -313,26 +353,26 @@ function LandingPage(){
           </div>
         </motion.div>
 
-        {/* Leaf 4 - Contact Us (Right side) */}
+        {/* Leaf 5 - Contact Us (Left side) */}
         <motion.div
           ref={contactLeafRef}
           initial={{ scale: 0, opacity: 0, x: -100 }}
           animate={{
-            scale: scrollProgress > 0.7 ? 1 : 0,
-            opacity: scrollProgress > 0.7 ? 1 : 0,
-            x: scrollProgress > 0.7 ? 0 : -100,
+            scale: scrollProgress > 0.8 ? 1 : 0,
+            opacity: scrollProgress > 0.8 ? 1 : 0,
+            x: scrollProgress > 0.8 ? 0 : -100,
           }}
           transition={{ duration: 0.8, ease: "easeOut" }}
-          className="relative mb-20 ml-auto mr-[13%] w-fit scroll-mt-28"
+          className="relative mb-20 ml-[13%] scroll-mt-28"
         >
           <div className="relative w-140 h-96 bg-gradient-to-br from-cyan-400/90 via-blue-500/90 to-blue-600/90 rounded-[50%] backdrop-blur-sm border-2 border-cyan-300/50 p-8 shadow-2xl" style={{ boxShadow: '0 0 60px rgba(34, 211, 238, 0.4), inset 0 0 40px rgba(59, 130, 246, 0.2)' }}>
           <div 
-            className="absolute right-full top-1/2 -translate-y-1/2 bg-cyan-400" 
+            className="absolute left-full top-1/2 -translate-y-1/2 bg-cyan-400" 
             style={{ 
                 width: '100px',
                 height: '50px',
                 // Triangle points LEFT: (100% 0, 100% 100, 0% 50%)
-                clipPath: 'polygon(100% 0%, 100% 100%, 0% 50%)', 
+                clipPath: 'polygon(0% 0%, 0% 100%, 100% 50%)', 
                 filter: 'blur(1px) drop-shadow(0 0 10px rgba(34, 211, 238, 0.8))'
             }} 
             />

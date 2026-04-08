@@ -35,11 +35,19 @@ import towerGameRoute from './routes/towerGameRoute.mjs';
 import ballGameRoute from './routes/ballGameRoute.mjs';
 import pizzaGameRoute from './routes/pizzaGameRoute.mjs';
 
+//ai route import
+import {router as aiRoute, ingestGame} from './routes/aiRoute.mjs';
+
 
 
 //oauth2.0 imports
 import passport from 'passport';
 import { Strategy as GoogleStrategy } from 'passport-google-oauth20';
+
+
+
+
+
 
 
 
@@ -151,6 +159,21 @@ app.use("/api/pizzaGame", pizzaGameRoute);
 
 
 
+
+//ai endpoints, have collection of all endpoints invloving ai api call
+
+//this function call should only be called once in development when new games are added
+
+
+//await ingestGame();
+
+
+
+app.use("/api/ai", aiRoute);
+
+
+
+
 //oauth app.use, will create custom session, do not app.use(passport.session()) 
 // because we are not using the default session of passport, we are using our own session with express-session, 
 // and we will store the playerName in our own session, and use that to check if the user is logged in or not, 
@@ -158,6 +181,15 @@ app.use("/api/pizzaGame", pizzaGameRoute);
 app.use(passport.initialize());
 //populate passport strategies
 import './strategies/googleStrategies.mjs';
+
+
+
+
+
+
+
+
+
 
 
 
@@ -272,6 +304,11 @@ app.get('/api/auth/google/callback',
         //repopulate session data
         req.session.playerName = req.user.playerName;
         req.session.displayedName = req.user.displayedName;
+        req.session.chatHistory = [
+            
+            {role:"model",parts:[{text:"Tell me anything, and i can: \nA: explain how to play a game❔\nB: find you a game to play👾\nC:just chat and chill🍇"}]}];
+        
+       
 
         await new Promise((resolve, reject) => {
                 req.session.save((err) => (err ? reject(err) : resolve()));
@@ -283,16 +320,6 @@ app.get('/api/auth/google/callback',
         res.redirect(`${process.env.REACT_URL}/login`);
     }
   });
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -385,6 +412,11 @@ app.post(`/api/login`,singUpLoginLimiter,async (req,res)=>{
 
         req.session.playerName = loginPlayer.playerName;
         req.session.displayedName = loginPlayer.displayedName;
+        req.session.chatHistory = [
+             
+            {role:"model",parts:[{text:"Tell me anything, and i can: \nA: explain how to play a game❔\nB: find you a game to play👾\nC:just chat and chill🍇"}]}];
+
+        
 
         // Use a Promise to make save "awaitable"
         await new Promise((resolve, reject) => {
@@ -458,6 +490,8 @@ app.get('/api/getUserCoins',getUserCoinsLimiter,checkSession,async (req,res)=>{
         return res.status(500).json({message:'unkown error'});
     }
 })
+
+
 
 
 

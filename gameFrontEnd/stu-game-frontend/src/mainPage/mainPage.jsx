@@ -10,7 +10,7 @@ import shopIcon from '../images/gameShopIcon.png';
 import towerIcon from '../images/towerGameImg/towerLv1.png';
 import loadingGear from '../images/loadingGear.png';
 
-import {ShoppingBag, Search, Info, User, Settings, Home, LogOut, Share2} from 'lucide-react';
+import {ShoppingBag, Search, Info, User, Settings, Home, LogOut, Share2, Bot} from 'lucide-react';
 
 
 //metadata import
@@ -40,6 +40,26 @@ import speedCoins from '../images/towerGameImg/speedCoin.png';
 const isDev = import.meta.env.VITE_MODE==='DEV';
 const testLoadingDelay = 2000;
 
+//a seperate message typer componenet, for the chatbot page, to make the ai response look more lively
+const TypingMessage = ({ content, speed = 5,setIsAiThinking }) => {
+    const [displayedText, setDisplayedText] = useState("");
+    const [index, setIndex] = useState(0);
+
+    useEffect(() => {
+        setIsAiThinking(true);
+        if (index < content.length) {
+            const timeout = setTimeout(() => {
+                setDisplayedText((prev) => prev + content[index]);
+                setIndex((prev) => prev + 1);
+            }, speed);
+            return () => clearTimeout(timeout);
+        }else{
+            setIsAiThinking(false);
+        }
+    }, [index, content, speed]);
+
+    return <p>{displayedText}</p>;
+};
 
 
 function MainPage() {
@@ -94,14 +114,50 @@ function MainPage() {
     index 1: shop
     index 2: info page
     index 3: contact use page / about author
+    index 4: ai chatiing page
 
   
     
     */
-    const [displaySubPage,setDisplaySubPage] = useState([true,false,false,false]);
+    const [displaySubPage,setDisplaySubPage] = useState([true,false,false,false,false]);
+
+    /*----------------------------------------------------
+    AI chatting related variable start
+    ----------------------------------------- */
+    const [chatHsitoryArr,setChatHistoryArr]=useState([]);
+    const [userMessage,setUserMessage] = useState("");
+    const[isAiThinking,setIsAiThinking] = useState(false);
+    const chatEndRef = useRef(null);
+    const scrollToBottom = () => {
+        if (chatEndRef.current) {
+            chatEndRef.current.scrollTo({
+                top: chatEndRef.current.scrollHeight,
+                behavior: "smooth"
+            });
+        }
+    };
+
+    // Trigger scroll when history changes or AI starts/stops thinking
+    useEffect(() => {
+        scrollToBottom();
+    }, [chatHsitoryArr, isAiThinking]);
+
+    const [isAiOperating, setIsAiOperating] = useState(false);
+    const [aiTaskMode, setAiTaskMode] = useState(""); // e.g., "suggestion", "conversation", later add shop_navigation,etc.
+    const [suggestedGame, setSuggestedGame] = useState("");
 
 
 
+
+
+
+
+    /*----------------------------------------------------
+    AI chatting related variable end
+    ----------------------------------------- */
+
+
+    
 
     
     /*---------------------------------------------------------------------
@@ -153,8 +209,38 @@ function MainPage() {
         }
 
 
+        async function getChatHistory(){
+            try{
+
+                 //loading gear tester
+                setDisplayLoadingScreen(true);
+                //loading gear tester end
+                const response = await fetch(`${import.meta.env.VITE_API_URL}/ai/getChatHistory`,{credentials:'include'});
+                if(response.ok){
+                    const {data} = await response.json();
+                    setChatHistoryArr([...data]);
+                }
+
+
+            }catch(error){
+                if(isDev){console.log(error)}
+
+            }finally{
+                 //loading gear tester
+                if(isDev){
+                    await new Promise((resolve,reject)=>{
+                        setTimeout(()=>{resolve();},testLoadingDelay);
+                    });
+                }
+                //end of loading gear tester
+                setDisplayLoadingScreen(false);
+
+            }
+        }
+
+
         
-       
+       getChatHistory();
         fetchWelcomeMessage();
 
 
@@ -274,22 +360,31 @@ function MainPage() {
                 <h1>loading {loadingDots}</h1>
             </div>
 
+            {/*loading screen for ai doing task, currently the only task is auto serch the game it suggested and click enter */}
+            <div style={{display:isAiOperating?"flex":"none"}}
+            className={styles.aiOperatingScreen}>
+                <div className={styles.aiOperatingContent}>
+                    <Bot size={80} className={styles.aiOperatingIcon} />
+                    <h2 className={styles.aiOperatingText}>AI is operating...</h2>
+                </div>
+            </div>
+
 
             <div className={styles.topNavBar}>
                 {!displaySubPage[0]&&<button className={styles.navButton}
-                onClick={()=>{setDisplaySubPage([true,false,false,false]);}}>
+                onClick={()=>{setDisplaySubPage([true,false,false,false,false]);}}>
                 <Home size={30}></Home>
                 </button>}
                 <button 
                 className={styles.navButton}
                 onClick={()=>{
-                    setDisplaySubPage([false,true,false,false]);
+                    setDisplaySubPage([false,true,false,false,false]);
                     setUpdateCoin(u=>u+1);
             }}><ShoppingBag size={30}></ShoppingBag></button>
 
-                <button className={styles.navButton}><Info size={30} onClick={()=>{setDisplaySubPage([false,false,true,false])}}></Info></button>
+                <button className={styles.navButton}><Info size={30} onClick={()=>{setDisplaySubPage([false,false,true,false,false])}}></Info></button>
 
-                <button className={styles.navButton}><Share2 size={30} onClick={()=>{setDisplaySubPage([false,false,false,true])}}></Share2></button>
+                <button className={styles.navButton}><Share2 size={30} onClick={()=>{setDisplaySubPage([false,false,false,true,false])}}></Share2></button>
 
                 {displaySubPage[0]&&<div className={styles.searchContainer}>
                     <input 
@@ -310,6 +405,11 @@ function MainPage() {
                         <Search size={18} />
                     </button>
                 </div>}
+
+
+
+                <button className={styles.askAiButton}
+                onClick={()=>{setDisplaySubPage([false,false,false,false,true])}}><Bot size={30}></Bot></button>
 
                 <button className={styles.navButtonRed}
             onClick={()=>{
@@ -336,7 +436,7 @@ function MainPage() {
                             }}>try {g.gameNameIdentifier}</button>
                             <button className={styles.btn}
                            onClick={()=>{setGameDescription(g.howToPlay);
-                            setDisplaySubPage([false,false,true,false])
+                            setDisplaySubPage([false,false,true,false,false])
 
                            }}>How to Play 🤔 </button>
 
@@ -389,6 +489,140 @@ function MainPage() {
 
                 </div> 
             </div>}
+
+                {/*AI agent page */}
+
+                {displaySubPage[4]&&(
+                    <div className={styles.tutorialPanel}>
+                        <div className={styles.tutorialInner}>
+                            
+                            <div className={styles.chatHeader}>
+                                <Bot size={28} className={styles.chatIcon} />
+                                <h1>AI Game Assistant</h1>
+                            </div>
+
+                            <div className={styles.chatMessageArea} ref={chatEndRef}>
+                                <div className={styles.aiLodaingScreen}
+                                style={{display:isAiThinking?'flex':'none'}}>
+                                </div>
+
+                                {chatHsitoryArr.map((chat,index)=>{
+                                    const isLastMessage = index === chatHsitoryArr.length - 1;
+                                    if(chat.role==="model"){
+                                        return (<div className={styles.messageBot} key={index}>
+                                                {/* Only type the very last message received */}
+                                                {isLastMessage ? (
+                                                    <TypingMessage content={chat.content} setIsAiThinking={(YN)=>{setIsAiThinking(YN)}} />
+                                                ) : (
+                                                    <p>{chat.content}</p>
+                                                )}
+                                            </div>)
+                                    }else{
+                                        return (<div className={styles.messageUser} key={index}><p>{chat.content}</p></div>)
+                                    }
+                                })}
+
+                                
+                                <button style={{display:aiTaskMode==="suggestion"&&!isAiThinking ? "flex":"none"}}
+                                className={styles.suggestionButton}
+                                onClick={async()=>{
+                                    //a little bit of deplay between operation to make it feel natural
+                                    setIsAiOperating(true);
+                                    await new Promise((resolve)=>setTimeout(resolve,1000));
+                                    if(aiTaskMode==="suggestion"){
+                                        setDisplaySubPage([true,false,false,false,false]);
+                                        await new Promise((resolve)=>setTimeout(resolve,1500));
+                                        setSearchQuery(suggestedGame);
+                                        setCardArrStartingIndex(0);
+                                        await new Promise((resolve)=>setTimeout(resolve,1500));
+                                        setDisplayedGameCardArr([...gameCardArr.filter(element=>element.gameNameIdentifier
+                                                                        .replaceAll(" ","") 
+                                                                        .toLowerCase()
+                                                                        .includes(suggestedGame.replaceAll(" ","").toLowerCase()))])
+                                        setGameName(suggestedGame);
+                                        await new Promise((resolve)=>setTimeout(resolve,1500));
+                                        setReadyToEnter(true);
+
+                                        setAiTaskMode("");
+                                        setSuggestedGame("");
+                                        
+                                    }else{
+                                        //add more task mode operation here
+                                    }
+                                    setIsAiOperating(false);
+                                }}>
+                                    {aiTaskMode==="suggestion"? `go to play ${suggestedGame} ?? `:""}
+                                </button>
+
+                            </div>
+
+                            <div className={styles.chatInputContainer}>
+                                <input 
+                                    type="text" 
+                                    placeholder="Ask something..." 
+                                    className={styles.chatInput}
+                                    value={userMessage}
+                                    onChange={(e) => setUserMessage(e.target.value)}
+
+
+                                />
+                                <button className={styles.chatSendButton}
+                                disabled={isAiThinking}
+                                onClick={async()=>{
+                                    try{
+                                        if(userMessage.trim()===""){return;}
+                                        //lock the button
+                                        setIsAiThinking(true);
+                                        setChatHistoryArr(c=>[...c,{role:"user",content:userMessage}])
+                                        
+                                        const response = await fetch(`${import.meta.env.VITE_API_URL}/ai/suggestGameToPlay`,
+                                            {credentials:'include',
+                                                method:'POST',
+                                                headers:{'Content-Type': 'application/json'},
+                                                body: JSON.stringify({
+                                                    userPrompt:userMessage
+                                        })});
+                                        if(response.ok){
+                                            if(isDev){console.log(response)}
+                                            const data=await response.json();
+                                            setChatHistoryArr(c=>[...c,{role:"model",content:data.aiText}])
+
+                                            setAiTaskMode(data.mode);
+                                            setSuggestedGame(data.suggestedGame);
+
+                                            
+                                        }
+                                    }catch(error){
+                                        if(isDev){console.log(error)}
+                                    }finally{
+                                        setIsAiThinking(false);
+                                    }
+
+                                }}>
+                                    Send
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                )}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
             {/*---------------------------------------
             the shop ui start

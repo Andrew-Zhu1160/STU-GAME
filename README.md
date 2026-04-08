@@ -174,8 +174,29 @@ MONGODB_URL=mongodb://localhost:27017/stu-game
 # Used for encrypting session cookies
 SESSION_SECRET=choose_a_long_random_string
 
+#oauth2.0 variable
+GOOGLE_CLIENT_ID=your_google_client_id
+GOOGLE_CLIENT_SECRET=your_google_client_secret
+
+#you will need to go to google api to set trusted url to the url of the callback endpoint
+
+#vectorDB (pinecone) and AI agent variable
+#for AI embedding database api key and google AI embedding api key
+PINECONE_API_KEY=your_api_key_on_pinecone
+PINECONE_HOST=your_pinecone_index_host_url
+GOOGLE_AI_API_KEY=your_googleAiStudio_api_key
+
+#for easy switch of model in deployment, this is the most recent
+GEMINI_EMBEDDING_MODEL=gemini-embedding-001
+GEMINI_LLM_MODEL=gemini-3.1-flash-lite-preview
+
 # CORS / Frontend Origin
 REACT_URL=http://localhost:5174
+
+#BACKEND REFERENCE
+BACKEND_URL=usually_localhost
+
+
 ```
 
 ### 6. Run the app
